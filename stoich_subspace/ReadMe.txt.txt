@@ -1,3 +1,1 @@
-Currently, stoich_subspace() is broken and needs to be adapted to accept multiple feeds. This should be simple (in principle) as we just need to loop through and compute the stoichiometric subspace for all N feeds as an input to the function. We then compute the convex hull of all N stoichiometric subspaces. 
-
-stoich_subspace() should also return the stoichiometric subspace (in both concentration or extent format) corresponding to the individual feeds.
+This notebook contains the stoich_subspace function that computes the vertices of the overall stoichiometric subsace for multiple feeds.

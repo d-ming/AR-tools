@@ -144,7 +144,7 @@ def plot_region3d(Vs, ax=None, color="g", alpha=0.25, view=(50, 30),
     return ax.get_figure()
 
 
-def plot_hplanes(A, b, ax=None):
+def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
     '''
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.
@@ -176,13 +176,19 @@ def plot_hplanes(A, b, ax=None):
         '''Helper function to plot x in terms of y'''
         return (b - n[1]*y)/n[0]
 
+    # limits for plotting
+    xl = lims[0]
+    xu = lims[1]
+    yl = lims[0]
+    yu = lims[1]
+    
     # plot based on whether ny = 0 or not
     for i, ni in enumerate(A):
         bi = b[i]
-        if ni[1] != 0:
-            ax.plot([0., 1.0], [y_fn(0., ni, bi), y_fn(1.0, ni, bi)], 'k-')
+        if ni[1] != 0.0:
+            ax.plot([xl, xu], [y_fn(yl, ni, bi), y_fn(yu, ni, bi)], 'k-')
         else:
-            ax.plot([x_fn(0.0, ni, bi), x_fn(1.0, ni, bi)], [0., 1.0], 'k-')
+            ax.plot([x_fn(xl, ni, bi), x_fn(xu, ni, bi)], [yl, yu], 'k-')
 
     return ax.get_figure()
 
@@ -233,10 +239,14 @@ def con2vert(A, b):
         c = solver_result
 
         # TODO: check if c is now an interior point...
+    
+    print in_region(c, A, b)
 
     # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
     D = A/b_tmp[:, None]
+    
+    print b_tmp
 
     # find indices of convex hull belonging to D?
     k = scipy.spatial.ConvexHull(D).simplices

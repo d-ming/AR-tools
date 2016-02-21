@@ -1,0 +1,2 @@
+-con2vert() currently doesn't check to see if the interior point required for the algorithm to work is actually in the region, which may cause errors. 
+-Also, some combinations of stoichiometric matrix and feed seem to fail with a divide by zero error. Need to figure out what is the cause of this behaviour and fix it.

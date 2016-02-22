@@ -25,8 +25,12 @@ def tmp_fn(xi):
 stoich_mat = -sp.array([[-1, -1, 1.], [-1., 0, 1]]).T
 Cf = sp.array([1., 1., 0.2])
 
+
+
 A = -stoich_mat
 b = Cf
+
+artools.con2vert(A, b)
 
 c = scipy.linalg.lstsq(A, b)[0]
 print artools.in_region(c, A, b)

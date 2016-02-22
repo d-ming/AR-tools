@@ -219,9 +219,12 @@ def con2vert(A, b):
     # attempt to find an interior point in the feasible region
     c = scipy.linalg.lstsq(A, b)[0]
 
-    if sp.any(sp.dot(A, c) - b > 0.0):
+    if sp.any(sp.dot(A, c) - b >= 0.0):
 
         def tmp_fn(xi):
+            # find the Chebyshev centre, xc, of the polytope (the 
+            # largest inscribed ball within the polytope with centre at xc.)
+        
             d = sp.dot(A, xi) - b
             # ensure point actually lies within region and not just on the
             # boundary

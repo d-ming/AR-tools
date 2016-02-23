@@ -219,7 +219,8 @@ def con2vert(A, b):
     # attempt to find an interior point in the feasible region
     c = scipy.linalg.lstsq(A, b)[0]
 
-    if sp.any(sp.dot(A, c) - b >= 0.0):
+    # re-calc c if c is out of the region or on the polytope boundary
+    while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
 
         def tmp_fn(xi):
             # find the Chebyshev centre, xc, of the polytope (the 
@@ -228,7 +229,7 @@ def con2vert(A, b):
             d = sp.dot(A, xi) - b
             # ensure point actually lies within region and not just on the
             # boundary
-            tmp_ks = sp.nonzero(d >= -1e-10)
+            tmp_ks = sp.nonzero(d >= -1e-6)
             # print sum(d[tmp_ks])    #sum of errors
 
             # return max(d)
@@ -240,16 +241,18 @@ def con2vert(A, b):
         # ignore output message
         solver_result = scipy.optimize.fmin(tmp_fn, c, disp=False)
         c = solver_result
+        
+        c = sp.rand(A.shape[1])
 
         # TODO: check if c is now an interior point...
     
-    print in_region(c, A, b)
+    # print in_region(c, A, b)
 
     # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
     D = A/b_tmp[:, None]
     
-    print b_tmp
+    # print b_tmp
 
     # find indices of convex hull belonging to D?
     k = scipy.spatial.ConvexHull(D).simplices
@@ -326,8 +329,8 @@ def vert2con(Vs):
 
 def in_region(xi, A, b, tol=1e-12):
     '''
-    Determine whether point xi lies within the region defined by the system
-    of inequalities A*xi <= b
+    Determine whether point xi lies within the region or on the region boundary
+    defined by the system of inequalities A*xi <= b
 
     Parameters:
         A
@@ -355,8 +358,8 @@ def in_region(xi, A, b, tol=1e-12):
 
 def out_region(xi, A, b, tol=1e-12):
     '''
-    Determine whether point xi lies outside of the region defined by the system
-    of inequalities A*xi <= b
+    Determine whether point xi lies strictly outside of the region (NOT on the 
+    region boundary) defined by the system of inequalities A*xi <= b
 
     Parameters:
         A

@@ -22,7 +22,7 @@ def tmp_fn(xi):
     # return max(d)
     return sum(d[tmp_ks])
 
-stoich_mat = -sp.array([[-1, -1, 1.], [-1., 0, 1]]).T
+stoich_mat = -sp.array([[-1, -1, 1.], [-2., 0, 1]]).T
 Cf = sp.array([1., 1., 0.2])
 
 
@@ -30,7 +30,8 @@ Cf = sp.array([1., 1., 0.2])
 A = -stoich_mat
 b = Cf
 
-artools.con2vert(A, b)
+v = artools.con2vert(A, b)
+print v
 
 c = scipy.linalg.lstsq(A, b)[0]
 print artools.in_region(c, A, b)
@@ -40,5 +41,8 @@ ax = fig.gca()
 ax.hold(True)
 
 ax.plot(c[0], c[1], "bo")
+ax.plot(v[0,0], v[0,1], "ro")
+ax.plot(v[1,0], v[1,1], "ro")
+ax.plot(v[2,0], v[2,1], "ro")
 
 plt.show(fig)

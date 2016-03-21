@@ -654,77 +654,48 @@ def convhull_pts(Xs):
 
     return Vs
 
-<<<<<<< HEAD
-def stoich_subspace(Cf0s, stoich_mat):
-    """ Compute the bounds of the stoichiometric subspace, S, from multiple feed points
-    and a stoichoimetric coefficient matrix.
-=======
 
-<<<<<<< HEAD
-def calc_stoich_subspace(stoich_mat, Cf0s):
-    '''Compute the stoichiometric subspace from a stoichometric coefficient
-    matrix and feed point.
->>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
-=======
 def stoich_subspace(Cf0s, stoich_mat):
-    """ Compute the bounds of the stoichiometric subspace, S, from multiple feed points
-    and a stoichoimetric coefficient matrix.
->>>>>>> refs/remotes/origin/master
+    """ 
+    Compute the bounds of the stoichiometric subspace, S, from multiple feed points and a stoichoimetric coefficient matrix.
 
     Parameters:
-        stoich_mat  (n x d) array. Each row in stoich_mat corresponds to a component
-                    and each column corresponds to a reaction.
-        Cf0s        (M x n) matrix. Each row in Cf0s corresponds to an individual 
-                    feed and each column corresponds to a component.
+    
+        stoich_mat    (n x d) array. Each row in stoich_mat corresponds to a component and each column corresponds to a reaction.
+        
+        Cf0s          (M x n) matrix. Each row in Cf0s corresponds to an individual feed and each column corresponds to a component.
+
 
     Returns:
-<<<<<<< HEAD
-<<<<<<< HEAD
-        S_attributes   dictionary that contains the vertices stoichiometric 
-=======
-        stoichSubspace_attributes   dictionary that contains the vertices stoichiometric 
->>>>>>> refs/remotes/origin/master
-                                    subspace in extent and concentration space for individual 
-                                    feeds as well as overall stoichiometric subspace for multiple
-                                    feeds.                         
+    
+        S_attributes   dictionary that contains the vertices stoichiometric subspace in extent and concentration space for individual feeds                        as well as overall stoichiometric subspace for multiple feeds.                         
+        
         keys:
         
-        all_Es      The vertices of individual stoichiometric subspaces in extent space.
-        
-        all_Cs      The vertices of individual stoichiometric subspaces in concentration space.
-        
-        all_Es_mat  list of vertices of the overall stoichiometric subspace in extent space.
-        
-        all_Cs_mat  list of vertices of the overall stoichiometric subspace in concentration space.
-        
-        hull_Es     extreme vertices of the overall stoichiometric subspace in the extent space.              
-        
-        hull_Cs     extreme vertices of the overall stoichiometric subspace in concentration space.
+            all_Es      vertices of the individual stoichiometric subspaces in extent space.
+
+            all_Cs      vertices of the individual stoichiometric subspaces in concentration space.
+
+            all_Es_mat  list of vertices of the overall stoichiometric subspace in extent space.
+
+            all_Cs_mat  list of vertices of the overall stoichiometric subspace in concentration space.
+
+            hull_Es     extreme vertices of the overall stoichiometric subspace in the extent space.              
+
+            hull_Cs     extreme vertices of the overall stoichiometric subspace in concentration space.
+
+            bounds      bounds of the stoichiometric subspace in concentration space.
 
     """
     
-<<<<<<< HEAD
-=======
     # create an empty list of bounds/ axis_lims
     min_lims = []
     max_lims = []
     
->>>>>>> refs/remotes/origin/master
     # to store stoichSubspace_attributes
     S_attributes = {}
     
     # to store vertices for each feed and stoich_mat in extent and concentration space  
-<<<<<<< HEAD
-=======
-        Cs     (L x n) array. The vertices of the stoichiometric subspace in
-               concentration space.
-        Es     (L x d) array. The vertices of the stoichiometric subspace in
-               extent space.
-    '''
-
->>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
-=======
->>>>>>> refs/remotes/origin/master
     all_Es = []
     all_Cs = []
     
@@ -737,37 +708,6 @@ def stoich_subspace(Cf0s, stoich_mat):
         # loop through each feed point, Cf0, and check if it is a column vector 
         # with ndim=2, or a (L,) array with ndim=1 only
         if Cf0.ndim == 2:
-<<<<<<< HEAD
-<<<<<<< HEAD
-            Cf0 = Cf0.flatten() # converts into (L,)
-                 
-        # always treat stoich_mat as a matrix for consistency, convert if not
-        if stoich_mat.ndim == 1: 
-            # converts a 'single rxn' row into column vector  
-            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
-            
-        # raise an error if the no. of components is inconsistent between the feed and stoichiometric matrix
-        if len(Cf0) != stoich_mat.shape[0]:
-            raise Exception("The number of components in the feed does not match the number of rows in the stoichiometric matrix.") 
-
-        # check if  a single reaction or multiple reactions are occuring  
-        if stoich_mat.shape[1] == 1: 
-            # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'  
-            
-            # converts into (L,)
-=======
-            Cf0 = Cf0.flatten()
-    
-        # always treat stoich_mat as a matrix for consistency, convert if not
-        if stoich_mat.ndim == 1:
-            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
-    
-        # handle the case when stoich_mat is a single reaction (using limiting
-        # reactants)
-        if stoich_mat.shape[1] == 1:
-    
->>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
-=======
             Cf0 = Cf0.flatten() # converts into (L,)
             
         # raise an error if the no. of components is inconsistent between the feed and stoichiometric matrix
@@ -784,7 +724,6 @@ def stoich_subspace(Cf0s, stoich_mat):
             # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'  
             
             # converts into (L,)
->>>>>>> refs/remotes/origin/master
             stoich_mat = stoich_mat.flatten()
 
             # calculate the limiting requirements
@@ -806,7 +745,7 @@ def stoich_subspace(Cf0s, stoich_mat):
 
         else:
             # extent associated with each feed vector
-            Es = artools.con2vert(- stoich_mat, Cf0) 
+            Es = con2vert(- stoich_mat, Cf0) 
             
             # calc the corresponding point in concentration space
             Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T 
@@ -819,13 +758,9 @@ def stoich_subspace(Cf0s, stoich_mat):
         all_Es_mat = sp.vstack(all_Es)
         all_Cs_mat = sp.vstack(all_Cs)
     
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> refs/remotes/origin/master
     # compute the convexhull of the overall stoichiometric subspace 
     # if n > d + 1, then hull_Cs is returned as the full list of vertices 
-    if len(Cf0) > artools.rank(stoich_mat) + 1:
+    if len(Cf0) > rank(stoich_mat) + 1:
         # convexHull vertices are returned as the whole stack of points
         hull_Es = all_Es_mat
         hull_Cs = all_Cs_mat
@@ -839,34 +774,10 @@ def stoich_subspace(Cf0s, stoich_mat):
         hull_all = ConvexHull(all_Cs_mat)
         ks = hull_all.vertices
         hull_Cs = all_Cs_mat[ks, :] 
-<<<<<<< HEAD
-
-    # create a dictionary containing all the 'attributes' of the 'stoich_subspace'
-    S_attributes = {
-        'all_Es' : all_Es,
-        'all_Cs' : all_Cs,
-        'all_Es_mat' : all_Es_mat,
-        'all_Cs_mat' : all_Cs_mat,
-        'hull_Es' : hull_Es,
-        'hull_Cs' : hull_Cs
-}
-        
-    return stoichCoeff_attributes
-=======
-            return Cs, Es
-    
-        # find extents corresponding to stoichiometric subspace from
-        # Cf0 + A*e >=0, or -A*e <= Cf0
-        Es = con2vert(-stoich_mat, Cf0)
-=======
->>>>>>> refs/remotes/origin/master
     
     # no. of components
     N = stoich_mat.shape[0]
 
-<<<<<<< HEAD
->>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
-=======
     # create a matrix of indices 
     components = sp.linspace(0, N-1, num=N)  
     
@@ -895,7 +806,6 @@ def stoich_subspace(Cf0s, stoich_mat):
 }
         
     return S_attributes
->>>>>>> refs/remotes/origin/master
 
 def nullspace(A, tol=1e-15):
     '''

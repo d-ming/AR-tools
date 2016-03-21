@@ -654,17 +654,26 @@ def convhull_pts(Xs):
 
     return Vs
 
+<<<<<<< HEAD
 def stoich_subspace(Cf0s, stoich_mat):
     """ Compute the bounds of the stoichiometric subspace, S, from multiple feed points
     and a stoichoimetric coefficient matrix.
+=======
+
+def calc_stoich_subspace(stoich_mat, Cf0s):
+    '''Compute the stoichiometric subspace from a stoichometric coefficient
+    matrix and feed point.
+>>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
 
     Parameters:
-        stoich_mat  (n x d) array. Each row in stoich_mat corresponds to a component
-                    and each column corresponds to a reaction.
-        Cf0s        (M x n) matrix. Each row in Cf0s corresponds to an individual 
-                    feed and each column corresponds to a component.
+        stoich_mat  (n x d) array. Each row in stoich_mat corresponds
+                    to a component and each column corresponds to a
+                    reaction.
+        Cf0s        (M x n) matrix of M feeds. Each row in Cf0s is a feed
+                    corresponding to a component row in stoich_mat.
 
     Returns:
+<<<<<<< HEAD
         S_attributes   dictionary that contains the vertices stoichiometric 
                                     subspace in extent and concentration space for individual 
                                     feeds as well as overall stoichiometric subspace for multiple
@@ -689,18 +698,24 @@ def stoich_subspace(Cf0s, stoich_mat):
     S_attributes = {}
     
     # to store vertices for each feed and stoich_mat in extent and concentration space  
+=======
+        Cs     (L x n) array. The vertices of the stoichiometric subspace in
+               concentration space.
+        Es     (L x d) array. The vertices of the stoichiometric subspace in
+               extent space.
+    '''
+
+>>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
     all_Es = []
     all_Cs = []
-    
-    # if user input is not a list, then convert into a list 
-    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 and not Cf0s.shape[1] > 1:
-        # put it in a list 
-        Cf0s = [Cf0s]
-    
+
     for Cf0 in Cf0s:
-        # loop through each feed point, Cf0, and check if it is a column vector 
-        # with ndim=2, or a (L,) array with ndim=1 only
+        print Cf0
+
+        # check if Cf0 is a column vector with ndim=2, or a (L,) array with
+        # ndim=1 only
         if Cf0.ndim == 2:
+<<<<<<< HEAD
             Cf0 = Cf0.flatten() # converts into (L,)
                  
         # always treat stoich_mat as a matrix for consistency, convert if not
@@ -717,40 +732,36 @@ def stoich_subspace(Cf0s, stoich_mat):
             # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'  
             
             # converts into (L,)
+=======
+            Cf0 = Cf0.flatten()
+    
+        # always treat stoich_mat as a matrix for consistency, convert if not
+        if stoich_mat.ndim == 1:
+            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
+    
+        # handle the case when stoich_mat is a single reaction (using limiting
+        # reactants)
+        if stoich_mat.shape[1] == 1:
+    
+>>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
             stoich_mat = stoich_mat.flatten()
-
-            # calculate the limiting requirements
-            limiting = Cf0/ stoich_mat
-
+    
+            # calculate stoichiometric limiting requirements
+            limiting = Cf0/stoich_mat
+    
             # only choose negative coefficients as these indicate reactants
             k = limiting < 0.0
-
+    
             # calc maximum extent based on limiting reactant and calc C
-            # we take max() because of the negative convention of the limiting requirements 
             e_max = sp.fabs(max(limiting[k]))
-            
-            # calc the corresponding point in concentration space 
+    
             C = Cf0 + stoich_mat*e_max
-
+    
             # form Cs and Es and return
             Cs = sp.vstack([Cf0, C])
             Es = sp.array([[0., e_max]]).T
-
-        else:
-            # extent associated with each feed vector
-            Es = artools.con2vert(- stoich_mat, Cf0) 
-            
-            # calc the corresponding point in concentration space
-            Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T 
-
-        # vertices for each feed and stoich_mat in extent and concentration space
-        all_Es.append(Es) 
-        all_Cs.append(Cs)
-
-        # stack vertices in one list and find the overall stoichiometric subspace(convex hull) 
-        all_Es_mat = sp.vstack(all_Es)
-        all_Cs_mat = sp.vstack(all_Cs)
     
+<<<<<<< HEAD
     # compute the convexhull of the overall stoichiometric subspace 
     # if n > d + 1, then hull_Cs is returned as the full list of vertices 
     if len(Cf0) > artools.rank(stoich_mat) + 1:
@@ -779,6 +790,22 @@ def stoich_subspace(Cf0s, stoich_mat):
 }
         
     return stoichCoeff_attributes
+=======
+            return Cs, Es
+    
+        # find extents corresponding to stoichiometric subspace from
+        # Cf0 + A*e >=0, or -A*e <= Cf0
+        Es = con2vert(-stoich_mat, Cf0)
+    
+        # convert vertices represented in extent space back to concentrations using
+        # C = Cf0 + A*e
+        Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
+
+        all_Es.append(Es)
+
+    return all_Cs, all_Es
+
+>>>>>>> parent of fdf39f5... Added an attribute 'bounds'  to the stoich_subspace dictionary
 
 def nullspace(A, tol=1e-15):
     '''

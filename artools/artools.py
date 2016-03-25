@@ -2,7 +2,6 @@
 # Imports
 # ----------------------------------------------------------------------------
 
-
 import scipy as sp
 import scipy.spatial
 import scipy.optimize
@@ -35,9 +34,9 @@ def unique_rows(A, tol=1e-13):
 
     duplicate_ks = []
     for r1 in range(A.shape[0]):
-        for r2 in range(r1+1, A.shape[0]):
+        for r2 in range(r1 + 1, A.shape[0]):
             # check if row 1 is equal to row 2 to within tol
-            if sp.all(sp.fabs(A[r1, :]-A[r2, :]) <= tol):
+            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
                 # only add if row 2 has not already been added from a previous
                 # pass
                 if r2 not in duplicate_ks:
@@ -91,7 +90,11 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     return ax.get_figure()
 
 
-def plot_region3d(Vs, ax=None, color="g", alpha=0.25, view=(50, 30),
+def plot_region3d(Vs,
+                  ax=None,
+                  color="g",
+                  alpha=0.25,
+                  view=(50, 30),
                   plot_verts=False):
     '''
     Plot a filled 3D region, similar to MATLAB's trisurf() function.
@@ -135,9 +138,11 @@ def plot_region3d(Vs, ax=None, color="g", alpha=0.25, view=(50, 30),
     xs = Vs[:, 0]
     ys = Vs[:, 1]
     zs = Vs[:, 2]
-    ax.plot_trisurf(mtri.Triangulation(xs, ys, simplices), zs,
-                    color=color,
-                    alpha=alpha)
+    ax.plot_trisurf(
+        mtri.Triangulation(xs, ys, simplices),
+        zs,
+        color=color,
+        alpha=alpha)
 
     ax.view_init(view[0], view[1])
 
@@ -170,11 +175,11 @@ def plot_hplanes(A, b, ax=None):
 
     def y_fn(x, n, b):
         '''Helper function to plot y in terms of x'''
-        return (b - n[0]*x)/n[1]
+        return (b - n[0] * x) / n[1]
 
     def x_fn(y, n, b):
         '''Helper function to plot x in terms of y'''
-        return (b - n[1]*y)/n[0]
+        return (b - n[1] * y) / n[0]
 
     # plot based on whether ny = 0 or not
     for i, ni in enumerate(A):
@@ -234,9 +239,9 @@ def con2vert(A, b):
 
         # TODO: check if c is now an interior point...
 
-    # calculate D matrix?
+        # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
-    D = A/b_tmp[:, None]
+    D = A / b_tmp[:, None]
 
     # find indices of convex hull belonging to D?
     k = scipy.spatial.ConvexHull(D).simplices
@@ -286,7 +291,7 @@ def vert2con(Vs):
     # perform affine transformation (subtract c from every row in Vs)
     V = Vs - c
 
-    A = sp.NaN*sp.empty((K.shape[0], Vs.shape[1]))
+    A = sp.NaN * sp.empty((K.shape[0], Vs.shape[1]))
 
     rc = 0
     for i in range(K.shape[0]):
@@ -462,7 +467,7 @@ def rand_pts(Npts, axis_lims):
         Ys          (Npts x d) numpy array of random points.
     '''
 
-    dim = len(axis_lims)/2
+    dim = len(axis_lims) / 2
 
     Xs = sp.rand(int(Npts), dim)
     # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
@@ -509,7 +514,7 @@ def calc_pfr_trajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     if linspace_ts:
         pfr_ts = sp.linspace(0, t_end, NUM_PTS)
     else:
-        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS-1))
+        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
 
     pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
 
@@ -550,7 +555,8 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     while Cs.shape[0] < NUM_PTS:
 
         # update display
-        print "%.2f%% complete..." % (float(Cs.shape[0])/float(NUM_PTS)*100.0)
+        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
+                                      100.0)
 
         # generate random points within the axis limits in blocks of N points
         Xs = rand_pts(N, axis_lims)
@@ -563,15 +569,15 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
             vi = ci - Cf
 
             # normalise ri and vi
-            vn = vi/scipy.linalg.norm(vi)
-            rn = ri/scipy.linalg.norm(ri)
+            vn = vi / scipy.linalg.norm(vi)
+            rn = ri / scipy.linalg.norm(ri)
 
             # calculate colinearity between rn and vn
             if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
                 ks.append(i)
 
                 # calc corresponding cstr residence time (based on 1st element)
-                tau = vi[0]/ri[0]
+                tau = vi[0] / ri[0]
                 ts.append(tau)
 
         # append colinear points to current list of CSTR points
@@ -607,7 +613,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
         cstr_ts
     '''
 
-    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts-1)])
+    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
     cstr_cs = []
 
     # loop through each cstr residence time and solve for the corresponding
@@ -617,7 +623,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
 
         # define CSTR function
         def cstr_fn(C):
-            return Cf + ti*rate_fn(C, 1) - C
+            return Cf + ti * rate_fn(C, 1) - C
 
         # solve
         ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
@@ -683,38 +689,38 @@ def calc_stoich_subspace(stoich_mat, Cf0s):
         # ndim=1 only
         if Cf0.ndim == 2:
             Cf0 = Cf0.flatten()
-    
-        # always treat stoich_mat as a matrix for consistency, convert if not
+
+    # always treat stoich_mat as a matrix for consistency, convert if not
         if stoich_mat.ndim == 1:
             stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
-    
-        # handle the case when stoich_mat is a single reaction (using limiting
-        # reactants)
+
+    # handle the case when stoich_mat is a single reaction (using limiting
+    # reactants)
         if stoich_mat.shape[1] == 1:
-    
+
             stoich_mat = stoich_mat.flatten()
-    
+
             # calculate stoichiometric limiting requirements
-            limiting = Cf0/stoich_mat
-    
+            limiting = Cf0 / stoich_mat
+
             # only choose negative coefficients as these indicate reactants
             k = limiting < 0.0
-    
+
             # calc maximum extent based on limiting reactant and calc C
             e_max = sp.fabs(max(limiting[k]))
-    
-            C = Cf0 + stoich_mat*e_max
-    
+
+            C = Cf0 + stoich_mat * e_max
+
             # form Cs and Es and return
             Cs = sp.vstack([Cf0, C])
             Es = sp.array([[0., e_max]]).T
-    
+
             return Cs, Es
-    
-        # find extents corresponding to stoichiometric subspace from
-        # Cf0 + A*e >=0, or -A*e <= Cf0
+
+    # find extents corresponding to stoichiometric subspace from
+    # Cf0 + A*e >=0, or -A*e <= Cf0
         Es = con2vert(-stoich_mat, Cf0)
-    
+
         # convert vertices represented in extent space back to concentrations using
         # C = Cf0 + A*e
         Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
@@ -828,7 +834,7 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
         S = []
 
         for i in range(0, len(axis_lims), 2):
-            S.append(axis_lims[i+1] - axis_lims[i])
+            S.append(axis_lims[i + 1] - axis_lims[i])
 
         S = sp.array(S)
 
@@ -849,7 +855,7 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
             if i != j:
                 # calc distance from xi to xj
                 dx = xi - xj
-                r = sp.sqrt(sp.sum((dx/S)**2))
+                r = sp.sqrt(sp.sum((dx / S)**2))
 
                 if r <= min_dist:
                     ks.append(j)

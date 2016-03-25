@@ -693,57 +693,59 @@ def stoich_subspace(Cf0s, stoich_mat):
             bounds      bounds of the stoichiometric subspace in concentration space.
 
     """
-    
+
     # create an empty list of bounds/ axis_lims
     min_lims = []
     max_lims = []
-    
+
     # to store stoichSubspace_attributes
     S_attributes = {}
-    
-    # to store vertices for each feed and stoich_mat in extent and concentration space  
+
+    # to store vertices for each feed and stoich_mat in extent and concentration space
     all_Es = []
     all_Cs = []
-    
-    # if user input is not a list, then convert into a list 
-    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 and not Cf0s.shape[1] > 1:
-        # put it in a list 
+
+    # if user input is not a list, then convert into a list
+    if not isinstance(
+            Cf0s, list) and not Cf0s.shape[0] > 1 and not Cf0s.shape[1] > 1:
+        # put it in a list
         Cf0s = [Cf0s]
-    
+
     for Cf0 in Cf0s:
         # loop through each feed point, Cf0, and check if it is a column vector 
         # with ndim=2, or a (L,) array with ndim=1 only
         if Cf0.ndim == 2:
-            Cf0 = Cf0.flatten() # converts into (L,)
-            
-        # raise an error if the no. of components is inconsistent between the feed and stoichiometric matrix
-        if len(Cf0) != stoich_mat.shape[0]:
-            raise Exception("The number of components in the feed does not match the number of rows in the stoichiometric matrix.")
-            
-        # always treat stoich_mat as a matrix for consistency, convert if not
-        if stoich_mat.ndim == 1: 
-            # converts a 'single rxn' row into column vector  
-            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1)) 
+            Cf0 = Cf0.flatten()  # converts into (L,)
 
-        # check if  a single reaction or multiple reactions are occuring  
-        if stoich_mat.shape[1] == 1 or stoich_mat.ndim == 1: 
-            # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'  
-            
+            # raise an error if the no. of components is inconsistent between the feed and stoichiometric matrix
+        if len(Cf0) != stoich_mat.shape[0]:
+            raise Exception(
+                "The number of components in the feed does not match the number of rows in the stoichiometric matrix.")
+
+            # always treat stoich_mat as a matrix for consistency, convert if not
+        if stoich_mat.ndim == 1:
+            # converts a 'single rxn' row into column vector
+            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
+
+        # check if  a single reaction or multiple reactions are occuring
+        if stoich_mat.shape[1] == 1 or stoich_mat.ndim == 1:
+            # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'
+
             # converts into (L,)
             stoich_mat = stoich_mat.flatten()
 
             # calculate the limiting requirements
-            limiting = Cf0/ stoich_mat
+            limiting = Cf0 / stoich_mat
 
             # only choose negative coefficients as these indicate reactants
             k = limiting < 0.0
 
             # calc maximum extent based on limiting reactant and calc C
-            # we take max() because of the negative convention of the limiting requirements 
+            # we take max() because of the negative convention of the limiting requirements
             e_max = sp.fabs(max(limiting[k]))
-            
-            # calc the corresponding point in concentration space 
-            C = Cf0 + stoich_mat*e_max
+
+            # calc the corresponding point in concentration space
+            C = Cf0 + stoich_mat * e_max
 
             # form Cs and Es and return
             Cs = sp.vstack([Cf0, C])
@@ -751,27 +753,27 @@ def stoich_subspace(Cf0s, stoich_mat):
 
         else:
             # extent associated with each feed vector
-            Es = con2vert(- stoich_mat, Cf0) 
-            
+            Es = con2vert(-stoich_mat, Cf0)
+
             # calc the corresponding point in concentration space
-            Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T 
+            Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
         # vertices for each feed and stoich_mat in extent and concentration space
-        all_Es.append(Es) 
+        all_Es.append(Es)
         all_Cs.append(Cs)
 
-        # stack vertices in one list and find the overall stoichiometric subspace(convex hull) 
+        # stack vertices in one list and find the overall stoichiometric subspace(convex hull)
         all_Es_mat = sp.vstack(all_Es)
         all_Cs_mat = sp.vstack(all_Cs)
-    
+
     # compute the convexhull of the overall stoichiometric subspace 
-    # if n > d + 1, then hull_Cs is returned as the full list of vertices 
+    # if n > d + 1, then hull_Cs is returned as the full list of vertices
     if len(Cf0) > rank(stoich_mat) + 1:
         # convexHull vertices are returned as the whole stack of points
         hull_Es = all_Es_mat
         hull_Cs = all_Cs_mat
     else:
-        # convexHull vertices for the overall stoichiometric subspace in extent space         
+        # convexHull vertices for the overall stoichiometric subspace in extent space
         hull_all = ConvexHull(all_Es_mat)
         ks = hull_all.vertices
         hull_Es = all_Es_mat[ks, :]
@@ -779,16 +781,16 @@ def stoich_subspace(Cf0s, stoich_mat):
         # convexHull vertices for the overall stoichiometric subspace in concentration space
         hull_all = ConvexHull(all_Cs_mat)
         ks = hull_all.vertices
-        hull_Cs = all_Cs_mat[ks, :] 
-    
+        hull_Cs = all_Cs_mat[ks, :]
+
     # no. of components
     N = stoich_mat.shape[0]
 
-    # create a matrix of indices 
-    components = sp.linspace(0, N-1, num=N)  
-    
+    # create a matrix of indices
+    components = sp.linspace(0, N - 1, num=N)
+
     for i in components:
-        # loop through each component and find the (min, max) => bounds of the axis  
+        # loop through each component and find the (min, max) => bounds of the axis
         minMatrix = min(hull_Cs[:, i])
         maxMatrix = max(hull_Cs[:, i])
 
@@ -796,21 +798,21 @@ def stoich_subspace(Cf0s, stoich_mat):
         min_lims.append(minMatrix)
         max_lims.append(maxMatrix)
 
-        # stack them into an ndarray and flatten() into a row vector 
+        # stack them into an ndarray and flatten() into a row vector
         bounds = sp.vstack((min_lims, max_lims)).T
-        bounds = bounds.flatten() # alternating min, max values
+        bounds = bounds.flatten()  # alternating min, max values
 
     # create a dictionary containing all the 'attributes' of the 'stoich_subspace'
     S_attributes = {
-        'all_Es' : all_Es,
-        'all_Cs' : all_Cs,
-        'all_Es_mat' : all_Es_mat,
-        'all_Cs_mat' : all_Cs_mat,
-        'hull_Es' : hull_Es,
-        'hull_Cs' : hull_Cs,
-        'bounds' : bounds
-}
-        
+        'all_Es': all_Es,
+        'all_Cs': all_Cs,
+        'all_Es_mat': all_Es_mat,
+        'all_Cs_mat': all_Cs_mat,
+        'hull_Es': hull_Es,
+        'hull_Cs': hull_Cs,
+        'bounds': bounds
+    }
+
     return S_attributes
 
 

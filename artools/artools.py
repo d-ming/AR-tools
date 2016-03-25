@@ -2,7 +2,6 @@
 # Imports
 # ----------------------------------------------------------------------------
 
-
 import scipy as sp
 import scipy.spatial
 import scipy.optimize
@@ -35,9 +34,9 @@ def unique_rows(A, tol=1e-13):
 
     duplicate_ks = []
     for r1 in range(A.shape[0]):
-        for r2 in range(r1+1, A.shape[0]):
+        for r2 in range(r1 + 1, A.shape[0]):
             # check if row 1 is equal to row 2 to within tol
-            if sp.all(sp.fabs(A[r1, :]-A[r2, :]) <= tol):
+            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
                 # only add if row 2 has not already been added from a previous
                 # pass
                 if r2 not in duplicate_ks:
@@ -91,7 +90,11 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     return ax.get_figure()
 
 
-def plot_region3d(Vs, ax=None, color="g", alpha=0.25, view=(50, 30),
+def plot_region3d(Vs,
+                  ax=None,
+                  color="g",
+                  alpha=0.25,
+                  view=(50, 30),
                   plot_verts=False):
     '''
     Plot a filled 3D region, similar to MATLAB's trisurf() function.
@@ -135,9 +138,11 @@ def plot_region3d(Vs, ax=None, color="g", alpha=0.25, view=(50, 30),
     xs = Vs[:, 0]
     ys = Vs[:, 1]
     zs = Vs[:, 2]
-    ax.plot_trisurf(mtri.Triangulation(xs, ys, simplices), zs,
-                    color=color,
-                    alpha=alpha)
+    ax.plot_trisurf(
+        mtri.Triangulation(xs, ys, simplices),
+        zs,
+        color=color,
+        alpha=alpha)
 
     ax.view_init(view[0], view[1])
 
@@ -170,11 +175,11 @@ def plot_hplanes(A, b, ax=None):
 
     def y_fn(x, n, b):
         '''Helper function to plot y in terms of x'''
-        return (b - n[0]*x)/n[1]
+        return (b - n[0] * x) / n[1]
 
     def x_fn(y, n, b):
         '''Helper function to plot x in terms of y'''
-        return (b - n[1]*y)/n[0]
+        return (b - n[1] * y) / n[0]
 
     # plot based on whether ny = 0 or not
     for i, ni in enumerate(A):
@@ -234,9 +239,9 @@ def con2vert(A, b):
 
         # TODO: check if c is now an interior point...
 
-    # calculate D matrix?
+        # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
-    D = A/b_tmp[:, None]
+    D = A / b_tmp[:, None]
 
     # find indices of convex hull belonging to D?
     k = scipy.spatial.ConvexHull(D).simplices
@@ -286,7 +291,7 @@ def vert2con(Vs):
     # perform affine transformation (subtract c from every row in Vs)
     V = Vs - c
 
-    A = sp.NaN*sp.empty((K.shape[0], Vs.shape[1]))
+    A = sp.NaN * sp.empty((K.shape[0], Vs.shape[1]))
 
     rc = 0
     for i in range(K.shape[0]):
@@ -462,7 +467,7 @@ def rand_pts(Npts, axis_lims):
         Ys          (Npts x d) numpy array of random points.
     '''
 
-    dim = len(axis_lims)/2
+    dim = len(axis_lims) / 2
 
     Xs = sp.rand(int(Npts), dim)
     # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
@@ -509,7 +514,7 @@ def calc_pfr_trajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     if linspace_ts:
         pfr_ts = sp.linspace(0, t_end, NUM_PTS)
     else:
-        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS-1))
+        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
 
     pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
 
@@ -550,7 +555,8 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     while Cs.shape[0] < NUM_PTS:
 
         # update display
-        print "%.2f%% complete..." % (float(Cs.shape[0])/float(NUM_PTS)*100.0)
+        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
+                                      100.0)
 
         # generate random points within the axis limits in blocks of N points
         Xs = rand_pts(N, axis_lims)
@@ -563,15 +569,15 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
             vi = ci - Cf
 
             # normalise ri and vi
-            vn = vi/scipy.linalg.norm(vi)
-            rn = ri/scipy.linalg.norm(ri)
+            vn = vi / scipy.linalg.norm(vi)
+            rn = ri / scipy.linalg.norm(ri)
 
             # calculate colinearity between rn and vn
             if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
                 ks.append(i)
 
                 # calc corresponding cstr residence time (based on 1st element)
-                tau = vi[0]/ri[0]
+                tau = vi[0] / ri[0]
                 ts.append(tau)
 
         # append colinear points to current list of CSTR points
@@ -607,7 +613,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
         cstr_ts
     '''
 
-    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts-1)])
+    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
     cstr_cs = []
 
     # loop through each cstr residence time and solve for the corresponding
@@ -617,7 +623,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
 
         # define CSTR function
         def cstr_fn(C):
-            return Cf + ti*rate_fn(C, 1) - C
+            return Cf + ti * rate_fn(C, 1) - C
 
         # solve
         ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
@@ -655,73 +661,157 @@ def convhull_pts(Xs):
     return Vs
 
 
-def calc_stoich_subspace(stoich_mat, Cf0s):
-    '''Compute the stoichiometric subspace from a stoichometric coefficient
-    matrix and feed point.
+def stoich_subspace(Cf0s, stoich_mat):
+    """ 
+    Compute the bounds of the stoichiometric subspace, S, from multiple feed points and a stoichoimetric coefficient matrix.
 
     Parameters:
-        stoich_mat  (n x d) array. Each row in stoich_mat corresponds
-                    to a component and each column corresponds to a
-                    reaction.
-        Cf0s        (M x n) matrix of M feeds. Each row in Cf0s is a feed
-                    corresponding to a component row in stoich_mat.
+    
+        stoich_mat    (n x d) array. Each row in stoich_mat corresponds to a component and each column corresponds to a reaction.
+        
+        Cf0s          (M x n) matrix. Each row in Cf0s corresponds to an individual feed and each column corresponds to a component.
+
 
     Returns:
-        Cs     (L x n) array. The vertices of the stoichiometric subspace in
-               concentration space.
-        Es     (L x d) array. The vertices of the stoichiometric subspace in
-               extent space.
-    '''
+    
+        S_attributes   dictionary that contains the vertices stoichiometric subspace in extent and concentration space for individual feeds                        as well as overall stoichiometric subspace for multiple feeds.                         
+        
+        keys:
+        
+            all_Es      vertices of the individual stoichiometric subspaces in extent space.
 
+            all_Cs      vertices of the individual stoichiometric subspaces in concentration space.
+
+            all_Es_mat  list of vertices of the overall stoichiometric subspace in extent space.
+
+            all_Cs_mat  list of vertices of the overall stoichiometric subspace in concentration space.
+
+            hull_Es     extreme vertices of the overall stoichiometric subspace in the extent space.              
+
+            hull_Cs     extreme vertices of the overall stoichiometric subspace in concentration space.
+
+            bounds      bounds of the stoichiometric subspace in concentration space.
+
+    """
+    
+    # create an empty list of bounds/ axis_lims
+    min_lims = []
+    max_lims = []
+    
+    # to store stoichSubspace_attributes
+    S_attributes = {}
+    
+    # to store vertices for each feed and stoich_mat in extent and concentration space  
     all_Es = []
     all_Cs = []
-
+    
+    # if user input is not a list, then convert into a list 
+    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 and not Cf0s.shape[1] > 1:
+        # put it in a list 
+        Cf0s = [Cf0s]
+    
     for Cf0 in Cf0s:
-        print Cf0
-
-        # check if Cf0 is a column vector with ndim=2, or a (L,) array with
-        # ndim=1 only
+        # loop through each feed point, Cf0, and check if it is a column vector 
+        # with ndim=2, or a (L,) array with ndim=1 only
         if Cf0.ndim == 2:
-            Cf0 = Cf0.flatten()
-    
+            Cf0 = Cf0.flatten() # converts into (L,)
+            
+        # raise an error if the no. of components is inconsistent between the feed and stoichiometric matrix
+        if len(Cf0) != stoich_mat.shape[0]:
+            raise Exception("The number of components in the feed does not match the number of rows in the stoichiometric matrix.")
+            
         # always treat stoich_mat as a matrix for consistency, convert if not
-        if stoich_mat.ndim == 1:
-            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
-    
-        # handle the case when stoich_mat is a single reaction (using limiting
-        # reactants)
-        if stoich_mat.shape[1] == 1:
-    
+        if stoich_mat.ndim == 1: 
+            # converts a 'single rxn' row into column vector  
+            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1)) 
+
+        # check if  a single reaction or multiple reactions are occuring  
+        if stoich_mat.shape[1] == 1 or stoich_mat.ndim == 1: 
+            # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an error 'tuple out of range'  
+            
+            # converts into (L,)
             stoich_mat = stoich_mat.flatten()
-    
-            # calculate stoichiometric limiting requirements
-            limiting = Cf0/stoich_mat
-    
+
+            # calculate the limiting requirements
+            limiting = Cf0/ stoich_mat
+
             # only choose negative coefficients as these indicate reactants
             k = limiting < 0.0
-    
+
             # calc maximum extent based on limiting reactant and calc C
+            # we take max() because of the negative convention of the limiting requirements 
             e_max = sp.fabs(max(limiting[k]))
-    
+            
+            # calc the corresponding point in concentration space 
             C = Cf0 + stoich_mat*e_max
-    
+
             # form Cs and Es and return
             Cs = sp.vstack([Cf0, C])
             Es = sp.array([[0., e_max]]).T
-    
-            return Cs, Es
-    
-        # find extents corresponding to stoichiometric subspace from
-        # Cf0 + A*e >=0, or -A*e <= Cf0
-        Es = con2vert(-stoich_mat, Cf0)
-    
-        # convert vertices represented in extent space back to concentrations using
-        # C = Cf0 + A*e
-        Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
-        all_Es.append(Es)
+        else:
+            # extent associated with each feed vector
+            Es = con2vert(- stoich_mat, Cf0) 
+            
+            # calc the corresponding point in concentration space
+            Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T 
 
-    return all_Cs, all_Es
+        # vertices for each feed and stoich_mat in extent and concentration space
+        all_Es.append(Es) 
+        all_Cs.append(Cs)
+
+        # stack vertices in one list and find the overall stoichiometric subspace(convex hull) 
+        all_Es_mat = sp.vstack(all_Es)
+        all_Cs_mat = sp.vstack(all_Cs)
+    
+    # compute the convexhull of the overall stoichiometric subspace 
+    # if n > d + 1, then hull_Cs is returned as the full list of vertices 
+    if len(Cf0) > rank(stoich_mat) + 1:
+        # convexHull vertices are returned as the whole stack of points
+        hull_Es = all_Es_mat
+        hull_Cs = all_Cs_mat
+    else:
+        # convexHull vertices for the overall stoichiometric subspace in extent space         
+        hull_all = ConvexHull(all_Es_mat)
+        ks = hull_all.vertices
+        hull_Es = all_Es_mat[ks, :]
+
+        # convexHull vertices for the overall stoichiometric subspace in concentration space
+        hull_all = ConvexHull(all_Cs_mat)
+        ks = hull_all.vertices
+        hull_Cs = all_Cs_mat[ks, :] 
+    
+    # no. of components
+    N = stoich_mat.shape[0]
+
+    # create a matrix of indices 
+    components = sp.linspace(0, N-1, num=N)  
+    
+    for i in components:
+        # loop through each component and find the (min, max) => bounds of the axis  
+        minMatrix = min(hull_Cs[:, i])
+        maxMatrix = max(hull_Cs[:, i])
+
+        # append limits into preallocated lists (min_lims, max_lims)
+        min_lims.append(minMatrix)
+        max_lims.append(maxMatrix)
+
+        # stack them into an ndarray and flatten() into a row vector 
+        bounds = sp.vstack((min_lims, max_lims)).T
+        bounds = bounds.flatten() # alternating min, max values
+
+    # create a dictionary containing all the 'attributes' of the 'stoich_subspace'
+    S_attributes = {
+        'all_Es' : all_Es,
+        'all_Cs' : all_Cs,
+        'all_Es_mat' : all_Es_mat,
+        'all_Cs_mat' : all_Cs_mat,
+        'hull_Es' : hull_Es,
+        'hull_Cs' : hull_Cs,
+        'bounds' : bounds
+}
+        
+    return S_attributes
 
 
 def nullspace(A, tol=1e-15):
@@ -828,7 +918,7 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
         S = []
 
         for i in range(0, len(axis_lims), 2):
-            S.append(axis_lims[i+1] - axis_lims[i])
+            S.append(axis_lims[i + 1] - axis_lims[i])
 
         S = sp.array(S)
 
@@ -849,7 +939,7 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
             if i != j:
                 # calc distance from xi to xj
                 dx = xi - xj
-                r = sp.sqrt(sp.sum((dx/S)**2))
+                r = sp.sqrt(sp.sum((dx / S)**2))
 
                 if r <= min_dist:
                     ks.append(j)

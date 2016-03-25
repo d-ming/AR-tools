@@ -813,6 +813,7 @@ def stoich_subspace(Cf0s, stoich_mat):
         
     return S_attributes
 
+
 def nullspace(A, tol=1e-15):
     '''
     Compute the nullspace of A using singular value decomposition (SVD). Factor

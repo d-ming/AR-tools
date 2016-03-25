@@ -774,12 +774,12 @@ def stoich_subspace(Cf0s, stoich_mat):
         hull_Cs = all_Cs_mat
     else:
         # convexHull vertices for the overall stoichiometric subspace in extent space
-        hull_all = ConvexHull(all_Es_mat)
+        hull_all = scipy.spatial.ConvexHull(all_Es_mat)
         ks = hull_all.vertices
         hull_Es = all_Es_mat[ks, :]
 
         # convexHull vertices for the overall stoichiometric subspace in concentration space
-        hull_all = ConvexHull(all_Cs_mat)
+        hull_all = scipy.spatial.ConvexHull(all_Cs_mat)
         ks = hull_all.vertices
         hull_Cs = all_Cs_mat[ks, :]
 

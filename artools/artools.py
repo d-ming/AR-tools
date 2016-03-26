@@ -255,13 +255,7 @@ def con2vert(A, b):
 
         # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
-<<<<<<< HEAD
-    D = A/b_tmp[:, None]
-    
-    # print b_tmp
-=======
     D = A / b_tmp[:, None]
->>>>>>> refs/remotes/origin/master
 
     # find indices of convex hull belonging to D?
     k = scipy.spatial.ConvexHull(D).simplices

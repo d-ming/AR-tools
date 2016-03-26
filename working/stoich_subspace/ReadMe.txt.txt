@@ -1,0 +1,1 @@
+This notebook contains the stoich_subspace function that computes the vertices of the overall stoichiometric subsace for multiple feeds.

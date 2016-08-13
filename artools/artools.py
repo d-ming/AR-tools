@@ -55,15 +55,15 @@ def same_rows(A, B):
     if A.shape != B.shape:
         return False
     else:
-        # now loop through each row in A and check if the same row exists in B. 
+        # now loop through each row in A and check if the same row exists in B.
         # If not, A and B are not equivalent according to their rows.
         for row_A in A:
             # does row_A exist in B?
             if not any([np.allclose(row_A, row_B) for row_B in B]):
                 return False
-                
+
         return True
-        
+
 
 def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''

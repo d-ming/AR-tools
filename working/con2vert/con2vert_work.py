@@ -1,5 +1,5 @@
 import sys
-sys.path.append('artools')
+sys.path.append('../../artools')
 import artools
 artools = reload(artools)
 

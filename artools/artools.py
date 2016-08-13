@@ -186,7 +186,7 @@ def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
     xu = lims[1]
     yl = lims[0]
     yu = lims[1]
-    
+
     # plot based on whether ny = 0 or not
     for i, ni in enumerate(A):
         bi = b[i]
@@ -224,13 +224,23 @@ def con2vert(A, b):
     # attempt to find an interior point in the feasible region
     c = scipy.linalg.lstsq(A, b)[0]
 
-    # re-calc c if c is out of the region or on the polytope boundary
+    # if c is out of the region or on the polytope boundary, try to find a new
+    # c
+    num_tries = 0
     while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+        
+        plt.plot(c[0], c[1], "ks")
+
+        num_tries += 1
+        if num_tries > 20:
+            raise Exception("con2vert() failed to find an interior point"
+                            "after 20 tries. Perhaps your constraints are"
+                            "badly formed or the region is unbounded.")
 
         def tmp_fn(xi):
-            # find the Chebyshev centre, xc, of the polytope (the 
+            # find the Chebyshev centre, xc, of the polytope (the
             # largest inscribed ball within the polytope with centre at xc.)
-        
+
             d = sp.dot(A, xi) - b
             # ensure point actually lies within region and not just on the
             # boundary
@@ -244,16 +254,11 @@ def con2vert(A, b):
         # %f" % (tmp_fn(c))
 
         # ignore output message
-        solver_result = scipy.optimize.fmin(tmp_fn, c, disp=False)
+        c_guess = sp.rand(A.shape[1])
+        solver_result = scipy.optimize.fmin(tmp_fn, c_guess, disp=False)
         c = solver_result
-        
-        c = sp.rand(A.shape[1])
 
-        # TODO: check if c is now an interior point...
-    
-    # print in_region(c, A, b)
-
-        # calculate D matrix?
+    # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
     D = A / b_tmp[:, None]
 
@@ -361,7 +366,7 @@ def in_region(xi, A, b, tol=1e-12):
 
 def out_region(xi, A, b, tol=1e-12):
     '''
-    Determine whether point xi lies strictly outside of the region (NOT on the 
+    Determine whether point xi lies strictly outside of the region (NOT on the
     region boundary) defined by the system of inequalities A*xi <= b
 
     Parameters:

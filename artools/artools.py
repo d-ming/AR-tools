@@ -165,7 +165,7 @@ def plot_region3d(Vs,
     return ax.get_figure()
 
 
-def plot_hplanes(A, b, ax=None):
+def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
     '''
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.
@@ -197,13 +197,19 @@ def plot_hplanes(A, b, ax=None):
         '''Helper function to plot x in terms of y'''
         return (b - n[1] * y) / n[0]
 
+    # limits for plotting
+    xl = lims[0]
+    xu = lims[1]
+    yl = lims[0]
+    yu = lims[1]
+
     # plot based on whether ny = 0 or not
     for i, ni in enumerate(A):
         bi = b[i]
-        if ni[1] != 0:
-            ax.plot([0., 1.0], [y_fn(0., ni, bi), y_fn(1.0, ni, bi)], 'k-')
+        if ni[1] != 0.0:
+            ax.plot([xl, xu], [y_fn(yl, ni, bi), y_fn(yu, ni, bi)], 'k-')
         else:
-            ax.plot([x_fn(0.0, ni, bi), x_fn(1.0, ni, bi)], [0., 1.0], 'k-')
+            ax.plot([x_fn(xl, ni, bi), x_fn(xu, ni, bi)], [yl, yu], 'k-')
 
     return ax.get_figure()
 
@@ -234,13 +240,27 @@ def con2vert(A, b):
     # attempt to find an interior point in the feasible region
     c = scipy.linalg.lstsq(A, b)[0]
 
-    if sp.any(sp.dot(A, c) - b > 0.0):
+    # if c is out of the region or on the polytope boundary, try to find a new
+    # c
+    num_tries = 0
+    while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+        
+        plt.plot(c[0], c[1], "ks")
+
+        num_tries += 1
+        if num_tries > 20:
+            raise Exception("con2vert() failed to find an interior point"
+                            "after 20 tries. Perhaps your constraints are"
+                            "badly formed or the region is unbounded.")
 
         def tmp_fn(xi):
+            # find the Chebyshev centre, xc, of the polytope (the
+            # largest inscribed ball within the polytope with centre at xc.)
+
             d = sp.dot(A, xi) - b
             # ensure point actually lies within region and not just on the
             # boundary
-            tmp_ks = sp.nonzero(d >= -1e-10)
+            tmp_ks = sp.nonzero(d >= -1e-6)
             # print sum(d[tmp_ks])    #sum of errors
 
             # return max(d)
@@ -250,12 +270,11 @@ def con2vert(A, b):
         # %f" % (tmp_fn(c))
 
         # ignore output message
-        solver_result = scipy.optimize.fmin(tmp_fn, c, disp=False)
+        c_guess = sp.rand(A.shape[1])
+        solver_result = scipy.optimize.fmin(tmp_fn, c_guess, disp=False)
         c = solver_result
 
-        # TODO: check if c is now an interior point...
-
-        # calculate D matrix?
+    # calculate D matrix?
     b_tmp = b - sp.dot(A, c)  # b_tmp is like a difference vector?
     D = A / b_tmp[:, None]
 
@@ -334,8 +353,8 @@ def vert2con(Vs):
 
 def in_region(xi, A, b, tol=1e-12):
     '''
-    Determine whether point xi lies within the region defined by the system
-    of inequalities A*xi <= b
+    Determine whether point xi lies within the region or on the region boundary
+    defined by the system of inequalities A*xi <= b
 
     Parameters:
         A
@@ -363,8 +382,8 @@ def in_region(xi, A, b, tol=1e-12):
 
 def out_region(xi, A, b, tol=1e-12):
     '''
-    Determine whether point xi lies outside of the region defined by the system
-    of inequalities A*xi <= b
+    Determine whether point xi lies strictly outside of the region (NOT on the
+    region boundary) defined by the system of inequalities A*xi <= b
 
     Parameters:
         A

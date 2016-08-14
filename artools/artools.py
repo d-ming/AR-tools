@@ -8,6 +8,7 @@ import scipy.optimize
 import scipy.linalg
 
 import numpy.linalg
+import numpy as np
 
 import itertools
 
@@ -48,6 +49,21 @@ def unique_rows(A, tol=1e-13):
     # return matrix of unique rows and associated indices
     return (A[unique_ks, :], unique_ks)
 
+
+def same_rows(A, B):
+    # check if A and B are the same shape
+    if A.shape != B.shape:
+        return False
+    else:
+        # now loop through each row in A and check if the same row exists in B. 
+        # If not, A and B are not equivalent according to their rows.
+        for row_A in A:
+            # does row_A exist in B?
+            if not any([np.allclose(row_A, row_B) for row_B in B]):
+                return False
+                
+        return True
+        
 
 def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''

@@ -5,15 +5,84 @@ artools = reload(artools)
 
 import scipy as sp
 
-# content of test_assert1.py
-def f():
-    return 3
 
-def test_function():
-    assert f() == 3
-    
-    
 def test_1():
-    Cf0 = sp.array([1., 0, 0, 0])
-    
-    
+    # single feed, as a 0-D array
+    # NB: test is incomplete still
+    Cf = sp.array([1., 0, 0, 0])
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = artools.stoich_subspace(Cf, stoich_mat)
+
+
+def test_2():
+    # multiple feeds in a list, as 0-D arrays
+    # NB: test is incomplete still
+    Cf1 = sp.array([1., 0, 0, 0])
+    Cf2 = sp.array([1., 1., 0, 0])
+
+    feed_list = [Cf1, Cf2]
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = artools.stoich_subspace(feed_list, stoich_mat)
+    print S
+
+
+def test_3():
+    # multiple feeds in a list, as row vectors
+    # NB: test is incomplete still
+    Cf1 = sp.array([[1., 0, 0, 0]])
+    Cf2 = sp.array([[1., 1., 0, 0]])
+
+    feed_list = [Cf1, Cf2]
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = artools.stoich_subspace(feed_list, stoich_mat)
+    print S
+
+
+def test_4():
+    # multiple feeds in a list, as column vectors
+    # NB: test is incomplete still
+    Cf1 = sp.array([[1., 0, 0, 0]]).T
+    Cf2 = sp.array([[1., 1., 0, 0]]).T
+
+    feed_list = [Cf1, Cf2]
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = artools.stoich_subspace(feed_list, stoich_mat)
+    print S
+
+
+def test_5():
+    # multiple feeds in a 2-D array
+    # NB: test is incomplete still
+    Cf1 = sp.array([1., 0, 0, 0])
+    Cf2 = sp.array([1., 1., 0, 0])
+
+    feeds = sp.vstack([Cf1, Cf2])
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = artools.stoich_subspace(feeds, stoich_mat)
+    print S
+
+test_2()

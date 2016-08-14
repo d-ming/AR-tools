@@ -244,7 +244,7 @@ def con2vert(A, b):
     # c
     num_tries = 0
     while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
-        
+
         plt.plot(c[0], c[1], "ks")
 
         num_tries += 1

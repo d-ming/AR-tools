@@ -55,6 +55,10 @@ def same_rows(A, B):
     if A.shape != B.shape:
         return False
     else:
+        
+        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
+            return np.allclose(A.flatten(), B.flatten())
+
         # now loop through each row in A and check if the same row exists in B.
         # If not, A and B are not equivalent according to their rows.
         for row_A in A:
@@ -864,7 +868,7 @@ def nullspace(A, tol=1e-15):
     Note:
         Unlike MATLAB's svd() function, Scipy returns V.T automatically and not
         V. Also, the S variable returned by scipy.linalg.svd() is an array and
-        not a (m x n) matrix like in MATLAB.
+        not a (m x n) matrix as in MATLAB.
 
     Parameters:
         A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is

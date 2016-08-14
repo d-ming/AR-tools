@@ -46,12 +46,17 @@ def test_4():
                   [0, 0, 0, 1, 0]])
 
     N = artools.nullspace(A)
-    N_ref = sp.array([[0., 1, 0, 0, 1]]).T
+    N_ref = sp.array([[0., 0, 0, 0, 1]]).T
 
-    print N
-    print N_ref
-
-    assert (artools.same_rows(N, N_ref) is False)
+    assert (artools.same_rows(N, N_ref) is True)
 
 
-#test_4()
+def test_5():
+    # test a 3x2 matrix
+    A = sp.array([[1., 0],
+                  [0, 1],
+                  [0, 0]])
+
+    N = artools.nullspace(A)
+
+    assert N.shape == (2, 0)

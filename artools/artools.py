@@ -55,7 +55,7 @@ def same_rows(A, B):
     if A.shape != B.shape:
         return False
     else:
-        
+
         if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
             return np.allclose(A.flatten(), B.flatten())
 

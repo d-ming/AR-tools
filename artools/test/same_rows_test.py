@@ -41,15 +41,6 @@ def test_same_3():
 
 
 def test_same_4():
-    # 0-D numpy arrays rows
-    A = sp.array([1., 0, 0])
-
-    B = sp.array([1., 0, 0])
-
-    assert (same_rows(A, B) is True)
-
-
-def test_same_5():
     # identical copies
     A = sp.array([[1., 0, 0],
                   [0, 1, 2],

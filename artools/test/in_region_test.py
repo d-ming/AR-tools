@@ -113,6 +113,42 @@ def test_on_2():
     assert artools.in_region(xi, A, b)
 
 
+def test_unbounded_1():
+    # check in an unbounded region
+    A = sp.array([[-1., 0],
+                  [0, -1]])
+
+    b = sp.array([0., 0])
+
+    xi = sp.array([0.5, 0.5])
+
+    assert artools.in_region(xi, A, b)
+
+
+def test_unbounded_2():
+    # check out an unbounded region
+    A = sp.array([[-1., 0],
+                  [0, -1]])
+
+    b = sp.array([0., 0])
+
+    xi = sp.array([-0.5, -0.5])
+
+    assert artools.in_region(xi, A, b) is False
+
+
+def test_unbounded_3():
+    # check on an unbounded region
+    A = sp.array([[-1., 0],
+                  [0, -1]])
+
+    b = sp.array([0., 0])
+
+    xi = sp.array([0.5, 0])
+
+    assert artools.in_region(xi, A, b)
+
+
 def test_tol_in_1():
     # slightly in the region at the origin
     A = sp.array([[-1., 0],
@@ -155,6 +191,21 @@ def test_tol_out_1():
     xi = sp.array([0.0 - 2*tol, 0.0 + tol])
 
     assert (artools.in_region(xi, A, b, tol=tol) is False)
+
+
+def test_tol_on_1():
+    # on an extreme point specifying tolerance
+    A = sp.array([[-1., 0],
+                  [0, -1],
+                  [1, 1]])
+
+    b = sp.array([0., 0, 1])
+
+    xi = sp.array([1., 0])
+
+    tol = 1e-2
+
+    assert artools.in_region(xi, A, b, tol=tol)
 
 
 def test_shape_1():

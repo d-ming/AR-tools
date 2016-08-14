@@ -9,6 +9,9 @@ import scipy as sp
 def test_1():
     # single feed, as a 0-D array
     # NB: test is incomplete still
+
+    # A -> B -> C
+    # 2A -> D
     Cf = sp.array([1., 0, 0, 0])
     stoich_mat = sp.array([[-1., 0, -2],
                            [1, -1, 0],
@@ -16,6 +19,7 @@ def test_1():
                            [0, 0, 1]])
 
     S = artools.stoich_subspace(Cf, stoich_mat)
+    print S
 
 
 def test_2():
@@ -72,8 +76,8 @@ def test_4():
 def test_5():
     # multiple feeds in a 2-D array
     # NB: test is incomplete still
-    Cf1 = sp.array([1., 0, 0, 0])
-    Cf2 = sp.array([1., 1., 0, 0])
+    Cf1 = sp.array([[1., 0, 0, 0]])
+    Cf2 = sp.array([[1., 1., 0, 0]])
 
     feeds = sp.vstack([Cf1, Cf2])
 
@@ -83,6 +87,15 @@ def test_5():
                            [0, 0, 1]])
 
     S = artools.stoich_subspace(feeds, stoich_mat)
-    print S
+#    print S
 
-test_2()
+# test 2-D system
+
+# test for single reaction, multiple feeds
+
+# test for single reaction, single feed
+
+# test incompatible size feed and stoichiometric matrix
+
+# test reversible reactions
+test_1()

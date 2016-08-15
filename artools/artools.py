@@ -758,10 +758,10 @@ def stoich_subspace(Cf0s, stoich_mat):
     all_Cs = []
 
     # if user input is not a list, then convert into a list
-#    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
-    if not isinstance(Cf0s, list):
+    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
+#    if not isinstance(Cf0s, list):
         # is Cf0s a matrix of feed(s), or just a single row/column vector?
-        if Cf0s.ndim == 1 or ((Cf0s.ndim == 2) and (Cf0s.shape[0] > 1 and Cf0s.shape[1] == 1) or (Cf0s.shape[0] == 1 and Cf0s.shape[1] > 1)):
+#        if Cf0s.ndim == 1 or ((Cf0s.ndim == 2) and (Cf0s.shape[0] > 1 and Cf0s.shape[1] == 1) or (Cf0s.shape[0] == 1 and Cf0s.shape[1] > 1)):
             # put it in a list
             Cf0s = [Cf0s]
 
@@ -825,24 +825,24 @@ def stoich_subspace(Cf0s, stoich_mat):
         all_Es_mat = sp.vstack(all_Es)
         all_Cs_mat = sp.vstack(all_Cs)
 
-#    # compute the convexhull of the overall stoichiometric subspace
-#    # if n > d + 1, then hull_Cs is returned as the full list of vertices
-#    if len(Cf0) > rank(stoich_mat) + 1:
-#        # convexHull vertices are returned as the whole stack of points
-#        hull_Es = all_Es_mat
-#        hull_Cs = all_Cs_mat
-#    else:
-#        # convexHull vertices for the overall stoichiometric subspace in extent
-#        # space
-#        hull_all = scipy.spatial.ConvexHull(all_Es_mat)
-#        ks = hull_all.vertices
-#        hull_Es = all_Es_mat[ks, :]
-#
-#        # convexHull vertices for the overall stoichiometric subspace in
-#        # concentration space
-#        hull_all = scipy.spatial.ConvexHull(all_Cs_mat)
-#        ks = hull_all.vertices
-#        hull_Cs = all_Cs_mat[ks, :]
+    # compute the convexhull of the overall stoichiometric subspace
+    # if n > d + 1, then hull_Cs is returned as the full list of vertices
+    if len(Cf0) > rank(stoich_mat) + 1:
+        # convexHull vertices are returned as the whole stack of points
+        hull_Es = all_Es_mat
+        hull_Cs = all_Cs_mat
+    else:
+        # convexHull vertices for the overall stoichiometric subspace in extent
+        # space
+        hull_all = scipy.spatial.ConvexHull(all_Es_mat)
+        ks = hull_all.vertices
+        hull_Es = all_Es_mat[ks, :]
+
+        # convexHull vertices for the overall stoichiometric subspace in
+        # concentration space
+        hull_all = scipy.spatial.ConvexHull(all_Cs_mat)
+        ks = hull_all.vertices
+        hull_Cs = all_Cs_mat[ks, :]
 
     hull_Es = all_Es_mat
     hull_Cs = all_Cs_mat

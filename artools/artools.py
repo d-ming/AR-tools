@@ -700,6 +700,54 @@ def convhull_pts(Xs):
     return Vs
 
 
+def stoich_S_S(Cf0, stoich_mat):
+    """
+    A helper function for stoich_subspace().
+    Single feed, single reaction version.
+    """
+
+    # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an
+    # error 'tuple out of range'
+
+    # converts into (L,)
+    stoich_mat = stoich_mat.flatten()
+
+    # calculate the limiting requirements
+    limiting = Cf0/stoich_mat
+
+    # only choose negative coefficients as these indicate reactants
+    k = limiting < 0.0
+
+    # calc maximum extent based on limiting reactant and calc C
+    # we take max() because of the negative convention of the limiting
+    # requirements
+    e_max = sp.fabs(max(limiting[k]))
+
+    # calc the corresponding point in concentration space
+    C = Cf0 + stoich_mat*e_max
+
+    # form Cs and Es and return
+    Cs = sp.vstack([Cf0, C])
+    Es = sp.array([[0.0, e_max]]).T
+
+    return (Cs, Es)
+
+
+def stoich_S_M(Cf0, stoich_mat):
+    """
+    A helper function for stoich_subspace().
+    Single feed, multiple reactions version.
+    """
+    
+    # extent associated with each feed vector
+    Es = con2vert(-stoich_mat, Cf0)
+
+    # calc the corresponding point in concentration space
+    Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
+
+    return (Cs, Es)
+
+
 def stoich_subspace(Cf0s, stoich_mat):
     """
     Compute the bounds of the stoichiometric subspace, S, from multiple feed
@@ -758,10 +806,10 @@ def stoich_subspace(Cf0s, stoich_mat):
     all_Cs = []
 
     # if user input is not a list, then convert into a list
-    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
-#    if not isinstance(Cf0s, list):
+#    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
+    if not isinstance(Cf0s, list):
         # is Cf0s a matrix of feed(s), or just a single row/column vector?
-#        if Cf0s.ndim == 1 or ((Cf0s.ndim == 2) and (Cf0s.shape[0] > 1 and Cf0s.shape[1] == 1) or (Cf0s.shape[0] == 1 and Cf0s.shape[1] > 1)):
+        if Cf0s.ndim == 1 or ((Cf0s.ndim == 2) and (Cf0s.shape[0] > 1 and Cf0s.shape[1] == 1) or (Cf0s.shape[0] == 1 and Cf0s.shape[1] > 1)):
             # put it in a list
             Cf0s = [Cf0s]
 
@@ -784,36 +832,10 @@ def stoich_subspace(Cf0s, stoich_mat):
 
         # check if a single reaction or multiple reactions are occuring
         if stoich_mat.shape[1] == 1 or stoich_mat.ndim == 1:
-            # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an
-            # error 'tuple out of range'
-
-            # converts into (L,)
-            stoich_mat = stoich_mat.flatten()
-
-            # calculate the limiting requirements
-            limiting = Cf0 / stoich_mat
-
-            # only choose negative coefficients as these indicate reactants
-            k = limiting < 0.0
-
-            # calc maximum extent based on limiting reactant and calc C
-            # we take max() because of the negative convention of the limiting
-            # requirements
-            e_max = sp.fabs(max(limiting[k]))
-
-            # calc the corresponding point in concentration space
-            C = Cf0 + stoich_mat * e_max
-
-            # form Cs and Es and return
-            Cs = sp.vstack([Cf0, C])
-            Es = sp.array([[0., e_max]]).T
+            Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
         else:
-            # extent associated with each feed vector
-            Es = con2vert(-stoich_mat, Cf0)
-
-            # calc the corresponding point in concentration space
-            Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
+            Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
         # vertices for each feed and stoich_mat in extent and concentration
         # space

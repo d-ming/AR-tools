@@ -319,8 +319,8 @@ def test_1():
                            [0, 0, 1]])
 
     S = stoich_subspace(Cf, stoich_mat)
-    Cs = S["all_Cs"][0]
-    Es = S["all_Es"][0]
+    Cs = S["all_Cs"]
+    Es = S["all_Es"]
 
     Cs_ref = sp.array([[1., 0, 0, 0],
                        [0, 0, 0, 0.5],
@@ -469,8 +469,8 @@ def test_steam_reforming_1():
                            [0, 1]])
 
     S = stoich_subspace(Cf0, stoich_mat)
-    Cs = S["all_Cs"][0]
-    Es = S["all_Es"][0]
+    Cs = S["all_Cs"]
+    Es = S["all_Es"]
 
     Cs_ref = sp.array([[0, 0, 2, 3, 0],
                        [1.25, 0.5, 0, 0, 0.75],

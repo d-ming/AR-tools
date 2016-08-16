@@ -788,8 +788,8 @@ def isRowVector(A):
 
 def stoich_subspace(Cf0s, stoich_mat):
     """
-    Compute the bounds of the stoichiometric subspace, S, from multiple feed
-    points and a stoichoimetric coefficient matrix.
+    Compute the extreme points of the stoichiometric subspace, S, from multiple
+    feed points and a stoichoimetric coefficient matrix.
 
     Parameters:
 
@@ -802,10 +802,9 @@ def stoich_subspace(Cf0s, stoich_mat):
 
     Returns:
 
-        S_attributes    dictionary that contains the vertices stoichiometric
-                        subspace in extent and concentration space for
-                        individual feeds as well as overall stoichiometric
-                        subspace for multiple feeds.
+        S_attributes    dictionary containing the vertices of the
+                        stoichiometric subspace in extent and concentration
+                        space for individual feeds.
 
         keys:
             all_Es      vertices of the individual stoichiometric subspaces in
@@ -821,7 +820,7 @@ def stoich_subspace(Cf0s, stoich_mat):
 
     """
 
-    # if user feeds is not in a list, then check to see if it is a matrix of
+    # if user Cf0s is not in a list, then check to see if it is a matrix of
     # feeds (with multiple rows), otherwise, put it in a list
     if not isinstance(Cf0s, list):
         # is Cf0s a matrix of feed(s), or just a single row/column vector?
@@ -869,6 +868,13 @@ def stoich_subspace(Cf0s, stoich_mat):
     Es_mins = sp.amin(sp.vstack(all_Es), 0)
     Es_maxs = sp.amax(sp.vstack(all_Es), 0)
     Es_bounds = sp.vstack([Es_mins, Es_maxs])
+
+    # if there was only one feed, return the data unpacked (so that it's not in
+    # a one-element) list
+    if len(all_Cs) == 1:
+        all_Cs = all_Cs[0]
+    if len(all_Es) == 1:
+        all_Es = all_Es[0]
 
     # create a dictionary containing all the attributes of the stoich_subspace
     S = {

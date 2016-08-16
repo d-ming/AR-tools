@@ -217,8 +217,6 @@ def test_stoich_S_S_5():
     assert(artools.same_rows(Cs, Cs_ref))
     assert(artools.same_rows(Es, Es_ref))
 
-#test_stoich_S_S_1()
-
 
 def test_1():
     # single feed, as a 0-D array
@@ -303,8 +301,49 @@ def test_5():
     S = artools.stoich_subspace(feeds, stoich_mat)
 #    print S
 
-# test 2-D system
 
+def test_2D_1():
+    # test 2-D system
+    # A -> B -> C
+
+    Cf1 = sp.array([1.0, 0, 0])
+    Cf2 = sp.array([1.0, 0.5, 0])
+
+    feeds = [Cf1, Cf2]
+
+    stoich_mat = sp.array([[-1., 0],
+                           [1, -1],
+                           [0, 1]])
+
+    S = artools.stoich_subspace(feeds, stoich_mat)
+
+    Cs1_ref = sp.array([[1., 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 1]])
+
+    Cs2_ref = sp.array([[1.5, 0, 0],
+                        [0, 1.5, 0],
+                        [0, 0, 1.5]])
+
+    Es1_ref = sp.array([[0., 0],
+                        [1, 0],
+                        [1, 1]])
+
+    Es2_ref = sp.array([[1., 0],
+                        [1, 1.5],
+                        [-0.5, 0]])
+
+    Cs1 = S["all_Cs"][0]
+    Cs2 = S["all_Cs"][1]
+    Es1 = S["all_Es"][0]
+    Es2 = S["all_Es"][1]
+
+    assert (artools.same_rows(Cs1, Cs1_ref) is True)
+    assert (artools.same_rows(Cs2, Cs2_ref) is True)
+    assert (artools.same_rows(Es1, Es1_ref) is True)
+    assert (artools.same_rows(Es2, Es2_ref) is True)
+
+#test_2D_1()
 # test for single reaction, multiple feeds
 
 # test for single reaction, single feed
@@ -312,4 +351,3 @@ def test_5():
 # test incompatible size feed and stoichiometric matrix
 
 # test reversible reactions
-#test_1()

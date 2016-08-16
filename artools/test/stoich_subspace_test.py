@@ -1,9 +1,10 @@
+import scipy as sp
+import pytest
+
 import sys
 sys.path.append('../')
 import artools
 artools = reload(artools)
-
-import scipy as sp
 
 
 def test_stoich_S_M_1():
@@ -118,6 +119,46 @@ def test_stoich_S_M_4():
     assert(artools.same_rows(Cs, Cs_ref))
 
 
+def test_stoich_S_M_positive_1():
+    # 2-D system
+    # A -> B -> C
+
+    # Test negative conentrations
+    Cf0 = sp.array([-1., 0, 0])
+
+    stoich_mat = sp.array([[-1., 0],
+                           [1, -1],
+                           [0, 1]])
+
+    with pytest.raises(Exception):
+        artools.stoich_S_M(Cf0, stoich_mat)
+
+
+def test_stoich_S_M_positive_2():
+    # 2-D system
+    # A -> B -> C
+
+    # Test negative zero
+    Cf0 = sp.array([1., -0, -0])
+
+    stoich_mat = sp.array([[-1., 0],
+                           [1, -1],
+                           [0, 1]])
+
+    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+
+    Cs_ref = sp.array([[1., 0, 0],
+                       [0, 1, 0],
+                       [0, 0, 1]])
+
+    Es_ref = sp.array([[0., 0],
+                       [1, 0],
+                       [1, 1]])
+
+    assert(artools.same_rows(Es, Es_ref))
+    assert(artools.same_rows(Cs, Cs_ref))
+
+
 def test_stoich_S_S_1():
     # A + B -> C
 
@@ -216,6 +257,52 @@ def test_stoich_S_S_5():
 
     assert(artools.same_rows(Cs, Cs_ref))
     assert(artools.same_rows(Es, Es_ref))
+
+
+def test_stoich_S_S_6():
+    # A -> B
+
+    # binary system
+    Cf0 = sp.array([1., 0])
+
+    stoich_mat = sp.array([[-1., 1]]).T
+
+    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+
+    Cs_ref = sp.array([[1., 0],
+                       [0, 1]])
+
+    Es_ref = sp.array([[0., 1]]).T
+
+    assert (artools.same_rows(Cs, Cs_ref))
+    assert (artools.same_rows(Es, Es_ref))
+
+
+def test_stoich_S_S_positive_1():
+    # 2-D system
+    # A -> B
+
+    # Test negative conentrations
+    Cf0 = sp.array([-1., 0])
+
+    stoich_mat = sp.array([[-1.],
+                           [1]])
+
+    with pytest.raises(Exception):
+        artools.stoich_S_S(Cf0, stoich_mat)
+
+
+def test_stoich_S_S_positive_2():
+    # 2-D system
+    # A -> B
+
+    # Test negative zero
+    Cf0 = sp.array([1., -0])
+
+    stoich_mat = sp.array([[-1.],
+                           [1]])
+
+    assert artools.stoich_S_S(Cf0, stoich_mat)
 
 
 def test_1():

@@ -706,8 +706,9 @@ def stoich_S_S(Cf0, stoich_mat):
     Single feed, single reaction version.
     """
 
-    # if stoich_mat is (L,) array this'stoich_mat.shape[1]' raises an
-    # error 'tuple out of range'
+    # check for positive concentrations
+    if sp.any(Cf0 < 0):
+        raise Exception("Feed concentrations must be positive")
 
     # converts into (L,)
     if Cf0.ndim == 2:
@@ -741,6 +742,10 @@ def stoich_S_M(Cf0, stoich_mat):
     A helper function for stoich_subspace().
     Single feed, multiple reactions version.
     """
+
+    # check for positive concentrations
+    if sp.any(Cf0 < 0):
+        raise Exception("Feed concentrations must be positive")
 
     # flatten Cf0 for consistency
     if Cf0.ndim == 2:

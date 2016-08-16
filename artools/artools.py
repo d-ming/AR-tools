@@ -710,6 +710,7 @@ def stoich_S_S(Cf0, stoich_mat):
     # error 'tuple out of range'
 
     # converts into (L,)
+    Cf0 = Cf0.flatten()
     stoich_mat = stoich_mat.flatten()
 
     # calculate the limiting requirements
@@ -723,7 +724,6 @@ def stoich_S_S(Cf0, stoich_mat):
     # requirements
     e_max = sp.fabs(max(limiting[k]))
 
-    # calc the corresponding point in concentration space
     C = Cf0 + stoich_mat*e_max
 
     # form Cs and Es and return
@@ -739,16 +739,23 @@ def stoich_S_M(Cf0, stoich_mat):
     Single feed, multiple reactions version.
     """
 
+    # flatten Cf0 for consistency
+    Cf0 = Cf0.flatten()
+
     # extent associated with each feed vector
     Es = con2vert(-stoich_mat, Cf0)
 
-    # calc the corresponding point in concentration space
+    # calculate the corresponding point in concentration space
     Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
     return (Cs, Es)
 
 
 def isColVector(A):
+    """
+    Checks if input A is a 2-D numpy array, orientated as a column vector
+    """
+
     if isinstance(A, sp.ndarray) and A.ndim == 2:
         row_num, col_num = A.shape
         if col_num == 1 and row_num > 1:
@@ -758,6 +765,10 @@ def isColVector(A):
 
 
 def isRowVector(A):
+    """
+    Checks if input A is a 2-D numpy array, orientated as a row vector
+    """
+
     if isinstance(A, sp.ndarray) and A.ndim == 2:
         row_num, col_num = A.shape
         if col_num > 1 and row_num == 1:
@@ -823,16 +834,17 @@ def stoich_subspace(Cf0s, stoich_mat):
     all_Es = []
     all_Cs = []
 
-    # if user input is not a list, then convert into a list
-#    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
+    # if user feeds is not in a list, then check to see if it is a matrix of
+    # feeds (with multiple rows), otherwise, put it in a list
     if not isinstance(Cf0s, list):
         # is Cf0s a matrix of feed(s), or just a single row/column vector?
+        if Cf0s.ndim == 1 or (isColVector(Cf0s) or isRowVector(Cf0s)):
             # put it in a list
             Cf0s = [Cf0s]
 
+    # loop through each feed and calculate stoich subspace
     for Cf0 in Cf0s:
-        # loop through each feed point, Cf0, and check if it is a column vector
-        # with ndim = 2, or a (L, ) array with ndim = 1 only
+        # flatten Cf0 for consistency
         if Cf0.ndim == 2:
             Cf0 = Cf0.flatten()  # converts into (L,)
 

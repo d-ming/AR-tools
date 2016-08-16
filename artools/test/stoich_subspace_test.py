@@ -10,6 +10,7 @@ def test_stoich_S_M_1():
     # 2-D system
     # A -> B -> C
 
+    # 0-D array feed
     Cf0 = sp.array([1., 0, 0])
 
     stoich_mat = sp.array([[-1., 0],
@@ -35,7 +36,66 @@ def test_stoich_S_M_2():
     # A -> B -> C
     # 2A -> D
 
+    # 0-D array feed
     Cf0 = sp.array([1., 0, 0, 0])
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+
+    Cs_ref = sp.array([[1, 0, 0, 0],
+                       [0, 1, 0, 0],
+                       [0, 0, 1, 0],
+                       [0, 0, 0, 0.5]])
+
+    Es_ref = sp.array([[0, 0, 0.5],
+                       [1, 1, 0],
+                       [0, 0, 0],
+                       [1, 0, 0]])
+
+    assert(artools.same_rows(Es, Es_ref))
+    assert(artools.same_rows(Cs, Cs_ref))
+
+
+def test_stoich_S_M_3():
+    # 3-D van de Vusse system
+    # A -> B -> C
+    # 2A -> D
+
+    # row vector feed
+    Cf0 = sp.array([[1., 0, 0, 0]])
+
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+
+    Cs_ref = sp.array([[1, 0, 0, 0],
+                       [0, 1, 0, 0],
+                       [0, 0, 1, 0],
+                       [0, 0, 0, 0.5]])
+
+    Es_ref = sp.array([[0, 0, 0.5],
+                       [1, 1, 0],
+                       [0, 0, 0],
+                       [1, 0, 0]])
+
+    assert(artools.same_rows(Es, Es_ref))
+    assert(artools.same_rows(Cs, Cs_ref))
+
+
+def test_stoich_S_M_4():
+    # 3-D van de Vusse system
+    # A -> B -> C
+    # 2A -> D
+
+    # column vector feed
+    Cf0 = sp.array([[1., 0, 0, 0]]).T
 
     stoich_mat = sp.array([[-1., 0, -2],
                            [1, -1, 0],
@@ -64,7 +124,7 @@ def test_stoich_S_S_1():
     # 0-D array feed
     Cf0 = sp.array([1., 1, 0])
 
-    # column vector matrix
+    # column vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]]).T
 
     Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
@@ -84,7 +144,7 @@ def test_stoich_S_S_2():
     # 0-D array feed
     Cf0 = sp.array([1., 1, 0])
 
-    # row vector matrix
+    # row vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]])
 
     Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)

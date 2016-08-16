@@ -333,15 +333,25 @@ def test_2D_1():
                         [1, 1.5],
                         [-0.5, 0]])
 
+    Cs_bounds_ref = sp.array([[0.0, 0.0, 0.0],
+                              [1.5, 1.5, 1.5]])
+
+    Es_bounds_ref = sp.array([[-0.5, 0.0],
+                              [1.0, 1.5]])
+
     Cs1 = S["all_Cs"][0]
     Cs2 = S["all_Cs"][1]
     Es1 = S["all_Es"][0]
     Es2 = S["all_Es"][1]
+    Es_bounds = S["bounds_Es"]
+    Cs_bounds = S["bounds_Cs"]
 
     assert (artools.same_rows(Cs1, Cs1_ref) is True)
     assert (artools.same_rows(Cs2, Cs2_ref) is True)
     assert (artools.same_rows(Es1, Es1_ref) is True)
     assert (artools.same_rows(Es2, Es2_ref) is True)
+    assert (artools.same_rows(Cs_bounds, Cs_bounds_ref) is True)
+    assert (artools.same_rows(Es_bounds, Es_bounds_ref) is True)
 
 #test_2D_1()
 # test for single reaction, multiple feeds

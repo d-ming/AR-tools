@@ -336,6 +336,35 @@ def test_singleFeed_3D_1():
     assert (same_rows(Es, Es_ref) is True)
 
 
+def test_singleFeed_3D_2():
+    # single feed, as a 0-D array, in packed into a one-element list
+
+    # A -> B -> C
+    # 2A -> D
+    Cf = sp.array([1., 0, 0, 0])
+    stoich_mat = sp.array([[-1., 0, -2],
+                           [1, -1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1]])
+
+    S = stoich_subspace([Cf], stoich_mat)
+    Cs = S["all_Cs"]
+    Es = S["all_Es"]
+
+    Cs_ref = sp.array([[1., 0, 0, 0],
+                       [0, 0, 0, 0.5],
+                       [0, 1, 0, 0],
+                       [0, 0, 1, 0]])
+
+    Es_ref = sp.array([[0, 0, 0],
+                       [0, 0, 0.5],
+                       [1, 0, 0],
+                       [1, 1, 0]])
+
+    assert (same_rows(Cs, Cs_ref) is True)
+    assert (same_rows(Es, Es_ref) is True)
+
+
 def test_multiFeed_3D_1():
     # multiple feeds in a list, as 0-D arrays
 
@@ -560,6 +589,46 @@ def test_multiFeed_3D_4():
     assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
 
+def test_multiFeed_1D_1():
+    # A + B -> C
+
+    # two feeds
+    Cf1 = sp.array([1., 1, 0])
+    Cf2 = sp.array([1, 0.5, 0.1])
+
+    feeds = [Cf1, Cf2]
+
+    stoich_mat = sp.array([[-1., -1, 1]]).T
+
+    S = stoich_subspace(feeds, stoich_mat)
+
+    Cs1 = S["all_Cs"][0]
+    Cs2 = S["all_Cs"][1]
+    Es1 = S["all_Es"][0]
+    Es2 = S["all_Es"][1]
+    Es_bounds = S["bounds_Es"]
+    Cs_bounds = S["bounds_Cs"]
+
+    Cs1_ref = sp.array([[1., 1, 0],
+                        [0, 0, 1]])
+    Cs2_ref = sp.array([[1., 0.5, 0.1],
+                        [0.5, 0, 0.6]])
+
+    Es1_ref = sp.array([[0., 1]]).T
+    Es2_ref = sp.array([[0., 0.5]]).T
+
+    Es_bounds_ref = sp.array([[0., 1]]).T
+    Cs_bounds_ref = sp.array([[0., 0, 0],
+                              [1, 1, 1]])
+
+    assert (same_rows(Cs1, Cs1_ref) is True)
+    assert (same_rows(Es1, Es1_ref) is True)
+    assert (same_rows(Cs2, Cs2_ref) is True)
+    assert (same_rows(Es2, Es2_ref) is True)
+    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+
+
 def test_multiFeed_2D_1():
     # test 2-D system
     # A -> B -> C
@@ -642,10 +711,6 @@ def test_steam_reforming_singleFeed_1():
     assert (same_rows(Cs, Cs_ref) is True)
     assert (same_rows(Es, Es_ref) is True)
 
-
-# test for single reaction, multiple feeds
-
-# test for single reaction, single feed
 
 # test incompatible size feed and stoichiometric matrix
 

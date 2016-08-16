@@ -748,10 +748,19 @@ def stoich_S_M(Cf0, stoich_mat):
     return (Cs, Es)
 
 
-def isColMatrix(A):
+def isColVector(A):
     if isinstance(A, sp.ndarray) and A.ndim == 2:
         row_num, col_num = A.shape
         if col_num == 1 and row_num > 1:
+            return True
+
+    return False
+
+
+def isRowVector(A):
+    if isinstance(A, sp.ndarray) and A.ndim == 2:
+        row_num, col_num = A.shape
+        if col_num > 1 and row_num == 1:
             return True
 
     return False
@@ -818,7 +827,6 @@ def stoich_subspace(Cf0s, stoich_mat):
 #    if not isinstance(Cf0s, list) and not Cf0s.shape[0] > 1 or not Cf0s.shape[1] > 1:
     if not isinstance(Cf0s, list):
         # is Cf0s a matrix of feed(s), or just a single row/column vector?
-        if Cf0s.ndim == 1 or ((Cf0s.ndim == 2) and isColMatrix(Cf0s) or (Cf0s.shape[0] == 1 and Cf0s.shape[1] > 1)):
             # put it in a list
             Cf0s = [Cf0s]
 

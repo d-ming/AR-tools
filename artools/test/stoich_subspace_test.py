@@ -6,6 +6,8 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
+from artools import stoich_S_S, stoich_S_M, stoich_subspace, same_rows
+
 
 def test_stoich_S_M_1():
     # 2-D system
@@ -18,7 +20,7 @@ def test_stoich_S_M_1():
                            [1, -1],
                            [0, 1]])
 
-    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+    Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 0, 0],
                        [0, 1, 0],
@@ -28,8 +30,8 @@ def test_stoich_S_M_1():
                        [1, 0],
                        [1, 1]])
 
-    assert(artools.same_rows(Es, Es_ref))
-    assert(artools.same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
 
 
 def test_stoich_S_M_2():
@@ -45,7 +47,7 @@ def test_stoich_S_M_2():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+    Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1, 0, 0, 0],
                        [0, 1, 0, 0],
@@ -57,8 +59,8 @@ def test_stoich_S_M_2():
                        [0, 0, 0],
                        [1, 0, 0]])
 
-    assert(artools.same_rows(Es, Es_ref))
-    assert(artools.same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
 
 
 def test_stoich_S_M_3():
@@ -74,7 +76,7 @@ def test_stoich_S_M_3():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+    Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1, 0, 0, 0],
                        [0, 1, 0, 0],
@@ -86,8 +88,8 @@ def test_stoich_S_M_3():
                        [0, 0, 0],
                        [1, 0, 0]])
 
-    assert(artools.same_rows(Es, Es_ref))
-    assert(artools.same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
 
 
 def test_stoich_S_M_4():
@@ -103,7 +105,7 @@ def test_stoich_S_M_4():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+    Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1, 0, 0, 0],
                        [0, 1, 0, 0],
@@ -115,8 +117,8 @@ def test_stoich_S_M_4():
                        [0, 0, 0],
                        [1, 0, 0]])
 
-    assert(artools.same_rows(Es, Es_ref))
-    assert(artools.same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
 
 
 def test_stoich_S_M_positive_1():
@@ -131,7 +133,7 @@ def test_stoich_S_M_positive_1():
                            [0, 1]])
 
     with pytest.raises(Exception):
-        artools.stoich_S_M(Cf0, stoich_mat)
+        stoich_S_M(Cf0, stoich_mat)
 
 
 def test_stoich_S_M_positive_2():
@@ -145,7 +147,7 @@ def test_stoich_S_M_positive_2():
                            [1, -1],
                            [0, 1]])
 
-    Cs, Es = artools.stoich_S_M(Cf0, stoich_mat)
+    Cs, Es = stoich_S_M(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 0, 0],
                        [0, 1, 0],
@@ -155,8 +157,8 @@ def test_stoich_S_M_positive_2():
                        [1, 0],
                        [1, 1]])
 
-    assert(artools.same_rows(Es, Es_ref))
-    assert(artools.same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
 
 
 def test_stoich_S_S_1():
@@ -168,15 +170,15 @@ def test_stoich_S_S_1():
     # column vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]]).T
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 1, 0],
                        [0, 0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert(artools.same_rows(Cs, Cs_ref))
-    assert(artools.same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_2():
@@ -188,15 +190,15 @@ def test_stoich_S_S_2():
     # row vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]])
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 1, 0],
                        [0, 0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert(artools.same_rows(Cs, Cs_ref))
-    assert(artools.same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_3():
@@ -208,15 +210,15 @@ def test_stoich_S_S_3():
     # 0-D array stoich matrix
     stoich_mat = sp.array([-1., -1, 1])
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 1, 0],
                        [0, 0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert(artools.same_rows(Cs, Cs_ref))
-    assert(artools.same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_4():
@@ -228,15 +230,15 @@ def test_stoich_S_S_4():
     # column vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]]).T
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 1, 0],
                        [0, 0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert(artools.same_rows(Cs, Cs_ref))
-    assert(artools.same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_5():
@@ -248,15 +250,15 @@ def test_stoich_S_S_5():
     # column vector stoich matrix
     stoich_mat = sp.array([[-1., -1, 1]]).T
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 1, 0],
                        [0, 0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert(artools.same_rows(Cs, Cs_ref))
-    assert(artools.same_rows(Es, Es_ref))
+    assert(same_rows(Cs, Cs_ref))
+    assert(same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_6():
@@ -267,15 +269,15 @@ def test_stoich_S_S_6():
 
     stoich_mat = sp.array([[-1., 1]]).T
 
-    Cs, Es = artools.stoich_S_S(Cf0, stoich_mat)
+    Cs, Es = stoich_S_S(Cf0, stoich_mat)
 
     Cs_ref = sp.array([[1., 0],
                        [0, 1]])
 
     Es_ref = sp.array([[0., 1]]).T
 
-    assert (artools.same_rows(Cs, Cs_ref))
-    assert (artools.same_rows(Es, Es_ref))
+    assert (same_rows(Cs, Cs_ref))
+    assert (same_rows(Es, Es_ref))
 
 
 def test_stoich_S_S_positive_1():
@@ -289,7 +291,7 @@ def test_stoich_S_S_positive_1():
                            [1]])
 
     with pytest.raises(Exception):
-        artools.stoich_S_S(Cf0, stoich_mat)
+        stoich_S_S(Cf0, stoich_mat)
 
 
 def test_stoich_S_S_positive_2():
@@ -297,17 +299,16 @@ def test_stoich_S_S_positive_2():
     # A -> B
 
     # Test negative zero
-    Cf0 = sp.array([1., -0])
+    Cf0 = sp.array([1., -0.0])
 
     stoich_mat = sp.array([[-1.],
                            [1]])
 
-    assert artools.stoich_S_S(Cf0, stoich_mat)
+    assert stoich_S_S(Cf0, stoich_mat)
 
 
 def test_1():
     # single feed, as a 0-D array
-    # NB: test is incomplete still
 
     # A -> B -> C
     # 2A -> D
@@ -317,8 +318,22 @@ def test_1():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    S = artools.stoich_subspace(Cf, stoich_mat)
-    print S
+    S = stoich_subspace(Cf, stoich_mat)
+    Cs = S["all_Cs"][0]
+    Es = S["all_Es"][0]
+
+    Cs_ref = sp.array([[1., 0, 0, 0],
+                       [0, 0, 0, 0.5],
+                       [0, 1, 0, 0],
+                       [0, 0, 1, 0]])
+
+    Es_ref = sp.array([[0, 0, 0],
+                       [0, 0, 0.5],
+                       [1, 0, 0],
+                       [1, 1, 0]])
+
+    assert (same_rows(Cs, Cs_ref) is True)
+    assert (same_rows(Es, Es_ref) is True)
 
 
 def test_2():
@@ -334,7 +349,7 @@ def test_2():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    S = artools.stoich_subspace(feed_list, stoich_mat)
+    S = stoich_subspace(feed_list, stoich_mat)
     print S
 
 
@@ -351,7 +366,7 @@ def test_3():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    S = artools.stoich_subspace(feed_list, stoich_mat)
+    S = stoich_subspace(feed_list, stoich_mat)
     print S
 
 
@@ -368,7 +383,7 @@ def test_4():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    S = artools.stoich_subspace(feed_list, stoich_mat)
+    S = stoich_subspace(feed_list, stoich_mat)
     print S
 
 
@@ -385,8 +400,7 @@ def test_5():
                            [0, 1, 0],
                            [0, 0, 1]])
 
-    S = artools.stoich_subspace(feeds, stoich_mat)
-#    print S
+    S = stoich_subspace(feeds, stoich_mat)
 
 
 def test_2D_1():
@@ -402,7 +416,7 @@ def test_2D_1():
                            [1, -1],
                            [0, 1]])
 
-    S = artools.stoich_subspace(feeds, stoich_mat)
+    S = stoich_subspace(feeds, stoich_mat)
 
     Cs1_ref = sp.array([[1., 0, 0],
                         [0, 1, 0],
@@ -433,14 +447,45 @@ def test_2D_1():
     Es_bounds = S["bounds_Es"]
     Cs_bounds = S["bounds_Cs"]
 
-    assert (artools.same_rows(Cs1, Cs1_ref) is True)
-    assert (artools.same_rows(Cs2, Cs2_ref) is True)
-    assert (artools.same_rows(Es1, Es1_ref) is True)
-    assert (artools.same_rows(Es2, Es2_ref) is True)
-    assert (artools.same_rows(Cs_bounds, Cs_bounds_ref) is True)
-    assert (artools.same_rows(Es_bounds, Es_bounds_ref) is True)
+    assert (same_rows(Cs1, Cs1_ref) is True)
+    assert (same_rows(Cs2, Cs2_ref) is True)
+    assert (same_rows(Es1, Es1_ref) is True)
+    assert (same_rows(Es2, Es2_ref) is True)
+    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
 
-#test_2D_1()
+
+def test_steam_reforming_1():
+    # methane steam reforming + water-gas shift
+    # CH4 + H2O -> CO + 3H2
+    # CO + H2O -> CO2 + H2
+
+    Cf0 = sp.array([1., 1, 1, 0, 0])
+
+    stoich_mat = sp.array([[-1., 0],
+                           [-1, -1],
+                           [1, -1],
+                           [3, 1],
+                           [0, 1]])
+
+    S = stoich_subspace(Cf0, stoich_mat)
+    Cs = S["all_Cs"][0]
+    Es = S["all_Es"][0]
+
+    Cs_ref = sp.array([[0, 0, 2, 3, 0],
+                       [1.25, 0.5, 0, 0, 0.75],
+                       [1, 1, 1, 0, 0],
+                       [1, 0, 0, 1, 1]])
+
+    Es_ref = sp.array([[1, 0],
+                       [-0.25, 0.75],
+                       [0, 0],
+                       [0, 1]])
+
+    assert (same_rows(Cs, Cs_ref) is True)
+    assert (same_rows(Es, Es_ref) is True)
+
+
 # test for single reaction, multiple feeds
 
 # test for single reaction, single feed

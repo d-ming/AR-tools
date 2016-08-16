@@ -828,6 +828,11 @@ def stoich_subspace(Cf0s, stoich_mat):
         if Cf0s.ndim == 1 or (isColVector(Cf0s) or isRowVector(Cf0s)):
             Cf0s = [Cf0s]
 
+    # always treat stoich_mat as a matrix for consistency. Convert 'single rxn'
+    # row into a column vector
+    if stoich_mat.ndim == 1:
+        stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
+
     # loop through each feed and calculate stoich subspace
     all_Es = []
     all_Cs = []
@@ -843,12 +848,8 @@ def stoich_subspace(Cf0s, stoich_mat):
                              match the number of rows in the stoichiometric \
                              matrix.")
 
-        # always treat stoich_mat as a matrix for consistency, convert if not
-        if stoich_mat.ndim == 1:
-            # converts a 'single rxn' row into column vector
-            stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
-
-        # check if a single reaction or multiple reactions are occuring
+        # now compute stoich subspace based on whether a single reaction or
+        # multiple reactions
         if isColVector(stoich_mat):
             Cs, Es = stoich_S_S(Cf0, stoich_mat)
         else:

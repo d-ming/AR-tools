@@ -710,7 +710,7 @@ def stoich_S_S(Cf0, stoich_mat):
     if sp.any(Cf0 < 0):
         raise Exception("Feed concentrations must be positive")
 
-    # converts into (L,)
+    # flatten Cf0 and stoich_mat to 1-D arrays for consistency
     if Cf0.ndim == 2:
         Cf0 = Cf0.flatten()
     if stoich_mat.ndim == 2:
@@ -747,14 +747,14 @@ def stoich_S_M(Cf0, stoich_mat):
     if sp.any(Cf0 < 0):
         raise Exception("Feed concentrations must be positive")
 
-    # flatten Cf0 for consistency
+    # flatten Cf0 to 1-D array for consistency
     if Cf0.ndim == 2:
         Cf0 = Cf0.flatten()
 
     # extent associated with each feed vector
     Es = con2vert(-stoich_mat, Cf0)
 
-    # calculate the corresponding point in concentration space
+    # calculate the corresponding points in concentration space
     Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
     return (Cs, Es)

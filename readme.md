@@ -1,3 +1,8 @@
-# AR Tools
+# Attainable Region (AR) Tools
 
-A collection of *Python functions* for performing attainable region (AR) calculations.
+## Welcome
+This is the GitHub repository of Attainable Region tools -- A collection of Python functions and Jupyter notebooks for carrying out attainable region (AR) calculations.
+
+The main homepage of attainable region theory can be found at [attainableregions.com](http://attainableregions.com "AR theory homepage")
+
+##

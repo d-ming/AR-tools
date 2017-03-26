@@ -1,4 +1,4 @@
 {
-  "same_rows_test.py": true, 
-  "stoich_subspace_test.py": true
+  "nullspace_test.py": true, 
+  "rank_test.py": true
 }

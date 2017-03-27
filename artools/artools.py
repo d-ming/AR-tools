@@ -945,10 +945,10 @@ def rank(A):
     return numpy.linalg.matrix_rank(A)
 
 
-def thin_out_pts(Xs, min_dist, axis_lims=None):
+def cullPts(Xs, min_dist, axis_lims=None):
     '''
     Thin out a set of points Xs by removing all neighboring points in Xs that
-    lie within an open radius of an elipse, given by the elipse equation:
+    lie within the boundary of an elipse, given by the elipse equation:
         r^2 = (x1/s1)^2 + (x2/s2)^2 + ... + (xn/sn)^2
     This function is useful for when we wish to spread out a set of points in
     space where all points are at least min_dist apart. For example, plotting
@@ -977,13 +977,12 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
                     apart.
     '''
 
-    # generate S array that holds the scaling values that distorts the shape
+    # generate S array holding the scaling values that distorts the shape
     # of the elipse
     if axis_lims is None:
         S = sp.ones((Xs.shape[0], 1))
     else:
         S = []
-
         for i in range(0, len(axis_lims), 2):
             S.append(axis_lims[i + 1] - axis_lims[i])
 
@@ -991,9 +990,6 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
 
     # now remove points. Loop through each point and check distance to all
     # other points.
-
-    # TODO: ensure that convex hull points are not removed.
-
     i = 0
     while i < Xs.shape[0]:
         xi = Xs[i, :]
@@ -1006,7 +1002,7 @@ def thin_out_pts(Xs, min_dist, axis_lims=None):
             if i != j:
                 # calc distance from xi to xj
                 dx = xi - xj
-                r = sp.sqrt(sp.sum((dx / S)**2))
+                r = sp.sqrt(sp.sum((dx/S)**2))
 
                 if r <= min_dist:
                     ks.append(j)

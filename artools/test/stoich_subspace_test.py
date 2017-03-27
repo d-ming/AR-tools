@@ -98,4 +98,4 @@ def test_5():
 # test incompatible size feed and stoichiometric matrix
 
 # test reversible reactions
-test_1()
+# test_1()

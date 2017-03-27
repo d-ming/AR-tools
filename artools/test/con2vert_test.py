@@ -6,92 +6,93 @@ artools = reload(artools)
 import scipy as sp
 
 
-def test_2D_1():
-    # 2-D mass balance triangle
-    A = sp.array([[-1., 0],
-                  [0, -1],
-                  [1, 1]])
+class Test2D:
 
-    b = sp.array([[0., 0, 1]]).T
+    def test_1(self):
+        # 2-D mass balance triangle
+        A = sp.array([[-1., 0],
+                      [0, -1],
+                      [1, 1]])
 
-    vs = artools.con2vert(A, b)
-    vs_ref = sp.array([[0., 1], [0, 0], [1, 0]])
+        b = sp.array([[0., 0, 1]]).T
 
-    assert (artools.same_rows(vs, vs_ref) is True)
+        vs = artools.con2vert(A, b)
+        vs_ref = sp.array([[0., 1], [0, 0], [1, 0]])
 
+        assert (artools.same_rows(vs, vs_ref) is True)
 
-def test_2D_2():
-    # 2-D unit square
-    A = sp.array([[-1., 0],
-                  [0, -1],
-                  [1, 0],
-                  [0, 1]])
+    def test_2(self):
+        # 2-D unit square
+        A = sp.array([[-1., 0],
+                      [0, -1],
+                      [1, 0],
+                      [0, 1]])
 
-    b = sp.array([[0., 0, 1, 1]]).T
+        b = sp.array([[0., 0, 1, 1]]).T
 
-    vs = artools.con2vert(A, b)
-    vs_ref = sp.array([[0., 1],
-                       [0, 0],
-                       [1, 0],
-                       [1, 1]])
+        vs = artools.con2vert(A, b)
+        vs_ref = sp.array([[0., 1],
+                           [0, 0],
+                           [1, 0],
+                           [1, 1]])
 
-    assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.same_rows(vs, vs_ref) is True)
 
+    def test_3(self):
+        # mass blanace triangle cut at y = 0.5
+        A = sp.array([[-1., 0],
+                      [0, -1],
+                      [1, 1],
+                      [0, 1]])
 
-def test_2D_3():
-    # mass blanace triangle cut at y = 0.5
-    A = sp.array([[-1., 0],
-                  [0, -1],
-                  [1, 1],
-                  [0, 1]])
+        b = sp.array([[0., 0, 1, 0.5]]).T
 
-    b = sp.array([[0., 0, 1, 0.5]]).T
+        vs = artools.con2vert(A, b)
+        vs_ref = sp.array([[0, 0.5],
+                           [0, 0],
+                           [1, 0],
+                           [0.5, 0.5]])
 
-    vs = artools.con2vert(A, b)
-    vs_ref = sp.array([[0, 0.5],
-                       [0, 0],
-                       [1, 0],
-                       [0.5, 0.5]])
-
-    assert (artools.same_rows(vs, vs_ref) is True)
-
-
-def test_3D_1():
-    # 3-D mass balance triangle
-    A = sp.array([[-1., 0, 0],
-                  [0, -1, 0],
-                  [0, 0, -1],
-                  [1, 1, 1]])
-    b = sp.array([[0., 0, 0, 1]]).T
-
-    vs = artools.con2vert(A, b)
-    vs_ref = sp.array([[1., 0, 0],
-                       [0, 1, 0],
-                       [0, 0, 1],
-                       [0, 0, 0]])
-
-    assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.same_rows(vs, vs_ref) is True)
 
 
-def test_3D_2():
-    # 3-D unit cube
-    A = sp.array([[-1., 0, 0],
-                  [0, -1, 0],
-                  [0, 0, -1],
-                  [1, 0, 0],
-                  [0, 1, 0],
-                  [0, 0, 1]])
+class Test3D:
 
-    b = sp.array([[0., 0, 0, 1, 1, 1]]).T
+    def test_1(self):
+        # 3-D mass balance triangle
+        A = sp.array([[-1., 0, 0],
+                      [0, -1, 0],
+                      [0, 0, -1],
+                      [1, 1, 1]])
+        b = sp.array([[0., 0, 0, 1]]).T
 
-    vs = artools.con2vert(A, b)
-    vs_ref = sp.array([[0, 0, 0],
-                       [1, 0, 0],
-                       [1, 1, 0],
-                       [0, 1, 0],
-                       [0, 0, 1],
-                       [1, 0, 1],
-                       [1, 1, 1],
-                       [0, 1, 1]])
+        vs = artools.con2vert(A, b)
+        vs_ref = sp.array([[1., 0, 0],
+                           [0, 1, 0],
+                           [0, 0, 1],
+                           [0, 0, 0]])
 
-    assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.same_rows(vs, vs_ref) is True)
+
+    def test_2(self):
+        # 3-D unit cube
+        A = sp.array([[-1., 0, 0],
+                      [0, -1, 0],
+                      [0, 0, -1],
+                      [1, 0, 0],
+                      [0, 1, 0],
+                      [0, 0, 1]])
+
+        b = sp.array([[0., 0, 0, 1, 1, 1]]).T
+
+        vs = artools.con2vert(A, b)
+        vs_ref = sp.array([[0, 0, 0],
+                           [1, 0, 0],
+                           [1, 1, 0],
+                           [0, 1, 0],
+                           [0, 0, 1],
+                           [1, 0, 1],
+                           [1, 1, 1],
+                           [0, 1, 1]])
+
+        assert (artools.same_rows(vs, vs_ref) is True)

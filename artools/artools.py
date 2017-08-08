@@ -850,22 +850,19 @@ def stoich_subspace(Cf0s, stoich_mat):
         if Cf0.ndim == 2:
             Cf0 = Cf0.flatten()
 
-        # raise an error if the no. of components is inconsistent between the
-        # feed and stoichiometric matrix
+        # check num components is consistent between Cf0 and stoich_mat
         if len(Cf0) != stoich_mat.shape[0]:
             raise Exception("The number of components in the feed does not \
                              match the number of rows in the stoichiometric \
                              matrix.")
 
-        # now compute stoich subspace based on whether a single reaction or
-        # multiple reactions
+        # compute S based on a single or multiple reactions
         if isColVector(stoich_mat):
             Cs, Es = stoich_S_1D(Cf0, stoich_mat)
         else:
             Cs, Es = stoich_S_nD(Cf0, stoich_mat)
 
-        # vertices for each feed and stoich_mat in extent and concentration
-        # space
+        # append vertices for S in extent and concentration space
         all_Es.append(Es)
         all_Cs.append(Cs)
 

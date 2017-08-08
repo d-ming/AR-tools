@@ -952,7 +952,7 @@ def rank(A):
     return numpy.linalg.matrix_rank(A)
 
 
-def thin_out_pts(Xs, min_dist, axis_lims=None):
+def cullPts(Xs, min_dist, axis_lims=None):
     '''
     Thin out a set of points Xs by removing all neighboring points in Xs that
     lie within an open radius of an elipse, given by the elipse equation:

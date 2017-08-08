@@ -39,7 +39,7 @@ class Test2D:
         assert (artools.same_rows(vs, vs_ref) is True)
 
     def test_3(self):
-        # mass blanace triangle cut at y = 0.5
+        # mass balance triangle cut at y = 0.5
         A = sp.array([[-1., 0],
                       [0, -1],
                       [1, 1],
@@ -94,5 +94,31 @@ class Test3D:
                            [1, 0, 1],
                            [1, 1, 1],
                            [0, 1, 1]])
+
+        assert (artools.same_rows(vs, vs_ref) is True)
+
+
+class TestMisc:
+
+    def test_interior_1(self):
+
+        """
+        This set of constraints produces an initial guess that is not an
+        interior point of the region.
+        """
+
+        A = sp.array([[1.0, 0.0],
+                      [1.0, 1.0],
+                      [-1.0, 1.0],
+                      [-3.0, -1.0],
+                      [0.0, -1.0]])
+
+        b = sp.array([[1.0, 1.0, 0.0, 0.0, 0.0]]).T
+
+        vs_ref = sp.array([[0.5, 0.5],
+                           [0.0, 0.0],
+                           [1.0, 0.0]])
+
+        vs = artools.con2vert(A, b)
 
         assert (artools.same_rows(vs, vs_ref) is True)

@@ -1028,3 +1028,18 @@ def cullPts(Xs, min_dist, axis_lims=None):
 
     Vs = Xs
     return Vs
+
+
+def calcDim(Xs):
+    """
+    Compute the dimension of a set of point Xs
+    """
+
+    if isColVector(Xs) or isRowVector(Xs) or Xs.ndim == 1:
+        return 1
+
+    # subtract the first row of Xs from all other rows and compute rank of the
+    # resulting matrix
+    Vs = Xs - Xs[0, :]
+
+    return rank(Vs)

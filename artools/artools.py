@@ -786,13 +786,25 @@ def stoich_S_nD(Cf0, stoich_mat):
     return (Cs, Es)
 
 
+def getExtrema(Xs, axis=0):
+    """
+    Collect the max and min values according to the COLUMNS of Xs.
+    """
+
+    Xs = sp.vstack(Xs)
+    Xs_mins = sp.amin(Xs, axis)
+    Xs_maxs = sp.amax(Xs, axis)
+    Xs_bounds = sp.vstack([Xs_mins, Xs_maxs])
+
+    return Xs_bounds
+
+
 def stoich_subspace(Cf0s, stoich_mat):
     """
     Compute the extreme points of the stoichiometric subspace, S, from multiple
     feed points and a stoichoimetric coefficient matrix.
 
     Parameters:
-
         stoich_mat      (n x d) array. Each row in stoich_mat corresponds to a
                         component and each column corresponds to a reaction.
 
@@ -801,7 +813,6 @@ def stoich_subspace(Cf0s, stoich_mat):
                         component.
 
     Returns:
-
         S_attributes    dictionary containing the vertices of the
                         stoichiometric subspace in extent and concentration
                         space for individual feeds.
@@ -817,7 +828,6 @@ def stoich_subspace(Cf0s, stoich_mat):
                         space.
 
             bounds_Es   bounds of the stoichiometric subspace in extent space.
-
     """
 
     # if user Cf0s is not in a list, then check to see if it is a matrix of
@@ -859,15 +869,9 @@ def stoich_subspace(Cf0s, stoich_mat):
         all_Es.append(Es)
         all_Cs.append(Cs)
 
-    # find minimum and maximum bounds in extent and concentration space for all
-    # components
-    Cs_mins = sp.amin(sp.vstack(all_Cs), 0)
-    Cs_maxs = sp.amax(sp.vstack(all_Cs), 0)
-    Cs_bounds = sp.vstack([Cs_mins, Cs_maxs])
-
-    Es_mins = sp.amin(sp.vstack(all_Es), 0)
-    Es_maxs = sp.amax(sp.vstack(all_Es), 0)
-    Es_bounds = sp.vstack([Es_mins, Es_maxs])
+    # get max and min bounds for Cs and Es
+    Cs_bounds = getExtrema(all_Cs)
+    Es_bounds = getExtrema(all_Es)
 
     # if there was only one feed, return the data unpacked (so that it's not in
     # a one-element) list

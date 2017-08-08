@@ -6,679 +6,385 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_S, stoich_S_M, stoich_subspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoich_subspace, same_rows
 
 
-def test_stoich_S_M_1():
-    # 2-D system
-    # A -> B -> C
+class TestSingleFeed:
 
-    # 0-D array feed
-    Cf0 = sp.array([1., 0, 0])
+    def test_3D_1(self):
+        # single feed, as a 0-D array
 
-    stoich_mat = sp.array([[-1., 0],
-                           [1, -1],
-                           [0, 1]])
+        # A -> B -> C
+        # 2A -> D
+        Cf = sp.array([1., 0, 0, 0])
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    Cs, Es = stoich_S_M(Cf0, stoich_mat)
+        S = stoich_subspace(Cf, stoich_mat)
+        Cs = S["all_Cs"]
+        Es = S["all_Es"]
 
-    Cs_ref = sp.array([[1., 0, 0],
-                       [0, 1, 0],
-                       [0, 0, 1]])
+        Cs_ref = sp.array([[1., 0, 0, 0],
+                           [0, 0, 0, 0.5],
+                           [0, 1, 0, 0],
+                           [0, 0, 1, 0]])
 
-    Es_ref = sp.array([[0., 0],
-                       [1, 0],
-                       [1, 1]])
+        Es_ref = sp.array([[0, 0, 0],
+                           [0, 0, 0.5],
+                           [1, 0, 0],
+                           [1, 1, 0]])
 
-    assert(same_rows(Es, Es_ref))
-    assert(same_rows(Cs, Cs_ref))
+        assert (same_rows(Cs, Cs_ref) is True)
+        assert (same_rows(Es, Es_ref) is True)
 
 
-def test_stoich_S_M_2():
-    # 3-D van de Vusse system
-    # A -> B -> C
-    # 2A -> D
+    def test_3D_2(self):
+        # single feed, as a 0-D array, in packed into a one-element list
 
-    # 0-D array feed
-    Cf0 = sp.array([1., 0, 0, 0])
+        # A -> B -> C
+        # 2A -> D
+        Cf = sp.array([1., 0, 0, 0])
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
+        S = stoich_subspace([Cf], stoich_mat)
+        Cs = S["all_Cs"]
+        Es = S["all_Es"]
 
-    Cs, Es = stoich_S_M(Cf0, stoich_mat)
+        Cs_ref = sp.array([[1., 0, 0, 0],
+                           [0, 0, 0, 0.5],
+                           [0, 1, 0, 0],
+                           [0, 0, 1, 0]])
 
-    Cs_ref = sp.array([[1, 0, 0, 0],
-                       [0, 1, 0, 0],
-                       [0, 0, 1, 0],
-                       [0, 0, 0, 0.5]])
+        Es_ref = sp.array([[0, 0, 0],
+                           [0, 0, 0.5],
+                           [1, 0, 0],
+                           [1, 1, 0]])
 
-    Es_ref = sp.array([[0, 0, 0.5],
-                       [1, 1, 0],
-                       [0, 0, 0],
-                       [1, 0, 0]])
+        assert (same_rows(Cs, Cs_ref) is True)
+        assert (same_rows(Es, Es_ref) is True)
 
-    assert(same_rows(Es, Es_ref))
-    assert(same_rows(Cs, Cs_ref))
 
+class TestMultiFeed:
 
-def test_stoich_S_M_3():
-    # 3-D van de Vusse system
-    # A -> B -> C
-    # 2A -> D
+    def test_3D_1(self):
+        # multiple feeds in a list, as 0-D arrays
 
-    # row vector feed
-    Cf0 = sp.array([[1., 0, 0, 0]])
+        Cf1 = sp.array([1., 0, 0, 0])
+        Cf2 = sp.array([1., 1., 0, 0])
 
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
+        feed_list = [Cf1, Cf2]
 
-    Cs, Es = stoich_S_M(Cf0, stoich_mat)
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    Cs_ref = sp.array([[1, 0, 0, 0],
-                       [0, 1, 0, 0],
-                       [0, 0, 1, 0],
-                       [0, 0, 0, 0.5]])
+        S = stoich_subspace(feed_list, stoich_mat)
 
-    Es_ref = sp.array([[0, 0, 0.5],
-                       [1, 1, 0],
-                       [0, 0, 0],
-                       [1, 0, 0]])
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
-    assert(same_rows(Es, Es_ref))
-    assert(same_rows(Cs, Cs_ref))
+        Cs1_ref = sp.array([[1., 0, 0, 0],
+                            [0, 0, 0, 0.5],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, 0]])
 
+        Es1_ref = sp.array([[0, 0, 0],
+                            [0, 0, 0.5],
+                            [1, 0, 0],
+                            [1, 1, 0]])
 
-def test_stoich_S_M_4():
-    # 3-D van de Vusse system
-    # A -> B -> C
-    # 2A -> D
+        Cs2_ref = sp.array([[0, 2, 0, 0],
+                            [0, 0, 2, 0],
+                            [2, 0, 0, 0],
+                            [0, 0, 0, 1]])
 
-    # column vector feed
-    Cf0 = sp.array([[1., 0, 0, 0]]).T
+        Es2_ref = sp.array([[1., 0, 0],
+                            [1, 2, 0],
+                            [-1, 0, 0],
+                            [-1, 0, 1]])
 
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
+        Cs_bounds_ref = sp.array([[0., 0, 0, 0],
+                                  [2, 2, 2, 1]])
 
-    Cs, Es = stoich_S_M(Cf0, stoich_mat)
+        Es_bounds_ref = sp.array([[-1., 0, 0],
+                                  [1, 2, 1]])
 
-    Cs_ref = sp.array([[1, 0, 0, 0],
-                       [0, 1, 0, 0],
-                       [0, 0, 1, 0],
-                       [0, 0, 0, 0.5]])
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
-    Es_ref = sp.array([[0, 0, 0.5],
-                       [1, 1, 0],
-                       [0, 0, 0],
-                       [1, 0, 0]])
 
-    assert(same_rows(Es, Es_ref))
-    assert(same_rows(Cs, Cs_ref))
+    def test_3D_2(self):
+        # multiple feeds in a list, as row vectors
 
+        Cf1 = sp.array([[1., 0, 0, 0]])
+        Cf2 = sp.array([[1., 1., 0, 0]])
 
-def test_stoich_S_M_positive_1():
-    # 2-D system
-    # A -> B -> C
+        feed_list = [Cf1, Cf2]
 
-    # Test negative conentrations
-    Cf0 = sp.array([-1., 0, 0])
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    stoich_mat = sp.array([[-1., 0],
-                           [1, -1],
-                           [0, 1]])
+        S = stoich_subspace(feed_list, stoich_mat)
 
-    with pytest.raises(Exception):
-        stoich_S_M(Cf0, stoich_mat)
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
+        Cs1_ref = sp.array([[1., 0, 0, 0],
+                            [0, 0, 0, 0.5],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, 0]])
 
-def test_stoich_S_M_positive_2():
-    # 2-D system
-    # A -> B -> C
+        Es1_ref = sp.array([[0, 0, 0],
+                            [0, 0, 0.5],
+                            [1, 0, 0],
+                            [1, 1, 0]])
 
-    # Test negative zero
-    Cf0 = sp.array([1., -0, -0])
+        Cs2_ref = sp.array([[0, 2, 0, 0],
+                            [0, 0, 2, 0],
+                            [2, 0, 0, 0],
+                            [0, 0, 0, 1]])
 
-    stoich_mat = sp.array([[-1., 0],
-                           [1, -1],
-                           [0, 1]])
+        Es2_ref = sp.array([[1., 0, 0],
+                            [1, 2, 0],
+                            [-1, 0, 0],
+                            [-1, 0, 1]])
 
-    Cs, Es = stoich_S_M(Cf0, stoich_mat)
+        Cs_bounds_ref = sp.array([[0., 0, 0, 0],
+                                  [2, 2, 2, 1]])
 
-    Cs_ref = sp.array([[1., 0, 0],
-                       [0, 1, 0],
-                       [0, 0, 1]])
+        Es_bounds_ref = sp.array([[-1., 0, 0],
+                                  [1, 2, 1]])
 
-    Es_ref = sp.array([[0., 0],
-                       [1, 0],
-                       [1, 1]])
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
-    assert(same_rows(Es, Es_ref))
-    assert(same_rows(Cs, Cs_ref))
 
+    def test_3D_3(self):
+        # multiple feeds in a list, as column vectors
 
-def test_stoich_S_S_1():
-    # A + B -> C
+        Cf1 = sp.array([[1., 0, 0, 0]]).T
+        Cf2 = sp.array([[1., 1., 0, 0]]).T
 
-    # 0-D array feed
-    Cf0 = sp.array([1., 1, 0])
+        feed_list = [Cf1, Cf2]
 
-    # column vector stoich matrix
-    stoich_mat = sp.array([[-1., -1, 1]]).T
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+        S = stoich_subspace(feed_list, stoich_mat)
 
-    Cs_ref = sp.array([[1., 1, 0],
-                       [0, 0, 1]])
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
-    Es_ref = sp.array([[0., 1]]).T
+        Cs1_ref = sp.array([[1., 0, 0, 0],
+                            [0, 0, 0, 0.5],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, 0]])
 
-    assert(same_rows(Cs, Cs_ref))
-    assert(same_rows(Es, Es_ref))
+        Es1_ref = sp.array([[0, 0, 0],
+                            [0, 0, 0.5],
+                            [1, 0, 0],
+                            [1, 1, 0]])
 
+        Cs2_ref = sp.array([[0, 2, 0, 0],
+                            [0, 0, 2, 0],
+                            [2, 0, 0, 0],
+                            [0, 0, 0, 1]])
 
-def test_stoich_S_S_2():
-    # A + B -> C
+        Es2_ref = sp.array([[1., 0, 0],
+                            [1, 2, 0],
+                            [-1, 0, 0],
+                            [-1, 0, 1]])
 
-    # 0-D array feed
-    Cf0 = sp.array([1., 1, 0])
+        Cs_bounds_ref = sp.array([[0., 0, 0, 0],
+                                  [2, 2, 2, 1]])
 
-    # row vector stoich matrix
-    stoich_mat = sp.array([[-1., -1, 1]])
+        Es_bounds_ref = sp.array([[-1., 0, 0],
+                                  [1, 2, 1]])
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
-    Cs_ref = sp.array([[1., 1, 0],
-                       [0, 0, 1]])
 
-    Es_ref = sp.array([[0., 1]]).T
+    def test_3D_4(self):
+        # multiple feeds in a 2-D array
 
-    assert(same_rows(Cs, Cs_ref))
-    assert(same_rows(Es, Es_ref))
+        Cf1 = sp.array([[1., 0, 0, 0]])
+        Cf2 = sp.array([[1., 1., 0, 0]])
 
+        feeds = sp.vstack([Cf1, Cf2])
 
-def test_stoich_S_S_3():
-    # A + B -> C
+        stoich_mat = sp.array([[-1., 0, -2],
+                               [1, -1, 0],
+                               [0, 1, 0],
+                               [0, 0, 1]])
 
-    # 0-D array feed
-    Cf0 = sp.array([1., 1, 0])
+        S = stoich_subspace(feeds, stoich_mat)
 
-    # 0-D array stoich matrix
-    stoich_mat = sp.array([-1., -1, 1])
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+        Cs1_ref = sp.array([[1., 0, 0, 0],
+                            [0, 0, 0, 0.5],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, 0]])
 
-    Cs_ref = sp.array([[1., 1, 0],
-                       [0, 0, 1]])
+        Es1_ref = sp.array([[0, 0, 0],
+                            [0, 0, 0.5],
+                            [1, 0, 0],
+                            [1, 1, 0]])
 
-    Es_ref = sp.array([[0., 1]]).T
+        Cs2_ref = sp.array([[0, 2, 0, 0],
+                            [0, 0, 2, 0],
+                            [2, 0, 0, 0],
+                            [0, 0, 0, 1]])
 
-    assert(same_rows(Cs, Cs_ref))
-    assert(same_rows(Es, Es_ref))
+        Es2_ref = sp.array([[1., 0, 0],
+                            [1, 2, 0],
+                            [-1, 0, 0],
+                            [-1, 0, 1]])
 
+        Cs_bounds_ref = sp.array([[0., 0, 0, 0],
+                                  [2, 2, 2, 1]])
 
-def test_stoich_S_S_4():
-    # A + B -> C
+        Es_bounds_ref = sp.array([[-1., 0, 0],
+                                  [1, 2, 1]])
 
-    # column vector feed
-    Cf0 = sp.array([[1., 1, 0]]).T
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
-    # column vector stoich matrix
-    stoich_mat = sp.array([[-1., -1, 1]]).T
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+    def test_1D_1(self):
+        # A + B -> C
 
-    Cs_ref = sp.array([[1., 1, 0],
-                       [0, 0, 1]])
+        # two feeds
+        Cf1 = sp.array([1., 1, 0])
+        Cf2 = sp.array([1, 0.5, 0.1])
 
-    Es_ref = sp.array([[0., 1]]).T
+        feeds = [Cf1, Cf2]
 
-    assert(same_rows(Cs, Cs_ref))
-    assert(same_rows(Es, Es_ref))
+        stoich_mat = sp.array([[-1., -1, 1]]).T
 
+        S = stoich_subspace(feeds, stoich_mat)
 
-def test_stoich_S_S_5():
-    # A + B -> C
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
-    # row vector feed
-    Cf0 = sp.array([[1., 1, 0]])
+        Cs1_ref = sp.array([[1., 1, 0],
+                            [0, 0, 1]])
+        Cs2_ref = sp.array([[1., 0.5, 0.1],
+                            [0.5, 0, 0.6]])
 
-    # column vector stoich matrix
-    stoich_mat = sp.array([[-1., -1, 1]]).T
+        Es1_ref = sp.array([[0., 1]]).T
+        Es2_ref = sp.array([[0., 0.5]]).T
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+        Es_bounds_ref = sp.array([[0., 1]]).T
+        Cs_bounds_ref = sp.array([[0., 0, 0],
+                                  [1, 1, 1]])
 
-    Cs_ref = sp.array([[1., 1, 0],
-                       [0, 0, 1]])
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
 
-    Es_ref = sp.array([[0., 1]]).T
 
-    assert(same_rows(Cs, Cs_ref))
-    assert(same_rows(Es, Es_ref))
+    def test_2D_1(self):
+        # test 2-D system
+        # A -> B -> C
 
+        Cf1 = sp.array([1.0, 0, 0])
+        Cf2 = sp.array([1.0, 0.5, 0])
 
-def test_stoich_S_S_6():
-    # A -> B
+        feeds = [Cf1, Cf2]
 
-    # binary system
-    Cf0 = sp.array([1., 0])
+        stoich_mat = sp.array([[-1., 0],
+                               [1, -1],
+                               [0, 1]])
 
-    stoich_mat = sp.array([[-1., 1]]).T
+        S = stoich_subspace(feeds, stoich_mat)
 
-    Cs, Es = stoich_S_S(Cf0, stoich_mat)
+        Cs1_ref = sp.array([[1., 0, 0],
+                            [0, 1, 0],
+                            [0, 0, 1]])
 
-    Cs_ref = sp.array([[1., 0],
-                       [0, 1]])
+        Cs2_ref = sp.array([[1.5, 0, 0],
+                            [0, 1.5, 0],
+                            [0, 0, 1.5]])
 
-    Es_ref = sp.array([[0., 1]]).T
+        Es1_ref = sp.array([[0., 0],
+                            [1, 0],
+                            [1, 1]])
 
-    assert (same_rows(Cs, Cs_ref))
-    assert (same_rows(Es, Es_ref))
+        Es2_ref = sp.array([[1., 0],
+                            [1, 1.5],
+                            [-0.5, 0]])
 
+        Cs_bounds_ref = sp.array([[0.0, 0.0, 0.0],
+                                  [1.5, 1.5, 1.5]])
 
-def test_stoich_S_S_positive_1():
-    # 2-D system
-    # A -> B
+        Es_bounds_ref = sp.array([[-0.5, 0.0],
+                                  [1.0, 1.5]])
 
-    # Test negative conentrations
-    Cf0 = sp.array([-1., 0])
+        Cs1 = S["all_Cs"][0]
+        Cs2 = S["all_Cs"][1]
+        Es1 = S["all_Es"][0]
+        Es2 = S["all_Es"][1]
+        Es_bounds = S["bounds_Es"]
+        Cs_bounds = S["bounds_Cs"]
 
-    stoich_mat = sp.array([[-1.],
-                           [1]])
-
-    with pytest.raises(Exception):
-        stoich_S_S(Cf0, stoich_mat)
-
-
-def test_stoich_S_S_positive_2():
-    # 2-D system
-    # A -> B
-
-    # Test negative zero
-    Cf0 = sp.array([1., -0.0])
-
-    stoich_mat = sp.array([[-1.],
-                           [1]])
-
-    assert stoich_S_S(Cf0, stoich_mat)
-
-
-def test_singleFeed_3D_1():
-    # single feed, as a 0-D array
-
-    # A -> B -> C
-    # 2A -> D
-    Cf = sp.array([1., 0, 0, 0])
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace(Cf, stoich_mat)
-    Cs = S["all_Cs"]
-    Es = S["all_Es"]
-
-    Cs_ref = sp.array([[1., 0, 0, 0],
-                       [0, 0, 0, 0.5],
-                       [0, 1, 0, 0],
-                       [0, 0, 1, 0]])
-
-    Es_ref = sp.array([[0, 0, 0],
-                       [0, 0, 0.5],
-                       [1, 0, 0],
-                       [1, 1, 0]])
-
-    assert (same_rows(Cs, Cs_ref) is True)
-    assert (same_rows(Es, Es_ref) is True)
-
-
-def test_singleFeed_3D_2():
-    # single feed, as a 0-D array, in packed into a one-element list
-
-    # A -> B -> C
-    # 2A -> D
-    Cf = sp.array([1., 0, 0, 0])
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace([Cf], stoich_mat)
-    Cs = S["all_Cs"]
-    Es = S["all_Es"]
-
-    Cs_ref = sp.array([[1., 0, 0, 0],
-                       [0, 0, 0, 0.5],
-                       [0, 1, 0, 0],
-                       [0, 0, 1, 0]])
-
-    Es_ref = sp.array([[0, 0, 0],
-                       [0, 0, 0.5],
-                       [1, 0, 0],
-                       [1, 1, 0]])
-
-    assert (same_rows(Cs, Cs_ref) is True)
-    assert (same_rows(Es, Es_ref) is True)
-
-
-def test_multiFeed_3D_1():
-    # multiple feeds in a list, as 0-D arrays
-
-    Cf1 = sp.array([1., 0, 0, 0])
-    Cf2 = sp.array([1., 1., 0, 0])
-
-    feed_list = [Cf1, Cf2]
-
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace(feed_list, stoich_mat)
-
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    Cs1_ref = sp.array([[1., 0, 0, 0],
-                        [0, 0, 0, 0.5],
-                        [0, 1, 0, 0],
-                        [0, 0, 1, 0]])
-
-    Es1_ref = sp.array([[0, 0, 0],
-                        [0, 0, 0.5],
-                        [1, 0, 0],
-                        [1, 1, 0]])
-
-    Cs2_ref = sp.array([[0, 2, 0, 0],
-                        [0, 0, 2, 0],
-                        [2, 0, 0, 0],
-                        [0, 0, 0, 1]])
-
-    Es2_ref = sp.array([[1., 0, 0],
-                        [1, 2, 0],
-                        [-1, 0, 0],
-                        [-1, 0, 1]])
-
-    Cs_bounds_ref = sp.array([[0., 0, 0, 0],
-                              [2, 2, 2, 1]])
-
-    Es_bounds_ref = sp.array([[-1., 0, 0],
-                              [1, 2, 1]])
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-
-
-def test_multiFeed_3D_2():
-    # multiple feeds in a list, as row vectors
-
-    Cf1 = sp.array([[1., 0, 0, 0]])
-    Cf2 = sp.array([[1., 1., 0, 0]])
-
-    feed_list = [Cf1, Cf2]
-
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace(feed_list, stoich_mat)
-
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    Cs1_ref = sp.array([[1., 0, 0, 0],
-                        [0, 0, 0, 0.5],
-                        [0, 1, 0, 0],
-                        [0, 0, 1, 0]])
-
-    Es1_ref = sp.array([[0, 0, 0],
-                        [0, 0, 0.5],
-                        [1, 0, 0],
-                        [1, 1, 0]])
-
-    Cs2_ref = sp.array([[0, 2, 0, 0],
-                        [0, 0, 2, 0],
-                        [2, 0, 0, 0],
-                        [0, 0, 0, 1]])
-
-    Es2_ref = sp.array([[1., 0, 0],
-                        [1, 2, 0],
-                        [-1, 0, 0],
-                        [-1, 0, 1]])
-
-    Cs_bounds_ref = sp.array([[0., 0, 0, 0],
-                              [2, 2, 2, 1]])
-
-    Es_bounds_ref = sp.array([[-1., 0, 0],
-                              [1, 2, 1]])
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-
-
-def test_multiFeed_3D_3():
-    # multiple feeds in a list, as column vectors
-
-    Cf1 = sp.array([[1., 0, 0, 0]]).T
-    Cf2 = sp.array([[1., 1., 0, 0]]).T
-
-    feed_list = [Cf1, Cf2]
-
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace(feed_list, stoich_mat)
-    
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    Cs1_ref = sp.array([[1., 0, 0, 0],
-                        [0, 0, 0, 0.5],
-                        [0, 1, 0, 0],
-                        [0, 0, 1, 0]])
-
-    Es1_ref = sp.array([[0, 0, 0],
-                        [0, 0, 0.5],
-                        [1, 0, 0],
-                        [1, 1, 0]])
-
-    Cs2_ref = sp.array([[0, 2, 0, 0],
-                        [0, 0, 2, 0],
-                        [2, 0, 0, 0],
-                        [0, 0, 0, 1]])
-
-    Es2_ref = sp.array([[1., 0, 0],
-                        [1, 2, 0],
-                        [-1, 0, 0],
-                        [-1, 0, 1]])
-
-    Cs_bounds_ref = sp.array([[0., 0, 0, 0],
-                              [2, 2, 2, 1]])
-
-    Es_bounds_ref = sp.array([[-1., 0, 0],
-                              [1, 2, 1]])
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-
-
-def test_multiFeed_3D_4():
-    # multiple feeds in a 2-D array
-
-    Cf1 = sp.array([[1., 0, 0, 0]])
-    Cf2 = sp.array([[1., 1., 0, 0]])
-
-    feeds = sp.vstack([Cf1, Cf2])
-
-    stoich_mat = sp.array([[-1., 0, -2],
-                           [1, -1, 0],
-                           [0, 1, 0],
-                           [0, 0, 1]])
-
-    S = stoich_subspace(feeds, stoich_mat)
-
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    Cs1_ref = sp.array([[1., 0, 0, 0],
-                        [0, 0, 0, 0.5],
-                        [0, 1, 0, 0],
-                        [0, 0, 1, 0]])
-
-    Es1_ref = sp.array([[0, 0, 0],
-                        [0, 0, 0.5],
-                        [1, 0, 0],
-                        [1, 1, 0]])
-
-    Cs2_ref = sp.array([[0, 2, 0, 0],
-                        [0, 0, 2, 0],
-                        [2, 0, 0, 0],
-                        [0, 0, 0, 1]])
-
-    Es2_ref = sp.array([[1., 0, 0],
-                        [1, 2, 0],
-                        [-1, 0, 0],
-                        [-1, 0, 1]])
-
-    Cs_bounds_ref = sp.array([[0., 0, 0, 0],
-                              [2, 2, 2, 1]])
-
-    Es_bounds_ref = sp.array([[-1., 0, 0],
-                              [1, 2, 1]])
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-
-
-def test_multiFeed_1D_1():
-    # A + B -> C
-
-    # two feeds
-    Cf1 = sp.array([1., 1, 0])
-    Cf2 = sp.array([1, 0.5, 0.1])
-
-    feeds = [Cf1, Cf2]
-
-    stoich_mat = sp.array([[-1., -1, 1]]).T
-
-    S = stoich_subspace(feeds, stoich_mat)
-
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    Cs1_ref = sp.array([[1., 1, 0],
-                        [0, 0, 1]])
-    Cs2_ref = sp.array([[1., 0.5, 0.1],
-                        [0.5, 0, 0.6]])
-
-    Es1_ref = sp.array([[0., 1]]).T
-    Es2_ref = sp.array([[0., 0.5]]).T
-
-    Es_bounds_ref = sp.array([[0., 1]]).T
-    Cs_bounds_ref = sp.array([[0., 0, 0],
-                              [1, 1, 1]])
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-
-
-def test_multiFeed_2D_1():
-    # test 2-D system
-    # A -> B -> C
-
-    Cf1 = sp.array([1.0, 0, 0])
-    Cf2 = sp.array([1.0, 0.5, 0])
-
-    feeds = [Cf1, Cf2]
-
-    stoich_mat = sp.array([[-1., 0],
-                           [1, -1],
-                           [0, 1]])
-
-    S = stoich_subspace(feeds, stoich_mat)
-
-    Cs1_ref = sp.array([[1., 0, 0],
-                        [0, 1, 0],
-                        [0, 0, 1]])
-
-    Cs2_ref = sp.array([[1.5, 0, 0],
-                        [0, 1.5, 0],
-                        [0, 0, 1.5]])
-
-    Es1_ref = sp.array([[0., 0],
-                        [1, 0],
-                        [1, 1]])
-
-    Es2_ref = sp.array([[1., 0],
-                        [1, 1.5],
-                        [-0.5, 0]])
-
-    Cs_bounds_ref = sp.array([[0.0, 0.0, 0.0],
-                              [1.5, 1.5, 1.5]])
-
-    Es_bounds_ref = sp.array([[-0.5, 0.0],
-                              [1.0, 1.5]])
-
-    Cs1 = S["all_Cs"][0]
-    Cs2 = S["all_Cs"][1]
-    Es1 = S["all_Es"][0]
-    Es2 = S["all_Es"][1]
-    Es_bounds = S["bounds_Es"]
-    Cs_bounds = S["bounds_Cs"]
-
-    assert (same_rows(Cs1, Cs1_ref) is True)
-    assert (same_rows(Cs2, Cs2_ref) is True)
-    assert (same_rows(Es1, Es1_ref) is True)
-    assert (same_rows(Es2, Es2_ref) is True)
-    assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-    assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (same_rows(Cs1, Cs1_ref) is True)
+        assert (same_rows(Cs2, Cs2_ref) is True)
+        assert (same_rows(Es1, Es1_ref) is True)
+        assert (same_rows(Es2, Es2_ref) is True)
+        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
 
 
 def test_steam_reforming_singleFeed_1():

@@ -700,7 +700,33 @@ def convhull_pts(Xs):
     return Vs
 
 
-def stoich_S_S(Cf0, stoich_mat):
+def isColVector(A):
+    """
+    Checks if input A is a 2-D numpy array, orientated as a column vector
+    """
+
+    if isinstance(A, sp.ndarray) and A.ndim == 2:
+        row_num, col_num = A.shape
+        if col_num == 1 and row_num > 1:
+            return True
+
+    return False
+
+
+def isRowVector(A):
+    """
+    Checks if input A is a 2-D numpy array, orientated as a row vector
+    """
+
+    if isinstance(A, sp.ndarray) and A.ndim == 2:
+        row_num, col_num = A.shape
+        if col_num > 1 and row_num == 1:
+            return True
+
+    return False
+
+
+def stoich_S_1D(Cf0, stoich_mat):
     """
     A helper function for stoich_subspace().
     Single feed, single reaction version.
@@ -737,7 +763,7 @@ def stoich_S_S(Cf0, stoich_mat):
     return (Cs, Es)
 
 
-def stoich_S_M(Cf0, stoich_mat):
+def stoich_S_nD(Cf0, stoich_mat):
     """
     A helper function for stoich_subspace().
     Single feed, multiple reactions version.
@@ -758,32 +784,6 @@ def stoich_S_M(Cf0, stoich_mat):
     Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
     return (Cs, Es)
-
-
-def isColVector(A):
-    """
-    Checks if input A is a 2-D numpy array, orientated as a column vector
-    """
-
-    if isinstance(A, sp.ndarray) and A.ndim == 2:
-        row_num, col_num = A.shape
-        if col_num == 1 and row_num > 1:
-            return True
-
-    return False
-
-
-def isRowVector(A):
-    """
-    Checks if input A is a 2-D numpy array, orientated as a row vector
-    """
-
-    if isinstance(A, sp.ndarray) and A.ndim == 2:
-        row_num, col_num = A.shape
-        if col_num > 1 and row_num == 1:
-            return True
-
-    return False
 
 
 def stoich_subspace(Cf0s, stoich_mat):
@@ -836,9 +836,9 @@ def stoich_subspace(Cf0s, stoich_mat):
     all_Es = []
     all_Cs = []
     for Cf0 in Cf0s:
-        # flatten Cf0 for consistency
+        # convert Cf0 to (L,) for consistency
         if Cf0.ndim == 2:
-            Cf0 = Cf0.flatten()  # converts into (L,)
+            Cf0 = Cf0.flatten()
 
         # raise an error if the no. of components is inconsistent between the
         # feed and stoichiometric matrix
@@ -850,9 +850,9 @@ def stoich_subspace(Cf0s, stoich_mat):
         # now compute stoich subspace based on whether a single reaction or
         # multiple reactions
         if isColVector(stoich_mat):
-            Cs, Es = stoich_S_S(Cf0, stoich_mat)
+            Cs, Es = stoich_S_1D(Cf0, stoich_mat)
         else:
-            Cs, Es = stoich_S_M(Cf0, stoich_mat)
+            Cs, Es = stoich_S_nD(Cf0, stoich_mat)
 
         # vertices for each feed and stoich_mat in extent and concentration
         # space

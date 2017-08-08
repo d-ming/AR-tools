@@ -60,3 +60,15 @@ def test_5():
     N = artools.nullspace(A)
 
     assert N.shape == (2, 0)
+
+
+def test_6():
+    # dimension of the nullspace
+    A = sp.array([[1., 2., 3., 1.],
+                  [1., 1., 2., 1.],
+                  [1., 2., 3., 1.]])
+
+    N = artools.nullspace(A)
+    dimension = artools.rank(N)
+
+    assert dimension == 2

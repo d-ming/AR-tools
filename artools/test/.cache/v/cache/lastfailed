@@ -1,1 +1,12 @@
-{}
+{
+  "cullPts_test.py::TestDuplicate::()::test_1": true, 
+  "cullPts_test.py::TestDuplicate::()::test_2": true, 
+  "cullPts_test.py::TestDuplicate::()::test_3": true, 
+  "cullPts_test.py::TestStd::()::test_1": true, 
+  "cullPts_test.py::TestStd::()::test_2": true, 
+  "cullPts_test.py::TestStd::()::test_3": true, 
+  "cullPts_test.py::TestStd::()::test_4": true, 
+  "cullPts_test.py::TestStd::()::test_5": true, 
+  "cullPts_test.py::TestStd::()::test_6": true, 
+  "cullPts_test.py::TestStd::()::test_7": true
+}

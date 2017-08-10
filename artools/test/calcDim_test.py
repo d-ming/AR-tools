@@ -82,3 +82,9 @@ class TestRand:
 
         Xs = sp.rand(10, 4)
         assert calcDim(Xs) == 4
+
+
+    def test_5(self):
+
+        Xs = sp.rand(63, 49)
+        assert calcDim(Xs) == 49

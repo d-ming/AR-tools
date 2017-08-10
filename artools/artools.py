@@ -1039,7 +1039,4 @@ def calcDim(Xs):
     if sp.allclose(Xs, 0.0):
         return 0
 
-    if isColVector(Xs) or isRowVector(Xs) or Xs.ndim == 1:
-        return 1
-
     return rank(Xs)

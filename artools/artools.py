@@ -939,7 +939,7 @@ def nullspace(A, tol=1e-15):
 
 def rank(A):
     '''
-    Wrapper to numpy.linalg.matrik_rank(). Calculates the rank of matrix A.
+    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
     Useful for critical CSTR and DSR calculations.
 
     Parameters:
@@ -1035,11 +1035,11 @@ def calcDim(Xs):
     Compute the dimension of a set of point Xs
     """
 
+    # test for zero vector or matrix
+    if sp.allclose(Xs, 0.0):
+        return 0
+
     if isColVector(Xs) or isRowVector(Xs) or Xs.ndim == 1:
         return 1
 
-    # subtract the first row of Xs from all other rows and compute rank of the
-    # resulting matrix
-    Vs = Xs - Xs[0, :]
-
-    return rank(Vs)
+    return rank(Xs)

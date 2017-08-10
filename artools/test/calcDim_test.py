@@ -8,24 +8,48 @@ import scipy as sp
 from artools import calcDim
 
 
+class TestZero:
+
+    def test_1(self):
+        x = sp.zeros([1, 3])
+        assert (calcDim(x) == 0)
+
+
+    def test_2(self):
+        x = sp.zeros([1, 3]).T
+        assert (calcDim(x) == 0)
+
+
+    def test_3(self):
+        x = sp.zeros([3, 3])
+        assert (calcDim(x) == 0)
+
+
 class Test1D:
 
     def test_1(self):
         # row vector
         x = sp.array([[1.0, 2.0, 3.0, 4.0]])
-        assert (calcDim(x) == 1) is True
+        assert (calcDim(x) == 1)
 
 
     def test_2(self):
         # column vector
         x = sp.array([[1.0, 2.0, 3.0, 4.0]]).T
-        assert (calcDim(x) == 1) is True
+        assert (calcDim(x) == 1)
 
 
     def test_3(self):
         # 1-D numpy array
         x = sp.array([1.0, 2.0, 3.0, 4.0])
-        assert (calcDim(x) == 1) is True
+        assert (calcDim(x) == 1)
+
+
+    def test_4(self):
+        # repeated row
+        x = sp.array([[1.0, 2.0],
+                      [1.0, 2.0]])
+        assert (calcDim(x) == 1)
 
 
 class TestRand:

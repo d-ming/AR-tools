@@ -1035,7 +1035,7 @@ def calcDim(Xs):
     Compute the dimension of a set of point Xs
     """
 
-    # test for zero vector
+    # test for zero vector or matrix
     if sp.allclose(Xs, 0.0):
         return 0
 

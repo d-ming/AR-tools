@@ -728,7 +728,7 @@ def isRowVector(A):
 
 def stoich_S_1D(Cf0, stoich_mat):
     """
-    A helper function for stoich_subspace().
+    A helper function for stoichSubspace().
     Single feed, single reaction version.
     """
 
@@ -765,7 +765,7 @@ def stoich_S_1D(Cf0, stoich_mat):
 
 def stoich_S_nD(Cf0, stoich_mat):
     """
-    A helper function for stoich_subspace().
+    A helper function for stoichSubspace().
     Single feed, multiple reactions version.
     """
 
@@ -788,7 +788,8 @@ def stoich_S_nD(Cf0, stoich_mat):
 
 def getExtrema(Xs, axis=0):
     """
-    Collect the max and min values according to the COLUMNS of Xs.
+    Collect the max and min values according to a user-specified axis direction
+    of Xs.
     """
 
     Xs = sp.vstack(Xs)
@@ -799,7 +800,7 @@ def getExtrema(Xs, axis=0):
     return Xs_bounds
 
 
-def stoich_subspace(Cf0s, stoich_mat):
+def stoichSubspace(Cf0s, stoich_mat):
     """
     Compute the extreme points of the stoichiometric subspace, S, from multiple
     feed points and a stoichoimetric coefficient matrix.
@@ -877,7 +878,7 @@ def stoich_subspace(Cf0s, stoich_mat):
     if len(all_Es) == 1:
         all_Es = all_Es[0]
 
-    # create a dictionary containing all the attributes of the stoich_subspace
+    # create a dictionary containing all the attributes of the stoich subspace
     S = {
         'all_Es': all_Es,
         'all_Cs': all_Cs,
@@ -939,7 +940,7 @@ def nullspace(A, tol=1e-15):
 
 def rank(A):
     '''
-    Wrapper to numpy.linalg.matrik_rank(). Calculates the rank of matrix A.
+    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
     Useful for critical CSTR and DSR calculations.
 
     Parameters:
@@ -1035,11 +1036,11 @@ def calcDim(Xs):
     Compute the dimension of a set of point Xs
     """
 
-    if isColVector(Xs) or isRowVector(Xs) or Xs.ndim == 1:
-        return 1
+    # check for a single row or column vector
+    if isRowVector(Xs) or isColVector(Xs) or Xs.ndim==1:
+        return 0
 
-    # subtract the first row of Xs from all other rows and compute rank of the
-    # resulting matrix
+    # convert N points to N-1 vectors
     Vs = Xs - Xs[0, :]
 
     return rank(Vs)

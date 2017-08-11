@@ -60,7 +60,7 @@ class TestAR:
         stoich_mat = sp.array([[-1.0, -3.0, 2.0]]).T
         Cf0 = sp.array([1.0, 1.0, 0.0])
 
-        Vs = artools.stoich_subspace(Cf0, stoich_mat)['bounds_Cs']
+        Vs = artools.stoich_subspace(Cf0, stoich_mat)['all_Cs']
 
         assert (calcDim(Vs) == 1)
 
@@ -74,9 +74,25 @@ class TestAR:
 
         Cf0 = sp.array([1.0, 0.0, 0.0])
 
-        Vs = artools.stoich_subspace(Cf0, stoich_mat)['bounds_Cs']
+        Vs = artools.stoich_subspace(Cf0, stoich_mat)['all_Cs']
 
         assert (calcDim(Vs) == 2)
+
+
+    def test_VDV_3D(self):
+        # A -> B -> C
+        # 2A -> D
+
+        stoich_mat = sp.array([[-1.0, 0.0, -2.0],
+                               [1.0, -1.0, 0.0],
+                               [0.0, 1.0, 0.0],
+                               [0.0, 0.0, 1.0]])
+
+        Cf0 = sp.array([1.0, 0.0, 0.0, 0.0])
+
+        Vs = artools.stoich_subspace(Cf0, stoich_mat)['all_Cs']
+
+        assert (calcDim(Vs) == 3)
 
 
 class TestRand:

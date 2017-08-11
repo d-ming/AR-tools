@@ -788,7 +788,8 @@ def stoich_S_nD(Cf0, stoich_mat):
 
 def getExtrema(Xs, axis=0):
     """
-    Collect the max and min values according to the COLUMNS of Xs.
+    Collect the max and min values according to a user-specified axis direction
+    of Xs.
     """
 
     Xs = sp.vstack(Xs)

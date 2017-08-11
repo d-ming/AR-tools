@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_1D, stoich_S_nD, stoich_subspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, same_rows
 
 
 class TestSingleFeed:
@@ -22,7 +22,7 @@ class TestSingleFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace(Cf, stoich_mat)
+        S = stoichSubspace(Cf, stoich_mat)
         Cs = S["all_Cs"]
         Es = S["all_Es"]
 
@@ -51,7 +51,7 @@ class TestSingleFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace([Cf], stoich_mat)
+        S = stoichSubspace([Cf], stoich_mat)
         Cs = S["all_Cs"]
         Es = S["all_Es"]
 
@@ -84,7 +84,7 @@ class TestMultiFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace(feed_list, stoich_mat)
+        S = stoichSubspace(feed_list, stoich_mat)
 
         Cs1 = S["all_Cs"][0]
         Cs2 = S["all_Cs"][1]
@@ -140,7 +140,7 @@ class TestMultiFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace(feed_list, stoich_mat)
+        S = stoichSubspace(feed_list, stoich_mat)
 
         Cs1 = S["all_Cs"][0]
         Cs2 = S["all_Cs"][1]
@@ -196,7 +196,7 @@ class TestMultiFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace(feed_list, stoich_mat)
+        S = stoichSubspace(feed_list, stoich_mat)
 
         Cs1 = S["all_Cs"][0]
         Cs2 = S["all_Cs"][1]
@@ -252,7 +252,7 @@ class TestMultiFeed:
                                [0, 1, 0],
                                [0, 0, 1]])
 
-        S = stoich_subspace(feeds, stoich_mat)
+        S = stoichSubspace(feeds, stoich_mat)
 
         Cs1 = S["all_Cs"][0]
         Cs2 = S["all_Cs"][1]
@@ -306,7 +306,7 @@ class TestMultiFeed:
 
         stoich_mat = sp.array([[-1., -1, 1]]).T
 
-        S = stoich_subspace(feeds, stoich_mat)
+        S = stoichSubspace(feeds, stoich_mat)
 
         Cs1 = S["all_Cs"][0]
         Cs2 = S["all_Cs"][1]
@@ -348,7 +348,7 @@ class TestMultiFeed:
                                [1, -1],
                                [0, 1]])
 
-        S = stoich_subspace(feeds, stoich_mat)
+        S = stoichSubspace(feeds, stoich_mat)
 
         Cs1_ref = sp.array([[1., 0, 0],
                             [0, 1, 0],
@@ -400,7 +400,7 @@ def test_steam_reforming_singleFeed_1():
                            [3, 1],
                            [0, 1]])
 
-    S = stoich_subspace(Cf0, stoich_mat)
+    S = stoichSubspace(Cf0, stoich_mat)
     Cs = S["all_Cs"]
     Es = S["all_Es"]
 

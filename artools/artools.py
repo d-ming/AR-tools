@@ -728,7 +728,7 @@ def isRowVector(A):
 
 def stoich_S_1D(Cf0, stoich_mat):
     """
-    A helper function for stoich_subspace().
+    A helper function for stoichSubspace().
     Single feed, single reaction version.
     """
 
@@ -765,7 +765,7 @@ def stoich_S_1D(Cf0, stoich_mat):
 
 def stoich_S_nD(Cf0, stoich_mat):
     """
-    A helper function for stoich_subspace().
+    A helper function for stoichSubspace().
     Single feed, multiple reactions version.
     """
 
@@ -799,7 +799,7 @@ def getExtrema(Xs, axis=0):
     return Xs_bounds
 
 
-def stoich_subspace(Cf0s, stoich_mat):
+def stoichSubspace(Cf0s, stoich_mat):
     """
     Compute the extreme points of the stoichiometric subspace, S, from multiple
     feed points and a stoichoimetric coefficient matrix.
@@ -877,7 +877,7 @@ def stoich_subspace(Cf0s, stoich_mat):
     if len(all_Es) == 1:
         all_Es = all_Es[0]
 
-    # create a dictionary containing all the attributes of the stoich_subspace
+    # create a dictionary containing all the attributes of the stoich subspace
     S = {
         'all_Es': all_Es,
         'all_Cs': all_Cs,

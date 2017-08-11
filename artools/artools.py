@@ -1035,8 +1035,11 @@ def calcDim(Xs):
     Compute the dimension of a set of point Xs
     """
 
-    # test for zero vector or matrix
-    if sp.allclose(Xs, 0.0):
+    # check for a single row or column vector
+    if isRowVector(Xs) or isColVector(Xs) or Xs.ndim==1:
         return 0
 
-    return rank(Xs)
+    # convert N points to N-1 vectors
+    Vs = Xs - Xs[0, :]
+
+    return rank(Vs)

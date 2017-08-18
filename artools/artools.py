@@ -99,7 +99,6 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
 
     if ax is None:
         fig = plt.figure()
-        fig.hold(True)
         ax = fig.gca()
 
     ax.fill(Vs[ks, 0], Vs[ks, 1], color=color, alpha=alpha)
@@ -149,7 +148,6 @@ def plot_region3d(Vs,
     if ax is None:
         fig = plt.figure(figsize=(6, 5))
 
-        fig.hold(True)
         ax = fig.gca(projection='3d')
 
     if plot_verts:
@@ -190,7 +188,6 @@ def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
     # generate new figure if none supplied
     if ax is None:
         fig = plt.figure()
-        fig.hold(True)
         ax = fig.gca()
 
     def y_fn(x, n, b):

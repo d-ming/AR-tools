@@ -5,7 +5,8 @@ This is the GitHub repository of Attainable Region (AR) theory. The main homepag
 
 ## Navigation
 ### 1. AR tools
-`artools.py` is a collection of Python functions for carrying out AR calculations as well as performing simple 2-D and 3-D visualisations of convex regions. 
+`artools.py` is a collection of Python functions for carrying out AR calculations as well as performing simple 2-D and 3-D visualisations of convex regions. A Jupyter notebook demonstrating its usage is given in the [notebooks folder](https://github.com/d-ming/AR-tools/blob/master/AR-book/AR-book-notebooks/Ch%208/artools%20demos.ipynb).
+
 Currently, `artools.py` is written in Python 2.
 
 ### 2. Jupyter notebooks

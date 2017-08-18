@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_1D, stoich_S_nD, stoich_subspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, same_rows
 
 
 class TestStd:

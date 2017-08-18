@@ -10,7 +10,7 @@ This is the GitHub repository of Attainable Region (AR) theory. The main homepag
 Currently, `artools.py` is written in Python 2.
 
 ### 2. Jupyter notebooks
-<img src="./AR-book/notebook_demo.gif" style="width:480px; margin: 1em auto; display: block"/>
+<img src="./AR-book/notebook_demo.gif" style="width:280px; margin: 1em auto; display: block"/>
 
 Jupyter notebooks can be found [here](https://github.com/d-ming/AR-tools/tree/Readme/AR-book/AR-book-notebooks) that help to demonstrate common concepts used in AR theory. These notebooks are written in conjunction with the [AR theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
 

@@ -49,7 +49,33 @@ class TestZero:
         assert (calcDim(x) == 0)
 
 
-#class Test1D:
+class Test1D:
+
+    def test_1(self):
+        # two points in 2-D space
+        Xs = sp.array([[0.0, 0.0],
+                       [1.0, 1.0]])
+
+        assert (calcDim(Xs) == 1)
+
+
+    def test_2(self):
+        # two points in 3-D space
+        Xs = sp.array([[0.0, 0.0, 0.0],
+                       [1.0, 1.0, 1.0]])
+
+        assert (calcDim(Xs) == 1)
+
+
+class Test2D:
+
+    def test_1(self):
+        # three points in 2-D space
+        Xs = sp.array([[0.0, 0.0],
+                       [1.0, 1.0],
+                       [1.0, 0.0]])
+
+        assert (calcDim(Xs) == 2)
 
 
 class TestAR:
@@ -97,16 +123,22 @@ class TestAR:
 
 class TestRand:
 
-    def test_1a(self):
+    def test_0a(self):
 
         Xs = sp.rand(10, 1)
         assert calcDim(Xs) == 0
 
 
-    def test_1b(self):
+    def test_0b(self):
 
         Xs = sp.rand(1, 10)
         assert calcDim(Xs) == 0
+
+
+    def test_1a(self):
+
+        Xs = sp.rand(2, 3)
+        assert calcDim(Xs) == 1
 
 
     def test_2(self):

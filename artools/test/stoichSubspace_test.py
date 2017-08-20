@@ -3,9 +3,6 @@ import pytest
 
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
-
 from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, sameRows
 
 

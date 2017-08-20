@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
+from artools import sameRows, nullspace, rank
 
 import scipy as sp
 
@@ -10,7 +9,7 @@ def test_1():
     # 0-D nullspace Identity matrix
     I = sp.eye(5)
 
-    N = artools.nullspace(I)
+    N = nullspace(I)
 
     assert (N.shape == (5, 0))
 
@@ -20,22 +19,22 @@ def test_2():
     A = sp.array([[1., 0, 0],
                   [0, 1, 0]])
 
-    N = artools.nullspace(A)
+    N = nullspace(A)
     N_ref = sp.array([[0., 0, 1]]).T
 
-    assert (artools.sameRows(N, N_ref) is True)
+    assert (sameRows(N, N_ref) is True)
 
 
 def test_3():
     # 2-D nullspace
     A = sp.array([[1., 0, 0]])
 
-    N = artools.nullspace(A)
+    N = nullspace(A)
     N_ref = sp.array([[0., 0],
                       [1, 0],
                       [0, 1]])
 
-    assert (artools.sameRows(N, N_ref) is True)
+    assert (sameRows(N, N_ref) is True)
 
 
 def test_4():
@@ -45,10 +44,10 @@ def test_4():
                   [0, 0, 1, 0, 0],
                   [0, 0, 0, 1, 0]])
 
-    N = artools.nullspace(A)
+    N = nullspace(A)
     N_ref = sp.array([[0., 0, 0, 0, 1]]).T
 
-    assert (artools.sameRows(N, N_ref) is True)
+    assert (sameRows(N, N_ref) is True)
 
 
 def test_5():
@@ -57,7 +56,7 @@ def test_5():
                   [0, 1],
                   [0, 0]])
 
-    N = artools.nullspace(A)
+    N = nullspace(A)
 
     assert N.shape == (2, 0)
 
@@ -68,7 +67,7 @@ def test_6():
                   [1., 1., 2., 1.],
                   [1., 2., 3., 1.]])
 
-    N = artools.nullspace(A)
-    dimension = artools.rank(N)
+    N = nullspace(A)
+    dimension = rank(N)
 
     assert dimension == 2

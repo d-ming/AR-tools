@@ -555,7 +555,7 @@ def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     return pfr_cs, pfr_ts
 
 
-def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
+def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     '''
     Brute-force CSTR locus solver using geometric CSTR colinearity condition
     between r(C) and (C - Cf).
@@ -624,7 +624,7 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     return Cs, ts
 
 
-def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
+def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
     '''
     Quick (potentially inexact) CSTR solver using a standard non-linear solver
     (Newton). The initial guess is based on the previous solution.

@@ -121,7 +121,7 @@ ax.hold(True)
 v = con2vert(A, b)
 print v
 
-print artools.in_region(c, A, b)
+print artools.inRegion(c, A, b)
 
 
 

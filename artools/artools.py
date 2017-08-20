@@ -350,7 +350,7 @@ def vert2con(Vs):
     return (A, b)
 
 
-def in_region(xi, A, b, tol=1e-12):
+def inRegion(xi, A, b, tol=1e-12):
     '''
     Determine whether point xi lies within the region or on the region boundary
     defined by the system of inequalities A*xi <= b
@@ -402,13 +402,13 @@ def out_region(xi, A, b, tol=1e-12):
     if b.ndim == 2:
         b = b.flatten()
 
-    if in_region(xi, A, b, tol=tol):
+    if inRegion(xi, A, b, tol=tol):
         return False
     else:
         return True
 
 
-def pts_in_region(Xs, A, b, tol=1e-12):
+def pts_inRegion(Xs, A, b, tol=1e-12):
     '''
     Similar to inregion(), but works on an array of points and returns the
     points and indices.
@@ -425,7 +425,7 @@ def pts_in_region(Xs, A, b, tol=1e-12):
 
     ks = []
     for idx, xi in enumerate(Xs):
-        if in_region(xi, A, b, tol=tol):
+        if inRegion(xi, A, b, tol=tol):
             ks.append(idx)
 
     Cs = Xs[ks, :]

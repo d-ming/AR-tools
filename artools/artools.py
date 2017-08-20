@@ -69,7 +69,7 @@ def sameRows(A, B):
         return True
 
 
-def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
+def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''
     Plot a filled 2D region, similar to MATLAB's fill() function.
 

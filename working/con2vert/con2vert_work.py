@@ -114,7 +114,7 @@ A = -stoich_mat
 b = Cf
 c = scipy.linalg.lstsq(A, b)[0]
 
-fig = artools.plot_hplanes(-stoich_mat, b, lims=(-2.0, 2.0))
+fig = artools.plotHplanes(-stoich_mat, b, lims=(-2.0, 2.0))
 ax = fig.gca()
 ax.hold(True)
 

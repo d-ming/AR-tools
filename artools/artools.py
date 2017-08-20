@@ -167,7 +167,7 @@ def plotRegion3D(Vs,
     return ax.get_figure()
 
 
-def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
+def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     '''
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.

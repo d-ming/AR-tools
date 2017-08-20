@@ -41,7 +41,7 @@ def con2vert(A, b):
     # if c is out of the region or on the polytope boundary, try to find a new
     # c
     num_tries = 0
-    while artools.out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+    while artools.outRegion(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
 
         num_tries += 1
         if num_tries > 20:

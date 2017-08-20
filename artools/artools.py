@@ -244,7 +244,7 @@ def con2vert(A, b):
     # if c is out of the region or on the polytope boundary, try to find a new
     # c
     num_tries = 0
-    while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+    while outRegion(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
 
         num_tries += 1
         if num_tries > 20:
@@ -379,7 +379,7 @@ def inRegion(xi, A, b, tol=1e-12):
         return False
 
 
-def out_region(xi, A, b, tol=1e-12):
+def outRegion(xi, A, b, tol=1e-12):
     '''
     Determine whether point xi lies strictly outside of the region (NOT on the
     region boundary) defined by the system of inequalities A*xi <= b
@@ -433,7 +433,7 @@ def pts_inRegion(Xs, A, b, tol=1e-12):
     return Cs, ks
 
 
-def pts_out_region(Xs, A, b, tol=1e-12):
+def pts_outRegion(Xs, A, b, tol=1e-12):
     '''
     Similar to outregion(), but works on an array of points and returns the
     points and indices.
@@ -461,7 +461,7 @@ def pts_out_region(Xs, A, b, tol=1e-12):
 
     ks = []
     for idx, xi in enumerate(Xs):
-        if out_region(xi, A, b, tol=tol):
+        if outRegion(xi, A, b, tol=tol):
             ks.append(idx)
 
     Cs = Xs[ks, :]

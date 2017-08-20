@@ -516,7 +516,7 @@ def randPts(Npts, axis_lims):
     return Ys
 
 
-def calc_pfr_trajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
+def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     '''
     Convenience function that integrate the PFR trajecotry from the feed point
     specified Cf, using scipy.integrate.odeint().

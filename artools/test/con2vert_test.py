@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
+from artools import sameRows, con2vert
 
 import scipy as sp
 
@@ -16,10 +15,10 @@ class Test2D:
 
         b = sp.array([[0., 0, 1]]).T
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
         vs_ref = sp.array([[0., 1], [0, 0], [1, 0]])
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)
 
     def test_2(self):
         # 2-D unit square
@@ -30,13 +29,13 @@ class Test2D:
 
         b = sp.array([[0., 0, 1, 1]]).T
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
         vs_ref = sp.array([[0., 1],
                            [0, 0],
                            [1, 0],
                            [1, 1]])
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)
 
     def test_3(self):
         # mass balance triangle cut at y = 0.5
@@ -47,13 +46,13 @@ class Test2D:
 
         b = sp.array([[0., 0, 1, 0.5]]).T
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
         vs_ref = sp.array([[0, 0.5],
                            [0, 0],
                            [1, 0],
                            [0.5, 0.5]])
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)
 
 
 class Test3D:
@@ -66,13 +65,13 @@ class Test3D:
                       [1, 1, 1]])
         b = sp.array([[0., 0, 0, 1]]).T
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
         vs_ref = sp.array([[1., 0, 0],
                            [0, 1, 0],
                            [0, 0, 1],
                            [0, 0, 0]])
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)
 
     def test_2(self):
         # 3-D unit cube
@@ -85,7 +84,7 @@ class Test3D:
 
         b = sp.array([[0., 0, 0, 1, 1, 1]]).T
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
         vs_ref = sp.array([[0, 0, 0],
                            [1, 0, 0],
                            [1, 1, 0],
@@ -95,7 +94,7 @@ class Test3D:
                            [1, 1, 1],
                            [0, 1, 1]])
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)
 
 
 class TestMisc:
@@ -119,6 +118,6 @@ class TestMisc:
                            [0.0, 0.0],
                            [1.0, 0.0]])
 
-        vs = artools.con2vert(A, b)
+        vs = con2vert(A, b)
 
-        assert (artools.sameRows(vs, vs_ref) is True)
+        assert (sameRows(vs, vs_ref) is True)

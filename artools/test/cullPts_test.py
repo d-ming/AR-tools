@@ -1,10 +1,8 @@
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
+from artools import sameRows, cullPts
 
 import scipy as sp
-from artools import sameRows, cullPts
 
 
 class TestStd:

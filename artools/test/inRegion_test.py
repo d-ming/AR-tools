@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
+from artools import inRegion
 
 import scipy as sp
 import pytest
@@ -19,7 +18,7 @@ class TestIn:
 
         xi = sp.array([0.1, 0.1])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_2(self):
@@ -32,7 +31,7 @@ class TestIn:
 
         xi = sp.array([0.25, 0.1])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_3(self):
@@ -46,7 +45,7 @@ class TestIn:
 
         xi = sp.array([0.25, 0.1, 0.25])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
 class TestOut:
@@ -61,7 +60,7 @@ class TestOut:
 
         xi = sp.array([-1., -1])
 
-        assert (artools.inRegion(xi, A, b) is False)
+        assert (inRegion(xi, A, b) is False)
 
 
     def test_2(self):
@@ -74,7 +73,7 @@ class TestOut:
 
         xi = sp.array([2., 2])
 
-        assert (artools.inRegion(xi, A, b) is False)
+        assert (inRegion(xi, A, b) is False)
 
 
     def test_3(self):
@@ -88,7 +87,7 @@ class TestOut:
 
         xi = sp.array([0.7, 0.7, 0.7])
 
-        assert (artools.inRegion(xi, A, b) is False)
+        assert (inRegion(xi, A, b) is False)
 
 
 class TestOn:
@@ -103,7 +102,7 @@ class TestOn:
 
         xi = sp.array([0.5, 0.5])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_2(self):
@@ -116,7 +115,7 @@ class TestOn:
 
         xi = sp.array([1., 0])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
 class TestUnbounded:
@@ -130,7 +129,7 @@ class TestUnbounded:
 
         xi = sp.array([0.5, 0.5])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_2(self):
@@ -142,7 +141,7 @@ class TestUnbounded:
 
         xi = sp.array([-0.5, -0.5])
 
-        assert artools.inRegion(xi, A, b) is False
+        assert inRegion(xi, A, b) is False
 
 
     def test_3(self):
@@ -154,7 +153,7 @@ class TestUnbounded:
 
         xi = sp.array([0.5, 0])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
 class TestToleranceIn:
@@ -170,7 +169,7 @@ class TestToleranceIn:
         tol = 1e-8
         xi = sp.array([0.0 + tol, 0.0 + tol])
 
-        assert artools.inRegion(xi, A, b, tol=tol)
+        assert inRegion(xi, A, b, tol=tol)
 
 
     def test_2(self):
@@ -185,7 +184,7 @@ class TestToleranceIn:
         tol = 1e-8
         xi = sp.array([0.0 - tol, 0.0 - tol])
 
-        assert artools.inRegion(xi, A, b, tol=tol)
+        assert inRegion(xi, A, b, tol=tol)
 
 
 class TestToleranceOut:
@@ -202,7 +201,7 @@ class TestToleranceOut:
         tol = 1e-10
         xi = sp.array([0.0 - 2*tol, 0.0 + tol])
 
-        assert (artools.inRegion(xi, A, b, tol=tol) is False)
+        assert (inRegion(xi, A, b, tol=tol) is False)
 
 
 class TestToleranceOn:
@@ -219,7 +218,7 @@ class TestToleranceOn:
 
         tol = 1e-2
 
-        assert artools.inRegion(xi, A, b, tol=tol)
+        assert inRegion(xi, A, b, tol=tol)
 
 
 class TestShape:
@@ -234,7 +233,7 @@ class TestShape:
 
         xi = sp.array([0.25, 0.1])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_2(self):
@@ -247,7 +246,7 @@ class TestShape:
 
         xi = sp.array([0.25, 0.1])
 
-        assert artools.inRegion(xi, A, b)
+        assert inRegion(xi, A, b)
 
 
     def test_3(self):
@@ -261,9 +260,9 @@ class TestShape:
         xi = sp.array([0.25, 0.1])
 
         with pytest.raises(ValueError):
-            artools.inRegion(xi, A, b)
+            inRegion(xi, A, b)
 
-    
+
     def test_4(self):
         # xi has incompatible shape
         A = sp.array([[-1., 0],
@@ -275,4 +274,4 @@ class TestShape:
         xi = sp.array([0.25, 0.1, 0.1])
 
         with pytest.raises(ValueError):
-            artools.inRegion(xi, A, b)
+            inRegion(xi, A, b)

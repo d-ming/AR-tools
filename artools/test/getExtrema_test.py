@@ -3,10 +3,8 @@ import pytest
 
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
-
 from artools import getExtrema, sameRows
+
 
 class TestMatrixFormat:
 
@@ -86,7 +84,7 @@ class TestListFormat:
 
     def test_3(self):
         # test along rows instead of columns
-        
+
         Xs_1 = sp.array([[1.0, 2.0, 3.0],
                         [2.0, -1.0, 3.0]])
 

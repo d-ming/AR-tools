@@ -1,11 +1,8 @@
 import sys
 sys.path.append('../')
-import artools
-artools = reload(artools)
+from artools import calcDim, stoichSubspace
 
 import scipy as sp
-
-from artools import calcDim
 
 
 class TestZero:
@@ -86,7 +83,7 @@ class TestAR:
         stoich_mat = sp.array([[-1.0, -3.0, 2.0]]).T
         Cf0 = sp.array([1.0, 1.0, 0.0])
 
-        Vs = artools.stoichSubspace(Cf0, stoich_mat)['all_Cs']
+        Vs = stoichSubspace(Cf0, stoich_mat)['all_Cs']
 
         assert (calcDim(Vs) == 1)
 
@@ -100,7 +97,7 @@ class TestAR:
 
         Cf0 = sp.array([1.0, 0.0, 0.0])
 
-        Vs = artools.stoichSubspace(Cf0, stoich_mat)['all_Cs']
+        Vs = stoichSubspace(Cf0, stoich_mat)['all_Cs']
 
         assert (calcDim(Vs) == 2)
 
@@ -116,7 +113,7 @@ class TestAR:
 
         Cf0 = sp.array([1.0, 0.0, 0.0, 0.0])
 
-        Vs = artools.stoichSubspace(Cf0, stoich_mat)['all_Cs']
+        Vs = stoichSubspace(Cf0, stoich_mat)['all_Cs']
 
         assert (calcDim(Vs) == 3)
 

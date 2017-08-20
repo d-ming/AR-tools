@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../')
-from artools import same_rows
+from artools import sameRows
 
 import scipy as sp
 
@@ -17,7 +17,7 @@ class TestSame:
                       [0, 1, 2],
                       [0, 1, 3]])
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_2(self):
@@ -30,7 +30,7 @@ class TestSame:
                       [0, 1, 3],
                       [0, 1, 2]])
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_3(self):
@@ -39,7 +39,7 @@ class TestSame:
 
         B = sp.array([[1., 0, 0]])
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_4(self):
@@ -50,7 +50,7 @@ class TestSame:
 
         B = A
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
 class TestElements:
@@ -65,7 +65,7 @@ class TestElements:
                       [1, 0, 0],
                       [1, 0, 0]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_2(self):
@@ -78,7 +78,7 @@ class TestElements:
                       [0, 0, 0],
                       [0, 0, 0]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_3(self):
@@ -89,7 +89,7 @@ class TestElements:
 
         B = A.T
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_4(self):
@@ -98,7 +98,7 @@ class TestElements:
 
         B = sp.array([1, 2, -3])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_5(self):
@@ -109,7 +109,7 @@ class TestElements:
 
         B = -A
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
 class TestShape:
@@ -123,7 +123,7 @@ class TestShape:
         B = sp.array([[1., 0, 0],
                       [0, 1, 2]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_2(self):
@@ -136,7 +136,7 @@ class TestShape:
                       [0, 2],
                       [0, 3]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_3(self):
@@ -149,7 +149,7 @@ class TestShape:
                       [0, 1, 2],
                       [0, 1, 3]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_4(self):
@@ -158,7 +158,7 @@ class TestShape:
 
         B = sp.array([[1., 0, 0, 1, 0]]).T
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_5(self):
@@ -167,7 +167,7 @@ class TestShape:
 
         B = sp.array([[1., 2, 3, 4, 5]]).T
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_6(self):
@@ -176,7 +176,7 @@ class TestShape:
 
         B = sp.array([[1., 0, 0, 1, 0]])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_7(self):
@@ -185,7 +185,7 @@ class TestShape:
 
         B = sp.array([[1., 0, 0, 0, 0]])
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_8(self):
@@ -194,7 +194,7 @@ class TestShape:
 
         B = sp.array([[1., 0, 0, 0, 0]]).T
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
 class TestArrays:
@@ -204,7 +204,7 @@ class TestArrays:
         A = sp.array([1., 2, 3, 4, 5])
         B = sp.array([1., 2, 3, 4, 5])
 
-        assert (same_rows(A, B) is True)
+        assert (sameRows(A, B) is True)
 
 
     def test_2(self):
@@ -212,7 +212,7 @@ class TestArrays:
         A = sp.array([[1., 2, 3, 4, 5]])
         B = sp.array([1., 2, 3, 4, 5])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)
 
 
     def test_3(self):
@@ -220,4 +220,4 @@ class TestArrays:
         A = sp.array([[1., 2, 3, 4, 5]]).T
         B = sp.array([1., 2, 3, 4, 5])
 
-        assert (same_rows(A, B) is False)
+        assert (sameRows(A, B) is False)

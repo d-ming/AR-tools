@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, sameRows
 
 
 class TestSingleFeed:
@@ -36,8 +36,8 @@ class TestSingleFeed:
                            [1, 0, 0],
                            [1, 1, 0]])
 
-        assert (same_rows(Cs, Cs_ref) is True)
-        assert (same_rows(Es, Es_ref) is True)
+        assert (sameRows(Cs, Cs_ref) is True)
+        assert (sameRows(Es, Es_ref) is True)
 
 
     def test_3D_2(self):
@@ -65,8 +65,8 @@ class TestSingleFeed:
                            [1, 0, 0],
                            [1, 1, 0]])
 
-        assert (same_rows(Cs, Cs_ref) is True)
-        assert (same_rows(Es, Es_ref) is True)
+        assert (sameRows(Cs, Cs_ref) is True)
+        assert (sameRows(Es, Es_ref) is True)
 
 
 class TestMultiFeed:
@@ -119,12 +119,12 @@ class TestMultiFeed:
         Es_bounds_ref = sp.array([[-1., 0, 0],
                                   [1, 2, 1]])
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
 
 
     def test_3D_2(self):
@@ -175,12 +175,12 @@ class TestMultiFeed:
         Es_bounds_ref = sp.array([[-1., 0, 0],
                                   [1, 2, 1]])
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
 
 
     def test_3D_3(self):
@@ -231,12 +231,12 @@ class TestMultiFeed:
         Es_bounds_ref = sp.array([[-1., 0, 0],
                                   [1, 2, 1]])
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
 
 
     def test_3D_4(self):
@@ -287,12 +287,12 @@ class TestMultiFeed:
         Es_bounds_ref = sp.array([[-1., 0, 0],
                                   [1, 2, 1]])
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
 
 
     def test_1D_1(self):
@@ -327,12 +327,12 @@ class TestMultiFeed:
         Cs_bounds_ref = sp.array([[0., 0, 0],
                                   [1, 1, 1]])
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
 
 
     def test_2D_1(self):
@@ -379,12 +379,12 @@ class TestMultiFeed:
         Es_bounds = S["bounds_Es"]
         Cs_bounds = S["bounds_Cs"]
 
-        assert (same_rows(Cs1, Cs1_ref) is True)
-        assert (same_rows(Cs2, Cs2_ref) is True)
-        assert (same_rows(Es1, Es1_ref) is True)
-        assert (same_rows(Es2, Es2_ref) is True)
-        assert (same_rows(Cs_bounds, Cs_bounds_ref) is True)
-        assert (same_rows(Es_bounds, Es_bounds_ref) is True)
+        assert (sameRows(Cs1, Cs1_ref) is True)
+        assert (sameRows(Cs2, Cs2_ref) is True)
+        assert (sameRows(Es1, Es1_ref) is True)
+        assert (sameRows(Es2, Es2_ref) is True)
+        assert (sameRows(Cs_bounds, Cs_bounds_ref) is True)
+        assert (sameRows(Es_bounds, Es_bounds_ref) is True)
 
 
 def test_steam_reforming_singleFeed_1():
@@ -414,8 +414,8 @@ def test_steam_reforming_singleFeed_1():
                        [0, 0],
                        [0, 1]])
 
-    assert (same_rows(Cs, Cs_ref) is True)
-    assert (same_rows(Es, Es_ref) is True)
+    assert (sameRows(Cs, Cs_ref) is True)
+    assert (sameRows(Es, Es_ref) is True)
 
 
 # test incompatible size feed and stoichiometric matrix

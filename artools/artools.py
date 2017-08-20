@@ -50,7 +50,7 @@ def uniqueRows(A, tol=1e-13):
     return (A[unique_ks, :], unique_ks)
 
 
-def same_rows(A, B):
+def sameRows(A, B):
     # check if A and B are the same shape
     if A.shape != B.shape:
         return False

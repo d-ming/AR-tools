@@ -19,7 +19,7 @@ class Test2D:
         vs = artools.con2vert(A, b)
         vs_ref = sp.array([[0., 1], [0, 0], [1, 0]])
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)
 
     def test_2(self):
         # 2-D unit square
@@ -36,7 +36,7 @@ class Test2D:
                            [1, 0],
                            [1, 1]])
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)
 
     def test_3(self):
         # mass balance triangle cut at y = 0.5
@@ -53,7 +53,7 @@ class Test2D:
                            [1, 0],
                            [0.5, 0.5]])
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)
 
 
 class Test3D:
@@ -72,7 +72,7 @@ class Test3D:
                            [0, 0, 1],
                            [0, 0, 0]])
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)
 
     def test_2(self):
         # 3-D unit cube
@@ -95,7 +95,7 @@ class Test3D:
                            [1, 1, 1],
                            [0, 1, 1]])
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)
 
 
 class TestMisc:
@@ -121,4 +121,4 @@ class TestMisc:
 
         vs = artools.con2vert(A, b)
 
-        assert (artools.same_rows(vs, vs_ref) is True)
+        assert (artools.sameRows(vs, vs_ref) is True)

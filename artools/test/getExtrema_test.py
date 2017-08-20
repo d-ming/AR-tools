@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import getExtrema, same_rows
+from artools import getExtrema, sameRows
 
 class TestMatrixFormat:
 
@@ -19,7 +19,7 @@ class TestMatrixFormat:
 
         bounds = getExtrema(Xs)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
     def test_2(self):
@@ -31,7 +31,7 @@ class TestMatrixFormat:
 
         bounds = getExtrema(Xs, axis=0)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
     def test_3(self):
@@ -45,7 +45,7 @@ class TestMatrixFormat:
 
         bounds = getExtrema(Xs, axis=1)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
 class TestListFormat:
@@ -64,7 +64,7 @@ class TestListFormat:
 
         bounds = getExtrema(Xs_list)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
     def test_2(self):
@@ -81,7 +81,7 @@ class TestListFormat:
 
         bounds = getExtrema(Xs_list)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
     def test_3(self):
@@ -100,7 +100,7 @@ class TestListFormat:
 
         bounds = getExtrema(Xs_list, axis=1)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)
 
 
 class Test1D:
@@ -113,4 +113,4 @@ class Test1D:
 
         bounds = getExtrema(Xs)
 
-        assert (same_rows(bounds, bounds_ref) is True)
+        assert (sameRows(bounds, bounds_ref) is True)

@@ -109,7 +109,7 @@ def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     return ax.get_figure()
 
 
-def plot_region3d(Vs,
+def plotRegion3D(Vs,
                   ax=None,
                   color="g",
                   alpha=0.25,

@@ -486,7 +486,7 @@ def allcomb(*X):
     return Xs
 
 
-def rand_pts(Npts, axis_lims):
+def randPts(Npts, axis_lims):
     '''
     Generate a list of random points within a user-specified range.
 
@@ -593,7 +593,7 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
                                       100.0)
 
         # generate random points within the axis limits in blocks of N points
-        Xs = rand_pts(N, axis_lims)
+        Xs = randPts(N, axis_lims)
 
         # loop through each point and determine if it is a CSTR point
         ks = []

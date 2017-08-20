@@ -433,7 +433,7 @@ def ptsInRegion(Xs, A, b, tol=1e-12):
     return Cs, ks
 
 
-def pts_outRegion(Xs, A, b, tol=1e-12):
+def ptsOutRegion(Xs, A, b, tol=1e-12):
     '''
     Similar to outregion(), but works on an array of points and returns the
     points and indices.

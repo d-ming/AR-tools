@@ -673,7 +673,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
     return cstr_cs, cstr_ts
 
 
-def convhull_pts(Xs):
+def convhullPts(Xs):
     '''
     A wrapper for SciPy's ConvexHull() function that returns the convex hull
     points directly and neatens up the syntax slightly. Use when you just need

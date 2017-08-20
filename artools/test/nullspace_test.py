@@ -23,7 +23,7 @@ def test_2():
     N = artools.nullspace(A)
     N_ref = sp.array([[0., 0, 1]]).T
 
-    assert (artools.same_rows(N, N_ref) is True)
+    assert (artools.sameRows(N, N_ref) is True)
 
 
 def test_3():
@@ -35,7 +35,7 @@ def test_3():
                       [1, 0],
                       [0, 1]])
 
-    assert (artools.same_rows(N, N_ref) is True)
+    assert (artools.sameRows(N, N_ref) is True)
 
 
 def test_4():
@@ -48,7 +48,7 @@ def test_4():
     N = artools.nullspace(A)
     N_ref = sp.array([[0., 0, 0, 0, 1]]).T
 
-    assert (artools.same_rows(N, N_ref) is True)
+    assert (artools.sameRows(N, N_ref) is True)
 
 
 def test_5():

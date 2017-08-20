@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, sameRows
 
 
 class TestStd:
@@ -32,8 +32,8 @@ class TestStd:
                            [1, 0],
                            [1, 1]])
 
-        assert(same_rows(Es, Es_ref))
-        assert(same_rows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
 
 
     def test_2(self):
@@ -61,8 +61,8 @@ class TestStd:
                            [0, 0, 0],
                            [1, 0, 0]])
 
-        assert(same_rows(Es, Es_ref))
-        assert(same_rows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
 
 
     def test_3(self):
@@ -90,8 +90,8 @@ class TestStd:
                            [0, 0, 0],
                            [1, 0, 0]])
 
-        assert(same_rows(Es, Es_ref))
-        assert(same_rows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
 
 
     def test_4(self):
@@ -119,8 +119,8 @@ class TestStd:
                            [0, 0, 0],
                            [1, 0, 0]])
 
-        assert(same_rows(Es, Es_ref))
-        assert(same_rows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
 
 
 class TestNegative:
@@ -161,5 +161,5 @@ class TestNegative:
                            [1, 0],
                            [1, 1]])
 
-        assert(same_rows(Es, Es_ref))
-        assert(same_rows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))

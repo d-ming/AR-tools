@@ -22,7 +22,7 @@ import matplotlib.tri as mtri
 # ----------------------------------------------------------------------------
 
 
-def unique_rows(A, tol=1e-13):
+def uniqueRows(A, tol=1e-13):
     '''
     Find the unique rows of a matrix A given a tolerance
 
@@ -50,7 +50,7 @@ def unique_rows(A, tol=1e-13):
     return (A[unique_ks, :], unique_ks)
 
 
-def same_rows(A, B):
+def sameRows(A, B):
     # check if A and B are the same shape
     if A.shape != B.shape:
         return False
@@ -69,7 +69,7 @@ def same_rows(A, B):
         return True
 
 
-def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
+def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''
     Plot a filled 2D region, similar to MATLAB's fill() function.
 
@@ -92,7 +92,7 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
 
     # convert Vs to a scipy array (because fill can't work with marices) with
     # only unique rows
-    Vs = sp.array(unique_rows(Vs)[0])
+    Vs = sp.array(uniqueRows(Vs)[0])
 
     # find indices of conv hull
     ks = scipy.spatial.ConvexHull(Vs).vertices
@@ -109,7 +109,7 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     return ax.get_figure()
 
 
-def plot_region3d(Vs,
+def plotRegion3D(Vs,
                   ax=None,
                   color="g",
                   alpha=0.25,
@@ -140,7 +140,7 @@ def plot_region3d(Vs,
     '''
 
     # convert Vs to a numpy array with only unique rows.
-    Vs = sp.array(unique_rows(Vs)[0])
+    Vs = sp.array(uniqueRows(Vs)[0])
 
     # find indices of conv hull
     simplices = scipy.spatial.ConvexHull(Vs).simplices
@@ -167,7 +167,7 @@ def plot_region3d(Vs,
     return ax.get_figure()
 
 
-def plot_hplanes(A, b, lims=(0.0, 1.0), ax=None):
+def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     '''
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.
@@ -244,7 +244,7 @@ def con2vert(A, b):
     # if c is out of the region or on the polytope boundary, try to find a new
     # c
     num_tries = 0
-    while out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+    while outRegion(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
 
         num_tries += 1
         if num_tries > 20:
@@ -297,7 +297,7 @@ def con2vert(A, b):
 
     # find vertices from vi = c + Gi
     Vs = G + sp.tile(c.T, (G.shape[0], 1))
-    Vs = unique_rows(Vs)[0]
+    Vs = uniqueRows(Vs)[0]
 
     return Vs
 
@@ -350,7 +350,7 @@ def vert2con(Vs):
     return (A, b)
 
 
-def in_region(xi, A, b, tol=1e-12):
+def inRegion(xi, A, b, tol=1e-12):
     '''
     Determine whether point xi lies within the region or on the region boundary
     defined by the system of inequalities A*xi <= b
@@ -379,7 +379,7 @@ def in_region(xi, A, b, tol=1e-12):
         return False
 
 
-def out_region(xi, A, b, tol=1e-12):
+def outRegion(xi, A, b, tol=1e-12):
     '''
     Determine whether point xi lies strictly outside of the region (NOT on the
     region boundary) defined by the system of inequalities A*xi <= b
@@ -402,13 +402,13 @@ def out_region(xi, A, b, tol=1e-12):
     if b.ndim == 2:
         b = b.flatten()
 
-    if in_region(xi, A, b, tol=tol):
+    if inRegion(xi, A, b, tol=tol):
         return False
     else:
         return True
 
 
-def pts_in_region(Xs, A, b, tol=1e-12):
+def ptsInRegion(Xs, A, b, tol=1e-12):
     '''
     Similar to inregion(), but works on an array of points and returns the
     points and indices.
@@ -425,7 +425,7 @@ def pts_in_region(Xs, A, b, tol=1e-12):
 
     ks = []
     for idx, xi in enumerate(Xs):
-        if in_region(xi, A, b, tol=tol):
+        if inRegion(xi, A, b, tol=tol):
             ks.append(idx)
 
     Cs = Xs[ks, :]
@@ -433,7 +433,7 @@ def pts_in_region(Xs, A, b, tol=1e-12):
     return Cs, ks
 
 
-def pts_out_region(Xs, A, b, tol=1e-12):
+def ptsOutRegion(Xs, A, b, tol=1e-12):
     '''
     Similar to outregion(), but works on an array of points and returns the
     points and indices.
@@ -461,7 +461,7 @@ def pts_out_region(Xs, A, b, tol=1e-12):
 
     ks = []
     for idx, xi in enumerate(Xs):
-        if out_region(xi, A, b, tol=tol):
+        if outRegion(xi, A, b, tol=tol):
             ks.append(idx)
 
     Cs = Xs[ks, :]
@@ -486,7 +486,7 @@ def allcomb(*X):
     return Xs
 
 
-def rand_pts(Npts, axis_lims):
+def randPts(Npts, axis_lims):
     '''
     Generate a list of random points within a user-specified range.
 
@@ -516,7 +516,7 @@ def rand_pts(Npts, axis_lims):
     return Ys
 
 
-def calc_pfr_trajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
+def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     '''
     Convenience function that integrate the PFR trajecotry from the feed point
     specified Cf, using scipy.integrate.odeint().
@@ -555,7 +555,7 @@ def calc_pfr_trajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     return pfr_cs, pfr_ts
 
 
-def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
+def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     '''
     Brute-force CSTR locus solver using geometric CSTR colinearity condition
     between r(C) and (C - Cf).
@@ -593,7 +593,7 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
                                       100.0)
 
         # generate random points within the axis limits in blocks of N points
-        Xs = rand_pts(N, axis_lims)
+        Xs = randPts(N, axis_lims)
 
         # loop through each point and determine if it is a CSTR point
         ks = []
@@ -624,7 +624,7 @@ def calc_cstr_locus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     return Cs, ts
 
 
-def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
+def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
     '''
     Quick (potentially inexact) CSTR solver using a standard non-linear solver
     (Newton). The initial guess is based on the previous solution.
@@ -673,7 +673,7 @@ def calc_cstr_locus_fast(Cf, rate_fn, t_end, num_pts):
     return cstr_cs, cstr_ts
 
 
-def convhull_pts(Xs):
+def convhullPts(Xs):
     '''
     A wrapper for SciPy's ConvexHull() function that returns the convex hull
     points directly and neatens up the syntax slightly. Use when you just need

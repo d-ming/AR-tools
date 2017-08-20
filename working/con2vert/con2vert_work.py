@@ -41,7 +41,7 @@ def con2vert(A, b):
     # if c is out of the region or on the polytope boundary, try to find a new
     # c
     num_tries = 0
-    while artools.out_region(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
+    while artools.outRegion(c, A, b) or sp.any(sp.dot(A, c) - b == 0.0):
 
         num_tries += 1
         if num_tries > 20:
@@ -96,7 +96,7 @@ def con2vert(A, b):
 
     # find vertices from vi = c + Gi
     Vs = G + sp.tile(c.T, (G.shape[0], 1))
-    Vs = artools.unique_rows(Vs)[0]
+    Vs = artools.uniqueRows(Vs)[0]
 
     return Vs
 
@@ -114,14 +114,14 @@ A = -stoich_mat
 b = Cf
 c = scipy.linalg.lstsq(A, b)[0]
 
-fig = artools.plot_hplanes(-stoich_mat, b, lims=(-2.0, 2.0))
+fig = artools.plotHplanes(-stoich_mat, b, lims=(-2.0, 2.0))
 ax = fig.gca()
 ax.hold(True)
 
 v = con2vert(A, b)
 print v
 
-print artools.in_region(c, A, b)
+print artools.inRegion(c, A, b)
 
 
 

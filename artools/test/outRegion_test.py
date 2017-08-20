@@ -17,7 +17,7 @@ def test_in_1():
 
     xi = sp.array([0.1, 0.1])
 
-    assert artools.out_region(xi, A, b) is False
+    assert artools.outRegion(xi, A, b) is False
 
 
 def test_in_2():
@@ -30,7 +30,7 @@ def test_in_2():
 
     xi = sp.array([0.25, 0.1])
 
-    assert artools.out_region(xi, A, b) is False
+    assert artools.outRegion(xi, A, b) is False
 
 
 def test_in_3():
@@ -44,7 +44,7 @@ def test_in_3():
 
     xi = sp.array([0.25, 0.1, 0.25])
 
-    assert artools.out_region(xi, A, b) is False
+    assert artools.outRegion(xi, A, b) is False
 
 
 def test_out_1():
@@ -57,7 +57,7 @@ def test_out_1():
 
     xi = sp.array([-1., -1])
 
-    assert artools.out_region(xi, A, b)
+    assert artools.outRegion(xi, A, b)
 
 
 def test_out_2():
@@ -70,7 +70,7 @@ def test_out_2():
 
     xi = sp.array([2., 2])
 
-    assert artools.out_region(xi, A, b)
+    assert artools.outRegion(xi, A, b)
 
 
 def test_out_3():
@@ -84,7 +84,7 @@ def test_out_3():
 
     xi = sp.array([0.7, 0.7, 0.7])
 
-    assert artools.out_region(xi, A, b)
+    assert artools.outRegion(xi, A, b)
 
 
 def test_on_1():
@@ -97,7 +97,7 @@ def test_on_1():
 
     xi = sp.array([0.5, 0.5])
 
-    assert artools.out_region(xi, A, b) is False
+    assert artools.outRegion(xi, A, b) is False
 
 
 def test_on_2():
@@ -110,7 +110,7 @@ def test_on_2():
 
     xi = sp.array([1., 0])
 
-    assert artools.out_region(xi, A, b) is False
+    assert artools.outRegion(xi, A, b) is False
 
 
 def test_tol_in_1():
@@ -124,7 +124,7 @@ def test_tol_in_1():
     tol = 1e-8
     xi = sp.array([0.0 + tol, 0.0 + tol])
 
-    assert artools.out_region(xi, A, b, tol=tol) is False
+    assert artools.outRegion(xi, A, b, tol=tol) is False
 
 
 def test_tol_in_2():
@@ -139,7 +139,7 @@ def test_tol_in_2():
     tol = 1e-8
     xi = sp.array([0.0 - tol, 0.0 - tol])
 
-    assert artools.out_region(xi, A, b, tol=tol) is False
+    assert artools.outRegion(xi, A, b, tol=tol) is False
 
 
 def test_tol_out_1():
@@ -154,7 +154,7 @@ def test_tol_out_1():
     tol = 1e-10
     xi = sp.array([0.0 - 2*tol, 0.0 + tol])
 
-    assert artools.out_region(xi, A, b, tol=tol)
+    assert artools.outRegion(xi, A, b, tol=tol)
 
 
 def test_shape_1():
@@ -167,7 +167,7 @@ def test_shape_1():
 
     xi = sp.array([-0.25, -0.1])
 
-    assert artools.out_region(xi, A, b)
+    assert artools.outRegion(xi, A, b)
 
 
 def test_shape_2():
@@ -180,7 +180,7 @@ def test_shape_2():
 
     xi = sp.array([-0.25, -0.1])
 
-    assert artools.out_region(xi, A, b)
+    assert artools.outRegion(xi, A, b)
 
 
 def test_shape_3():
@@ -194,7 +194,7 @@ def test_shape_3():
     xi = sp.array([0.25, 0.1])
 
     with pytest.raises(ValueError):
-        artools.out_region(xi, A, b)
+        artools.outRegion(xi, A, b)
 
 
 def test_shape_4():
@@ -208,4 +208,4 @@ def test_shape_4():
     xi = sp.array([0.25, 0.1, 0.1])
 
     with pytest.raises(ValueError):
-        artools.out_region(xi, A, b)
+        artools.outRegion(xi, A, b)

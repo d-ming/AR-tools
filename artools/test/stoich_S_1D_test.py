@@ -6,7 +6,7 @@ sys.path.append('../')
 import artools
 artools = reload(artools)
 
-from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, same_rows
+from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, sameRows
 
 
 class TestStd:
@@ -27,8 +27,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert(same_rows(Cs, Cs_ref))
-        assert(same_rows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
 
 
     def test_2(self):
@@ -47,8 +47,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert(same_rows(Cs, Cs_ref))
-        assert(same_rows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
 
 
     def test_3(self):
@@ -67,8 +67,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert(same_rows(Cs, Cs_ref))
-        assert(same_rows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
 
 
     def test_4(self):
@@ -87,8 +87,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert(same_rows(Cs, Cs_ref))
-        assert(same_rows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
 
 
     def test_5(self):
@@ -107,8 +107,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert(same_rows(Cs, Cs_ref))
-        assert(same_rows(Es, Es_ref))
+        assert(sameRows(Cs, Cs_ref))
+        assert(sameRows(Es, Es_ref))
 
 
     def test_6(self):
@@ -126,8 +126,8 @@ class TestStd:
 
         Es_ref = sp.array([[0., 1]]).T
 
-        assert (same_rows(Cs, Cs_ref))
-        assert (same_rows(Es, Es_ref))
+        assert (sameRows(Cs, Cs_ref))
+        assert (sameRows(Es, Es_ref))
 
 
 class TestNegative:
@@ -190,8 +190,8 @@ class TestAR:
                            [0, 0],
                            [0, 1]])
 
-        assert (same_rows(Cs, Cs_ref) is True)
-        assert (same_rows(Es, Es_ref) is True)
+        assert (sameRows(Cs, Cs_ref) is True)
+        assert (sameRows(Es, Es_ref) is True)
 
 
 # test incompatible size feed and stoichiometric matrix

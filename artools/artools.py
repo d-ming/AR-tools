@@ -22,7 +22,7 @@ import matplotlib.tri as mtri
 # ----------------------------------------------------------------------------
 
 
-def unique_rows(A, tol=1e-13):
+def uniqueRows(A, tol=1e-13):
     '''
     Find the unique rows of a matrix A given a tolerance
 
@@ -92,7 +92,7 @@ def plot_region2d(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
 
     # convert Vs to a scipy array (because fill can't work with marices) with
     # only unique rows
-    Vs = sp.array(unique_rows(Vs)[0])
+    Vs = sp.array(uniqueRows(Vs)[0])
 
     # find indices of conv hull
     ks = scipy.spatial.ConvexHull(Vs).vertices
@@ -140,7 +140,7 @@ def plot_region3d(Vs,
     '''
 
     # convert Vs to a numpy array with only unique rows.
-    Vs = sp.array(unique_rows(Vs)[0])
+    Vs = sp.array(uniqueRows(Vs)[0])
 
     # find indices of conv hull
     simplices = scipy.spatial.ConvexHull(Vs).simplices
@@ -297,7 +297,7 @@ def con2vert(A, b):
 
     # find vertices from vi = c + Gi
     Vs = G + sp.tile(c.T, (G.shape[0], 1))
-    Vs = unique_rows(Vs)[0]
+    Vs = uniqueRows(Vs)[0]
 
     return Vs
 

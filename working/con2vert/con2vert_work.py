@@ -96,7 +96,7 @@ def con2vert(A, b):
 
     # find vertices from vi = c + Gi
     Vs = G + sp.tile(c.T, (G.shape[0], 1))
-    Vs = artools.unique_rows(Vs)[0]
+    Vs = artools.uniqueRows(Vs)[0]
 
     return Vs
 

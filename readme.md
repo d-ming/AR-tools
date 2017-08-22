@@ -8,7 +8,7 @@ This repository contains:
 3. Source code for the examples found on attainableregions.com
 
 ## 1. AR tools
-`artools.py` is a collection of Python functions for carrying out AR calculations as well as performing simple 2-D and 3-D visualisations of convex regions. A Jupyter notebook demonstrating its usage is given in the [notebooks folder](./AR-book/AR-book-notebooks/Ch%208/artools%20demos.ipynb).
+`artools.py` is a collection of Python functions for carrying out AR calculations as well as performing simple 2-D and 3-D visualisations of convex regions. A Jupyter notebook demonstrating its usage can be found in the [notebooks folder](./AR-book/AR-book-notebooks/Ch%208/artools%20demos.ipynb).
 
 ### 1.1 Usage
 Copy `artools.py` to your local directory and import.

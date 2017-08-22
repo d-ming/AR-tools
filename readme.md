@@ -30,7 +30,7 @@ Currently, `artools.py` is written in Python 2.7 and depends on [SciPy](https://
 ## 2. Jupyter notebooks
 <img src="./AR-book/notebook_demo.gif" width="480">
 
-Jupyter notebooks can be found [here](./AR-book/AR-book-notebooks) that help to demonstrate a number of common AR theory concepts. These notebooks are written in conjunction with the [attainable region theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
+Jupyter notebooks, which demonstrate a number of common AR theory concepts, can be found [here](./AR-book/AR-book-notebooks). These notebooks are written in conjunction with the [Attainable Region theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
 
 ## 3. AR website examples
 The source code for the examples described on attainableregions.com are stored [here](./AR-book/website-examples).

@@ -331,7 +331,7 @@ def vert2con(Vs):
         ks = K[i, :]
         F = V[ks, :]
 
-        if numpy.linalg.matrix_rank(F) == F.shape[0]:
+        if rank(F) == F.shape[0]:
             f = sp.ones(F.shape[0])
             A[rc, :] = scipy.linalg.solve(F, f)
             rc += 1

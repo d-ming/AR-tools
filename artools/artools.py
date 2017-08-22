@@ -8,7 +8,6 @@ import scipy.optimize
 import scipy.linalg
 
 import numpy.linalg
-import numpy as np
 
 import itertools
 
@@ -57,13 +56,13 @@ def sameRows(A, B):
     else:
 
         if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
-            return np.allclose(A.flatten(), B.flatten())
+            return sp.allclose(A.flatten(), B.flatten())
 
         # now loop through each row in A and check if the same row exists in B.
         # If not, A and B are not equivalent according to their rows.
         for row_A in A:
             # does row_A exist in B?
-            if not any([np.allclose(row_A, row_B) for row_B in B]):
+            if not any([sp.allclose(row_A, row_B) for row_B in B]):
                 return False
 
         return True
@@ -332,7 +331,7 @@ def vert2con(Vs):
         ks = K[i, :]
         F = V[ks, :]
 
-        if numpy.linalg.matrix_rank(F) == F.shape[0]:
+        if rank(F) == F.shape[0]:
             f = sp.ones(F.shape[0])
             A[rc, :] = scipy.linalg.solve(F, f)
             rc += 1

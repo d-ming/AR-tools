@@ -1038,3 +1038,35 @@ def calcDim(Xs):
     Vs = Xs - Xs[0, :]
 
     return rank(Vs)
+
+
+def splitCoeffFromStr(substring):
+    """
+    Convert a substring into a list where the first element is the coefficient
+    an the second element is the component name.
+
+    e.g. '2*H2O' --> ['2', 'H2O']
+         'H2O' --> ['1', 'H2O']
+    """
+    
+    items = substring.split("*")
+    if len(items) > 1:
+        return items
+
+    items.append("1")
+    items.reverse()
+    return items
+
+
+def genStoichMat(rxn_strings):
+    print rxn_strings
+
+    for rxn_str in rxn_strings:
+        terms = rxn_str.strip().split(" ")
+        arrow_pos = terms.index("->")
+
+        lhs_terms = terms[:arrow_pos]
+        rhs_terms = terms[arrow_pos + 1:]
+
+        for t in lhs_terms:
+            print splitCoeffFromStr(t)

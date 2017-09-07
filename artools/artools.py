@@ -1132,8 +1132,6 @@ def genStoichMat(rxn_strings):
     components_dict = genComponentDict(rxn_strings)
     num_rxns = len(rxn_strings)
     num_comps = len(components_dict)
-    #print "\nthere are %i components in %i reactions" % (num_comps, num_rxns)
-    #print rxn_strings
 
     stoich_mat = sp.zeros((num_comps, num_rxns))
     for rnum, rxn_str in enumerate(rxn_strings):
@@ -1141,11 +1139,6 @@ def genStoichMat(rxn_strings):
 
         reactants = [splitCoeffFromStr(term) for term in lhs.split("+")]
         products = [splitCoeffFromStr(term) for term in rhs.split("+")]
-
-        #print "\nreaction %i reactants:" % rnum
-        #print reactants
-        #print "\nreaction %i products:" % rnum
-        #print products
 
         for ri in reactants:
             # reactants have negative reaction coefficients

@@ -1060,15 +1060,65 @@ def splitCoeffFromStr(substring):
     return items
 
 
+def genComponentDict(rxn_strings):
+    """
+    Generate a Python dictionary of components and indices from a list of
+    reaction strings.
+
+    e.g. ['A + 2*B -> C',
+          'C + 0.5*D -> E'] --> {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
+    """
+
+    all_components = {}
+    comp_idx = 0
+    for rxn_str in rxn_strings:
+        # generate a list of single terms, e.g ['3*H2O', '1.5*H2', ...]
+        terms = [term.strip() for side in rxn_str.split("->") for term in side.split("+")]
+
+        # get the component name and add to all_components if it doesn't already
+        # exist.
+        for term in terms:
+            coeff, comp = splitCoeffFromStr(term)
+            if not all_components.has_key(comp):
+                all_components[comp] = comp_idx
+                comp_idx += 1
+
+    return all_components
+
+
 def genStoichMat(rxn_strings):
+    comps = genComponentDict(rxn_strings)
+    num_rxns = len(rxn_strings)
+    num_comps = len(comps)
+    print "\nthere are %i components in %i reactions" % (num_comps, num_rxns)
     print rxn_strings
 
-    for rxn_str in rxn_strings:
-        terms = rxn_str.strip().split(" ")
-        arrow_pos = terms.index("->")
+    stoich_mat = sp.zeros((num_comps, num_rxns))
+    for rnum, rxn_str in enumerate(rxn_strings):
+        lhs, rhs = rxn_str.split("->")
 
-        lhs_terms = terms[:arrow_pos]
-        rhs_terms = terms[arrow_pos + 1:]
+        reactants = [splitCoeffFromStr(term) for term in lhs.split("+")]
+        products = [splitCoeffFromStr(term) for term in rhs.split("+")]
 
-        for t in lhs_terms:
-            print splitCoeffFromStr(t)
+        print "\nreaction %i reactants:" % rnum
+        print reactants
+        print "\nreaction %i products:" % rnum
+        print products
+
+        for ri in reactants:
+            # reactants have negative reaction coefficients
+            coeff = eval(ri[0])*-1
+            comp = ri[1]
+            comp_idx = comps[comp]
+
+            stoich_mat[comp_idx, rnum] = coeff
+
+        for pi in products:
+            # reactants have positive reaction coefficients
+            coeff = eval(pi[0])
+            comp = pi[1]
+            comp_idx = comps[comp]
+
+            stoich_mat[comp_idx, rnum] = coeff
+
+    print stoich_mat

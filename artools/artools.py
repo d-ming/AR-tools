@@ -53,7 +53,7 @@ def sameRows(A, B):
     """
     Check if A and B have the exact same rows.
     """
-    
+
     # check if A and B are the same shape
     if A.shape != B.shape:
         return False
@@ -1100,6 +1100,9 @@ def genComponentDict(rxn_strings):
 
 def genStoichMat(rxn_strings):
     """
+    Generate a stoichiometric coefficient matrix given a list of reactions
+    written as Python strings in a specific format.
+    
     e.g
     ['A + 2*B -> 1.5*C',
      'A + C -> 0.5*D',

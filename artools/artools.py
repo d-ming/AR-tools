@@ -1087,11 +1087,32 @@ def genComponentDict(rxn_strings):
 
 
 def genStoichMat(rxn_strings):
-    comps = genComponentDict(rxn_strings)
+    """
+    e.g
+    ['A + 2*B -> 1.5*C',
+     'A + C -> 0.5*D',
+     'C + 3.2*D -> E + 0.1*F']
+
+    returns: [[-1.  -1.   0. ]
+              [-2.   0.   0. ]
+              [ 1.5 -1.  -1. ]
+              [ 0.   0.5 -3.2]
+              [ 0.   0.   1. ]
+              [ 0.   0.   0.1]]
+
+    with dictionary: {'A': 0,
+                      'B': 1,
+                      'C': 2,
+                      'D': 3,
+                      'E': 4,
+                      'F': 5}
+    """
+
+    components_dict = genComponentDict(rxn_strings)
     num_rxns = len(rxn_strings)
-    num_comps = len(comps)
-    print "\nthere are %i components in %i reactions" % (num_comps, num_rxns)
-    print rxn_strings
+    num_comps = len(components_dict)
+    #print "\nthere are %i components in %i reactions" % (num_comps, num_rxns)
+    #print rxn_strings
 
     stoich_mat = sp.zeros((num_comps, num_rxns))
     for rnum, rxn_str in enumerate(rxn_strings):
@@ -1100,16 +1121,16 @@ def genStoichMat(rxn_strings):
         reactants = [splitCoeffFromStr(term) for term in lhs.split("+")]
         products = [splitCoeffFromStr(term) for term in rhs.split("+")]
 
-        print "\nreaction %i reactants:" % rnum
-        print reactants
-        print "\nreaction %i products:" % rnum
-        print products
+        #print "\nreaction %i reactants:" % rnum
+        #print reactants
+        #print "\nreaction %i products:" % rnum
+        #print products
 
         for ri in reactants:
             # reactants have negative reaction coefficients
             coeff = eval(ri[0])*-1
             comp = ri[1]
-            comp_idx = comps[comp]
+            comp_idx = components_dict[comp]
 
             stoich_mat[comp_idx, rnum] = coeff
 
@@ -1117,8 +1138,8 @@ def genStoichMat(rxn_strings):
             # reactants have positive reaction coefficients
             coeff = eval(pi[0])
             comp = pi[1]
-            comp_idx = comps[comp]
+            comp_idx = components_dict[comp]
 
             stoich_mat[comp_idx, rnum] = coeff
 
-    print stoich_mat
+    return stoich_mat

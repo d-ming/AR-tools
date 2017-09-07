@@ -1042,14 +1042,16 @@ def calcDim(Xs):
 
 def splitCoeffFromStr(substring):
     """
-    Convert a substring into a list where the first element is the coefficient
-    an the second element is the component name.
+    Convert a substring into a list where the first element is the reaction
+    coefficient and the second is the component name.
+    Whitespace will also be stripped out from the string.
 
-    e.g. '2*H2O' --> ['2', 'H2O']
-         'H2O' --> ['1', 'H2O']
+    e.g.     '2*H2O' --> ['2', 'H2O']
+               'H2O' --> ['1', 'H2O']
+         ' 2 * H2O ' --> ['2', 'H2O']
     """
-    
-    items = substring.split("*")
+
+    items = [item.strip() for item in substring.split("*")]
     if len(items) > 1:
         return items
 

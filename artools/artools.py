@@ -1141,7 +1141,7 @@ def genStoichMat(rxn_strings):
         products = [splitCoeffFromStr(term) for term in rhs.split("+")]
 
         for ri in reactants:
-            # reactants have negative reaction coefficients
+            # reactants have negative stoichiometric coefficients
             coeff = eval(ri[0])*-1
             comp = ri[1]
             comp_idx = components_dict[comp]
@@ -1149,7 +1149,7 @@ def genStoichMat(rxn_strings):
             stoich_mat[comp_idx, rnum] = coeff
 
         for pi in products:
-            # reactants have positive reaction coefficients
+            # reactants have positive stoichiometric coefficients
             coeff = eval(pi[0])
             comp = pi[1]
             comp_idx = components_dict[comp]

@@ -2,7 +2,7 @@ from __future__ import print_function
 import sys
 sys.path.append('../')
 import artools
-#from artools import calcDim, stoichSubspace
+from artools import genStoichMat, sameRows
 
 import scipy as sp
 
@@ -13,11 +13,11 @@ class TestTuple:
         # reactions written in tuple format
         rxn_str = ("A -> B",)
 
-        A = artools.genStoichMat(rxn_str)
+        A = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
 
-        assert (artools.sameRows(A.T, A_ref.T) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
 class TestNormal:
@@ -28,13 +28,13 @@ class TestNormal:
                    "B -> C",
                    "2*A -> D"]
 
-        A = artools.genStoichMat(rxn_str)
+        A = genStoichMat(rxn_str)
         A_ref = sp.array([[-1., 0, -2],
                           [1, -1, 0],
                           [0, 1, 0],
                           [0, 0, 1]])
 
-        assert (artools.sameRows(A.T, A_ref.T) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
     def test_BTX(self):
@@ -49,20 +49,20 @@ class TestNormal:
                           [0.0, 0.0, 1.0],
                           [0.0, 0.0, 1.0]])
 
-        A = artools.genStoichMat(rxns)
+        A = genStoichMat(rxns)
 
-        assert (artools.sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
     def test_1(self):
 
         rxn_str = ["A -> B"]
 
-        A = artools.genStoichMat(rxn_str)
+        A = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
 
-        assert (artools.sameRows(A.T, A_ref.T) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
     def test_3(self):
@@ -71,7 +71,7 @@ class TestNormal:
                    'A + C -> 0.5*D',
                    'C + 3.2*D -> E + 0.1*F']
 
-        A = artools.genStoichMat(rxn_str)
+        A = genStoichMat(rxn_str)
         A_ref = sp.array([[-1., -1, 0],
                           [-2, 0, 0],
                           [1.5, -1, -1],
@@ -79,7 +79,7 @@ class TestNormal:
                           [0, 0, 1],
                           [0, 0, 0.1]])
 
-        assert (artools.sameRows(A.T, A_ref.T) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
 class TestRealistic:
@@ -88,9 +88,9 @@ class TestRealistic:
         rxn = ["N2 + 3*H2 -> 2*NH3"]
 
         A_ref = sp.array([[-1.0, -3.0, 2.0]]).T
-        A = artools.genStoichMat(rxn)
+        A = genStoichMat(rxn)
 
-        assert (artools.sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) is True)
 
 
     def test_CH4_reform(self):
@@ -102,9 +102,9 @@ class TestRealistic:
                                [1.0, -1.0],
                                [3.0, 1.0],
                                [0.0, 1.0]])
-        A = artools.genStoichMat(rxns)
+        A = genStoichMat(rxns)
 
-        assert (artools.sameRows(stoich_mat, A) is True)
+        assert (sameRows(stoich_mat, A) is True)
 
 
     def test_UCG_1(self):
@@ -125,6 +125,6 @@ class TestRealistic:
                           [0, 0, 0, -1, -1, 1, 0, -1, 1],
                           [0, 0, 0, 1, 1, -1, -2, 3, -3],
                           [0, 0, 0, 0, 0, 0, 1, -1, 1]])
-        A = artools.genStoichMat(rxns)
+        A = genStoichMat(rxns)
 
-        assert (artools.sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) is True)

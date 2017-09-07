@@ -53,7 +53,7 @@ def sameRows(A, B):
     """
     Check if A and B have the exact same rows.
     """
-    
+
     # check if A and B are the same shape
     if A.shape != B.shape:
         return False
@@ -1050,3 +1050,110 @@ def calcDim(Xs):
     Vs = Xs - Xs[0, :]
 
     return rank(Vs)
+
+
+def splitCoeffFromStr(substring):
+    """
+    Convert a substring into a list where the first element is the reaction
+    coefficient and the second is the component name.
+    Whitespace will also be stripped out from the string.
+
+    e.g.     '2*H2O' --> ['2', 'H2O']
+               'H2O' --> ['1', 'H2O']
+         ' 2 * H2O ' --> ['2', 'H2O']
+    """
+
+    items = [item.strip() for item in substring.split("*")]
+    if len(items) > 1:
+        return items
+
+    items.append("1")
+    items.reverse()
+    return items
+
+
+def genComponentDict(rxn_strings):
+    """
+    Generate a Python dictionary of components and indices from a list of
+    reaction strings.
+
+    e.g. ['A + 2*B -> C',
+          'C + 0.5*D -> E'] --> {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
+    """
+
+    all_components = {}
+    comp_idx = 0
+    for rxn_str in rxn_strings:
+        # generate a list of single terms, e.g ['3*H2O', '1.5*H2', ...]
+        terms = [term.strip() for side in rxn_str.split("->") for term in side.split("+")]
+
+        # get the component name and add to all_components if it doesn't already
+        # exist.
+        for term in terms:
+            coeff, comp = splitCoeffFromStr(term)
+            if not all_components.has_key(comp):
+                all_components[comp] = comp_idx
+                comp_idx += 1
+
+    return all_components
+
+
+def genStoichMat(rxn_strings):
+    """
+    Generate a stoichiometric coefficient matrix given a list of reactions
+    written as Python strings in a specific format.
+
+    '+' indicates separate terms in the reaction string: 'A + B'
+    '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
+    '->' separates products from reactants: '1.5*A + B -> 0.1*C'
+    Organise each line in the reaction as a separate string in a list:
+        ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
+
+    e.g
+    ['A + 2*B -> 1.5*C',
+     'A + C -> 0.5*D',
+     'C + 3.2*D -> E + 0.1*F']
+
+    returns: [[-1.  -1.   0. ]
+              [-2.   0.   0. ]
+              [ 1.5 -1.  -1. ]
+              [ 0.   0.5 -3.2]
+              [ 0.   0.   1. ]
+              [ 0.   0.   0.1]]
+
+    with dictionary: {'A': 0,
+                      'B': 1,
+                      'C': 2,
+                      'D': 3,
+                      'E': 4,
+                      'F': 5}
+    """
+
+    components_dict = genComponentDict(rxn_strings)
+    num_rxns = len(rxn_strings)
+    num_comps = len(components_dict)
+
+    stoich_mat = sp.zeros((num_comps, num_rxns))
+    for rnum, rxn_str in enumerate(rxn_strings):
+        lhs, rhs = rxn_str.split("->")
+
+        reactants = [splitCoeffFromStr(term) for term in lhs.split("+")]
+        products = [splitCoeffFromStr(term) for term in rhs.split("+")]
+
+        for ri in reactants:
+            # reactants have negative stoichiometric coefficients
+            coeff = eval(ri[0])*-1
+            comp = ri[1]
+            comp_idx = components_dict[comp]
+
+            stoich_mat[comp_idx, rnum] = coeff
+
+        for pi in products:
+            # reactants have positive stoichiometric coefficients
+            coeff = eval(pi[0])
+            comp = pi[1]
+            comp_idx = components_dict[comp]
+
+            stoich_mat[comp_idx, rnum] = coeff
+
+    return stoich_mat

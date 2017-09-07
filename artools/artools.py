@@ -50,6 +50,10 @@ def uniqueRows(A, tol=1e-13):
 
 
 def sameRows(A, B):
+    """
+    Check if A and B have the exact same rows.
+    """
+    
     # check if A and B are the same shape
     if A.shape != B.shape:
         return False
@@ -66,6 +70,14 @@ def sameRows(A, B):
                 return False
 
         return True
+
+
+def sameCols(A, B):
+    """
+    Check if A and B have the exact same columns.
+    """
+
+    return sameRows(A.T, B.T)
 
 
 def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):

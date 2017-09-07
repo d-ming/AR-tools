@@ -5,6 +5,18 @@ import artools
 
 import scipy as sp
 
+class TestTuple:
+
+    def test_1(self):
+
+        rxn_str = ("A -> B",)
+
+        A = artools.genStoichMat(rxn_str)
+        A_ref = sp.array([[-1.0],
+                          [1.0]])
+
+        assert (artools.sameRows(A.T, A_ref.T) is True)
+
 
 class TestNormal:
 

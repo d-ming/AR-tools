@@ -1102,7 +1102,13 @@ def genStoichMat(rxn_strings):
     """
     Generate a stoichiometric coefficient matrix given a list of reactions
     written as Python strings in a specific format.
-    
+
+    '+' indicates separate terms in the reaction string: 'A + B'
+    '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
+    '->' separates products from reactants: '1.5*A + B -> 0.1*C'
+    Organise each line in the reaction as a separate string in a list:
+        ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
+
     e.g
     ['A + 2*B -> 1.5*C',
      'A + C -> 0.5*D',

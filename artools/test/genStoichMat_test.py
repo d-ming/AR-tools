@@ -1,7 +1,6 @@
 from __future__ import print_function
 import sys
 sys.path.append('../')
-import artools
 from artools import genStoichMat, sameRows
 
 import scipy as sp

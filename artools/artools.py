@@ -1072,7 +1072,7 @@ def splitCoeffFromStr(substring):
     return items
 
 
-def genComponentDict(rxn_strings):
+def collectComponents(rxn_strings):
     """
     Generate a Python dictionary of components and indices from a list of
     reaction strings.
@@ -1131,7 +1131,7 @@ def genStoichMat(rxn_strings):
          'F': 5}
     """
 
-    components_dict = genComponentDict(rxn_strings)
+    components_dict = collectComponents(rxn_strings)
     num_rxns = len(rxn_strings)
     num_comps = len(components_dict)
 

@@ -5,6 +5,31 @@ from artools import genStoichMat, sameRows
 
 import scipy as sp
 
+
+def equivalentDictionaries(x, y):
+    """
+    Helper function to test if dictionaries x and y share the same keys and
+    values OVERALL AS A SET, but not necessarily that the key-value pairs are
+    the same between x and y.
+    """
+
+    for xi in x.values():
+        if xi not in y.values():
+            return False
+    for yi in y.values():
+        if yi not in x.values():
+            return False
+
+    for xi in x.keys():
+        if xi not in y.keys():
+            return False
+    for yi in y.keys():
+        if yi not in x.keys():
+            return False
+
+    return True
+
+
 class TestTuple:
 
     def test_1(self):
@@ -15,8 +40,10 @@ class TestTuple:
         A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
+        d_ref = {'A':0,
+                 'B':1}
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
 class TestNormal:
@@ -32,8 +59,12 @@ class TestNormal:
                           [1, -1, 0],
                           [0, 1, 0],
                           [0, 0, 1]])
+        d_ref = {'A':0,
+                 'B':1,
+                 'C':2,
+                 'D':3}
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
     def test_BTX(self):
@@ -47,10 +78,16 @@ class TestNormal:
                           [0.0, 1.0, 0.0],
                           [0.0, 0.0, 1.0],
                           [0.0, 0.0, 1.0]])
+        d_ref = {'B':0,
+                 'E':1,
+                 'T':2,
+                 'X':3,
+                 'D':4,
+                 'H':5}
 
         A, d = genStoichMat(rxns)
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
     def test_1(self):
@@ -60,8 +97,10 @@ class TestNormal:
         A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
+        d_ref = {'A':0,
+                 'B':1}
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
     def test_3(self):
@@ -77,8 +116,14 @@ class TestNormal:
                           [0, 0.5, -3.2],
                           [0, 0, 1],
                           [0, 0, 0.1]])
+        d_ref = {'A':0,
+                 'B':1,
+                 'C':2,
+                 'D':3,
+                 'E':4,
+                 'F':5}
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
 class TestRealistic:
@@ -87,23 +132,31 @@ class TestRealistic:
         rxn = ["N2 + 3*H2 -> 2*NH3"]
 
         A_ref = sp.array([[-1.0, -3.0, 2.0]]).T
+        d_ref = {'N2':0,
+                 'H2':1,
+                 'NH3': 2}
         A, d = genStoichMat(rxn)
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
     def test_CH4_reform(self):
         rxns = ['CH4 + H2O -> CO + 3*H2',
                 'CO + H2O -> CO2 + H2']
 
-        stoich_mat = sp.array([[-1.0, 0.0],
-                               [-1.0, -1.0],
-                               [1.0, -1.0],
-                               [3.0, 1.0],
-                               [0.0, 1.0]])
+        A_ref = sp.array([[-1.0, 0.0],
+                          [-1.0, -1.0],
+                          [1.0, -1.0],
+                          [3.0, 1.0],
+                          [0.0, 1.0]])
+        d_ref = {'CH4':0,
+                 'H2O':1,
+                 'CO':2,
+                 'H2':3,
+                 'CO2':4}
         A, d = genStoichMat(rxns)
 
-        assert (sameRows(stoich_mat, A) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
     def test_UCG_1(self):
@@ -124,6 +177,13 @@ class TestRealistic:
                           [0, 0, 0, -1, -1, 1, 0, -1, 1],
                           [0, 0, 0, 1, 1, -1, -2, 3, -3],
                           [0, 0, 0, 0, 0, 0, 1, -1, 1]])
+        d_ref = {'C':0,
+                 'O2':1,
+                 'CO2':2,
+                 'CO':3,
+                 'H2O':4,
+                 'H2':5,
+                 'CH4':6}
         A, d = genStoichMat(rxns)
 
-        assert (sameRows(A, A_ref) is True)
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)

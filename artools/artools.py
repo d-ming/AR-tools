@@ -1161,37 +1161,68 @@ def genStoichMat(rxn_strings):
     return stoich_mat, components_dict
 
 
+def hasRedundantRxns(stoich_mat):
+    """
+    Check if stoich_mat contains redundant reactions. I.e. is the number of
+    columns in stoich_mat greater than rank(stoich_mat)?
+
+    Example
+        In : A = array([[-1.,  0., -1.],
+                        [ 1., -1.,  0.],
+                        [ 0.,  1.,  1.]])
+
+        In : artools.hasRedundantRxns(A)
+        Out: True
+
+
+    Example
+        In : A1 = array([[-1.,  0.],
+                        [ 1., -1.],
+                        [ 0.,  1.]])
+
+        In : artools.hasRedundantRxns(A1)
+        Out: False
+    """
+
+    dim = calcDim(stoich_mat)
+    num_rows, num_cols = stoich_mat.shape
+
+    if num_cols > dim:
+        return True
+    else:
+        return False
+
+
 def uniqueRxns(stoich_mat):
     """
     Generate all unique combinations of columns of stoich_mat that give the full
     dimension as computed by calcDim(stoich_mat).
 
-    e.g.
-        In []: A = array([[-1.,  0., -1.],
-                          [ 1., -1.,  0.],
-                          [ 0.,  1.,  1.]])
+    Example
+        In : A = array([[-1.,  0., -1.],
+                        [ 1., -1.,  0.],
+                        [ 0.,  1.,  1.]])
 
-        In []: uniqueRxns(A)
+        In : uniqueRxns(A)
 
-        Out[]: [(0, 1), (0, 2), (1, 2)]
+        Out: [(0, 1), (0, 2), (1, 2)]
 
 
-    e.g.
-        In []: A1 = array([[-1.,  0.],
-                           [ 1., -1.],
-                           [ 0.,  1.]])
+    Example
+        In : A1 = array([[-1.,  0.],
+                         [ 1., -1.],
+                         [ 0.,  1.]])
 
-        In []: uniqueRxns(A1)
+        In : uniqueRxns(A1)
 
-        Out[]: [(0, 1)]
+        Out: [(0, 1)]
     """
 
-    dim = artools.calcDim(stoich_mat)
+    dim = calcDim(stoich_mat)
     num_rows, num_cols = stoich_mat.shape
 
     # generate all subset combinations if there are more columns than dim
     if num_cols > dim:
-        print "The system of reactions contains redudent reactions. Lisiting all possible combination\n"
         combos = [combo for combo in itertools.combinations(range(num_cols), dim) if rank(stoich_mat[:, combo])==dim]
     else:
         # stoich mat has full dimension, generate only one combo containing all

@@ -1114,19 +1114,21 @@ def genStoichMat(rxn_strings):
      'A + C -> 0.5*D',
      'C + 3.2*D -> E + 0.1*F']
 
-    returns: [[-1.  -1.   0. ]
-              [-2.   0.   0. ]
-              [ 1.5 -1.  -1. ]
-              [ 0.   0.5 -3.2]
-              [ 0.   0.   1. ]
-              [ 0.   0.   0.1]]
+    returns:
+        [[-1.  -1.   0. ]
+         [-2.   0.   0. ]
+         [ 1.5 -1.  -1. ]
+         [ 0.   0.5 -3.2]
+         [ 0.   0.   1. ]
+         [ 0.   0.   0.1]]
 
-    with dictionary: {'A': 0,
-                      'B': 1,
-                      'C': 2,
-                      'D': 3,
-                      'E': 4,
-                      'F': 5}
+    with dictionary:
+        {'A': 0,
+         'B': 1,
+         'C': 2,
+         'D': 3,
+         'E': 4,
+         'F': 5}
     """
 
     components_dict = genComponentDict(rxn_strings)
@@ -1156,4 +1158,4 @@ def genStoichMat(rxn_strings):
 
             stoich_mat[comp_idx, rnum] = coeff
 
-    return stoich_mat
+    return stoich_mat, components_dict

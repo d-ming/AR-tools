@@ -12,7 +12,7 @@ class TestTuple:
         # reactions written in tuple format
         rxn_str = ("A -> B",)
 
-        A = genStoichMat(rxn_str)
+        A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
 
@@ -27,7 +27,7 @@ class TestNormal:
                    "B -> C",
                    "2*A -> D"]
 
-        A = genStoichMat(rxn_str)
+        A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1., 0, -2],
                           [1, -1, 0],
                           [0, 1, 0],
@@ -48,7 +48,7 @@ class TestNormal:
                           [0.0, 0.0, 1.0],
                           [0.0, 0.0, 1.0]])
 
-        A = genStoichMat(rxns)
+        A, d = genStoichMat(rxns)
 
         assert (sameRows(A, A_ref) is True)
 
@@ -57,7 +57,7 @@ class TestNormal:
 
         rxn_str = ["A -> B"]
 
-        A = genStoichMat(rxn_str)
+        A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1.0],
                           [1.0]])
 
@@ -70,7 +70,7 @@ class TestNormal:
                    'A + C -> 0.5*D',
                    'C + 3.2*D -> E + 0.1*F']
 
-        A = genStoichMat(rxn_str)
+        A, d = genStoichMat(rxn_str)
         A_ref = sp.array([[-1., -1, 0],
                           [-2, 0, 0],
                           [1.5, -1, -1],
@@ -87,7 +87,7 @@ class TestRealistic:
         rxn = ["N2 + 3*H2 -> 2*NH3"]
 
         A_ref = sp.array([[-1.0, -3.0, 2.0]]).T
-        A = genStoichMat(rxn)
+        A, d = genStoichMat(rxn)
 
         assert (sameRows(A, A_ref) is True)
 
@@ -101,7 +101,7 @@ class TestRealistic:
                                [1.0, -1.0],
                                [3.0, 1.0],
                                [0.0, 1.0]])
-        A = genStoichMat(rxns)
+        A, d = genStoichMat(rxns)
 
         assert (sameRows(stoich_mat, A) is True)
 
@@ -124,6 +124,6 @@ class TestRealistic:
                           [0, 0, 0, -1, -1, 1, 0, -1, 1],
                           [0, 0, 0, 1, 1, -1, -2, 3, -3],
                           [0, 0, 0, 0, 0, 0, 1, -1, 1]])
-        A = genStoichMat(rxns)
+        A, d = genStoichMat(rxns)
 
         assert (sameRows(A, A_ref) is True)

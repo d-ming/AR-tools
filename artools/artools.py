@@ -1159,3 +1159,74 @@ def genStoichMat(rxn_strings):
             stoich_mat[comp_idx, rnum] = coeff
 
     return stoich_mat, components_dict
+
+
+def hasRedundantRxns(stoich_mat):
+    """
+    Check if stoich_mat contains redundant reactions. I.e. is the number of
+    columns in stoich_mat greater than rank(stoich_mat)?
+
+    Example
+        In : A = array([[-1.,  0., -1.],
+                        [ 1., -1.,  0.],
+                        [ 0.,  1.,  1.]])
+
+        In : artools.hasRedundantRxns(A)
+        Out: True
+
+
+    Example
+        In : A1 = array([[-1.,  0.],
+                        [ 1., -1.],
+                        [ 0.,  1.]])
+
+        In : artools.hasRedundantRxns(A1)
+        Out: False
+    """
+
+    dim = calcDim(stoich_mat)
+    num_rows, num_cols = stoich_mat.shape
+
+    if num_cols > dim:
+        return True
+    else:
+        return False
+
+
+def uniqueRxns(stoich_mat):
+    """
+    Generate all unique combinations of columns of stoich_mat that give the full
+    dimension as computed by calcDim(stoich_mat).
+
+    Example
+        In : A = array([[-1.,  0., -1.],
+                        [ 1., -1.,  0.],
+                        [ 0.,  1.,  1.]])
+
+        In : uniqueRxns(A)
+
+        Out: [(0, 1), (0, 2), (1, 2)]
+
+
+    Example
+        In : A1 = array([[-1.,  0.],
+                         [ 1., -1.],
+                         [ 0.,  1.]])
+
+        In : uniqueRxns(A1)
+
+        Out: [(0, 1)]
+    """
+
+    dim = calcDim(stoich_mat)
+    num_rows, num_cols = stoich_mat.shape
+
+    # generate all subset combinations if there are more columns than dim
+    if num_cols > dim:
+        combos = [combo for combo in itertools.combinations(range(num_cols), dim) if rank(stoich_mat[:, combo])==dim]
+    else:
+        # stoich mat has full dimension, generate only one combo containing all
+        # column indices
+        combos = [tuple([i for i in range(num_cols)])]
+
+    return combos

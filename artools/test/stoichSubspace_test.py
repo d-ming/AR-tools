@@ -5,6 +5,8 @@ import sys
 sys.path.append('../')
 from artools import stoich_S_1D, stoich_S_nD, stoichSubspace, sameRows
 
+import pytest
+
 
 class TestSingleFeed:
 
@@ -414,6 +416,18 @@ def test_steam_reforming_singleFeed_1():
     assert (sameRows(Cs, Cs_ref) is True)
     assert (sameRows(Es, Es_ref) is True)
 
+
+class TestError:
+
+    def test_redundant_rxns(self):
+        with pytest.raises(ValueError):
+            stoich_mat = sp.array([[-1.0, 1.0],
+                                   [1.0, -1.0],
+                                   [0.0, 0.0]])
+
+            Cf0 = sp.array([[1.0, 0.0, 0.0]]).T
+
+            stoichSubspace(Cf0, stoich_mat)
 
 # test incompatible size feed and stoichiometric matrix
 

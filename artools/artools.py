@@ -32,9 +32,10 @@ def uniqueRows(A, tol=1e-13):
         tuple   []
     '''
 
+    num_rows = A.shape[0]
     duplicate_ks = []
-    for r1 in range(A.shape[0]):
-        for r2 in range(r1 + 1, A.shape[0]):
+    for r1 in range(num_rows):
+        for r2 in range(r1 + 1, num_rows):
             # check if row 1 is equal to row 2 to within tol
             if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
                 # only add if row 2 has not already been added from a previous
@@ -43,7 +44,7 @@ def uniqueRows(A, tol=1e-13):
                     duplicate_ks.append(r2)
 
     # generate a list of unique indices
-    unique_ks = [idx for idx in range(A.shape[0]) if idx not in duplicate_ks]
+    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
 
     # return matrix of unique rows and associated indices
     return (A[unique_ks, :], unique_ks)
@@ -849,6 +850,9 @@ def stoichSubspace(Cf0s, stoich_mat):
     if stoich_mat.ndim == 1:
         stoich_mat = stoich_mat.reshape((len(stoich_mat), 1))
 
+    # check for redundant reactions
+    if hasRedundantRxns(stoich_mat):
+        raise ValueError("Stoichiometric matrix contains redundant reactions. Consider using uniqueRxns() to pick a subset of linearly independent columns.")
     # loop through each feed and calculate stoich subspace
     all_Es = []
     all_Cs = []
@@ -1241,7 +1245,7 @@ def hasRedundantRxns(stoich_mat):
     dim = calcDim(stoich_mat)
     num_rows, num_cols = stoich_mat.shape
 
-    if num_cols > dim:
+    if (num_cols > dim) and (dim > 0):
         return True
     else:
         return False

@@ -190,6 +190,33 @@ class TestRealistic:
         assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
+    def test_formic_acid(self):
+        rxns = ['HCHO + 0.5*O2 -> HCOOH',
+                '        HCOOH -> CO + H2O',
+                '       2*HCHO -> HCOOCH3',
+                '      HCOOCH3 -> CH3OH + HCOOH']
+
+        A_ref = sp.array([[-1. ,  0. , -2. ,  0. ],
+                          [-0.5,  0. ,  0. ,  0. ],
+                          [ 1. , -1. ,  0. ,  1. ],
+                          [ 0. ,  1. ,  0. ,  0. ],
+                          [ 0. ,  1. ,  0. ,  0. ],
+                          [ 0. ,  0. ,  1. , -1. ],
+                          [ 0. ,  0. ,  0. ,  1. ]])
+
+        d_ref = {'HCHO': 0,
+                 'O2': 1,
+                 'HCOOH': 2,
+                 'CO': 3,
+                 'H2O': 4,
+                 'HCOOCH3': 5,
+                 'CH3OH': 6}
+
+        A, d = genStoichMat(rxns)
+
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
+
+
 class TestWords:
 
     def test_1(self):

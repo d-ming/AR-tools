@@ -4,6 +4,7 @@ sys.path.append('../')
 from artools import genStoichMat, sameRows
 
 import scipy as sp
+import pytest
 
 
 def equivalentDictionaries(x, y):
@@ -187,3 +188,33 @@ class TestRealistic:
         A, d = genStoichMat(rxns)
 
         assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
+
+
+class TestWords:
+
+    def test_1(self):
+        rxns = ['ethylene + 0.5*oxygen -> ethylene_oxide',
+                'ethylene + 3*oxygen -> 2*carbon_dioxide + 2*water']
+
+        A_ref = sp.array([[-1. , -1. ],
+                          [-0.5, -3. ],
+                          [ 1. ,  0. ],
+                          [ 0. ,  2. ],
+                          [ 0. ,  2. ]])
+        d_ref = {'carbon_dioxide': 3,
+                 'ethylene': 0,
+                 'ethylene_oxide': 2,
+                 'oxygen': 1,
+                 'water': 4}
+
+        A, d = genStoichMat(rxns)
+
+        assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
+
+
+class TestErorr:
+
+    def test_double_arrow(self):
+        with pytest.raises(SyntaxError):
+            rxns = ['A -> B -> C']
+            genStoichMat(rxns)

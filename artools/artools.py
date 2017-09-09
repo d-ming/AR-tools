@@ -1084,6 +1084,10 @@ def collectComponents(rxn_strings):
     all_components = {}
     comp_idx = 0
     for rxn_str in rxn_strings:
+
+        if not validRxnStr(rxn_str):
+            raise SyntaxError("Error in collectComponents(): Reaction string is not formatted correctly")
+
         # generate a list of single terms, e.g ['3*H2O', '1.5*H2', ...]
         terms = [term.strip() for side in rxn_str.split("->") for term in side.split("+")]
 
@@ -1096,6 +1100,33 @@ def collectComponents(rxn_strings):
                 comp_idx += 1
 
     return all_components
+
+
+def validRxnStr(rxn_str):
+    """
+    (work in progress)
+    Return True if rxn string is formatted correctly  according to the following
+    criteria:
+    1) Contains only one '->' per reaction
+    2) others??
+
+    Example:
+        In : validRxnStr('A + B')
+        Out: False
+
+        In : validRxnStr('A -> B -> C')
+        Out: False
+
+        In : validRxnStr('A -> 2*B')
+        Out: True
+    """
+
+    # conditions go here
+    if len(rxn_str.split("->")) != 2:
+        print "\nReaction string must contain only one '->' per reaction\n"
+        return False
+
+    return True
 
 
 def genStoichMat(rxn_strings):

@@ -3,7 +3,7 @@
 This is the GitHub repository of Attainable Region (AR) theory. The main homepage of AR theory can be found at [attainableregions.com](http://attainableregions.com "AR theory homepage").
 
 This repository contains:
-1. Python functions for carrying out AR computations, `artools.py`
+1. A collection of Python functions for carrying out AR computations, `artools.py`
 2. Interactive Jupyter notebooks that describe the basics of AR theory
 3. Source code for the examples found on attainableregions.com
 

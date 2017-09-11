@@ -1037,7 +1037,7 @@ def cullPts(Xs, min_dist, axis_lims=None):
     return Vs
 
 
-def calcDim(Xs):
+def ARDim(Xs):
     """
     Compute the dimension of a set of point Xs that the AR will reside in.
     Note that is NOT the same as rank(Xs).
@@ -1048,14 +1048,14 @@ def calcDim(Xs):
         In : Xs = array([[ 1. ],
                          [ 0. ],
                          [ 0.5]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 0
 
 
     Example
         In : Xs = array([[ 1.  ,  0.  ,  0.5 ],
                          [ 0.25, -0.25,  2.  ]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 1
 
 
@@ -1064,7 +1064,7 @@ def calcDim(Xs):
                          [0.25, -0.25, 2.0],
                          [3.0, 2.0, 1.0],
                          [3.0, 2.0, 1.0]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 2
     """
 

@@ -1192,7 +1192,7 @@ def validRxnStr(rxn_str):
 def genStoichMat(rxn_strings):
     """
     Generate a stoichiometric coefficient matrix given a list of reactions
-    written as Python strings.
+    written as Python strings, such as 'A + 2*B -> 1.5*C + 0.1*D'
 
     Reactions should be written according to the following format:
       '+' indicates separate terms in the reaction string: 'A + B
@@ -1201,26 +1201,22 @@ def genStoichMat(rxn_strings):
       Organise each line in the reaction as a separate string in a list:
           ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
 
-    e.g
-    ['A + 2*B -> 1.5*C',
-     'A + C -> 0.5*D',
-     'C + 3.2*D -> E + 0.1*F']
+    Example
+        In : rxns = ['A + 2*B -> 1.5*C',
+                     'A + C -> 0.5*D',
+                     'C + 3.2*D -> E + 0.1*F']
+        In : stoich_mat, dictionary = genStoichMat(rxns)
 
-    returns:
-        [[-1.  -1.   0. ]
-         [-2.   0.   0. ]
-         [ 1.5 -1.  -1. ]
-         [ 0.   0.5 -3.2]
-         [ 0.   0.   1. ]
-         [ 0.   0.   0.1]]
+        In : stoich_mat
+        Out: array([[-1. , -1. ,  0. ],
+                    [-2. ,  0. ,  0. ],
+                    [ 1.5, -1. , -1. ],
+                    [ 0. ,  0.5, -3.2],
+                    [ 0. ,  0. ,  1. ],
+                    [ 0. ,  0. ,  0.1]])
 
-    with dictionary:
-        {'A': 0,
-         'B': 1,
-         'C': 2,
-         'D': 3,
-         'E': 4,
-         'F': 5}
+        In : dictionary
+        Out: {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5}
     """
 
     components_dict = collectComponents(rxn_strings)

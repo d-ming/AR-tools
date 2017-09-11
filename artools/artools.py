@@ -1248,7 +1248,7 @@ def hasRedundantRxns(stoich_mat):
     dim = rank(stoich_mat)
     num_rows, num_cols = stoich_mat.shape
 
-    if (num_cols > dim) and (dim > 0):
+    if num_cols > dim:
         return True
     else:
         return False

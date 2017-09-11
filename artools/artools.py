@@ -1041,22 +1041,25 @@ def cullPts(Xs, min_dist, axis_lims=None):
     return Vs
 
 
-def calcDim(Xs):
+def ARDim(Xs):
     """
-    Compute the dimension of a set of point Xs
+    Compute the dimension of a set of point Xs that the AR will reside in.
+    Note that is NOT the same as rank(Xs).
+    By example, two independent points each containing three components gives a
+    line in 3-D space. Thus the AR dimension is 1-D.
 
     Example
         In : Xs = array([[ 1. ],
                          [ 0. ],
                          [ 0.5]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 0
 
 
     Example
         In : Xs = array([[ 1.  ,  0.  ,  0.5 ],
                          [ 0.25, -0.25,  2.  ]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 1
 
 
@@ -1065,7 +1068,7 @@ def calcDim(Xs):
                          [0.25, -0.25, 2.0],
                          [3.0, 2.0, 1.0],
                          [3.0, 2.0, 1.0]])
-        In : calcDim(Xs)
+        In : ARDim(Xs)
         Out: 2
     """
 
@@ -1242,7 +1245,7 @@ def hasRedundantRxns(stoich_mat):
         Out: False
     """
 
-    dim = calcDim(stoich_mat)
+    dim = rank(stoich_mat)
     num_rows, num_cols = stoich_mat.shape
 
     if (num_cols > dim) and (dim > 0):
@@ -1254,7 +1257,7 @@ def hasRedundantRxns(stoich_mat):
 def uniqueRxns(stoich_mat):
     """
     Generate all unique combinations of columns of stoich_mat that give the full
-    dimension as computed by calcDim(stoich_mat).
+    dimension as computed by rank(stoich_mat).
 
     Example
         In : A = array([[-1.,  0., -1.],
@@ -1276,7 +1279,7 @@ def uniqueRxns(stoich_mat):
         Out: [(0, 1)]
     """
 
-    dim = calcDim(stoich_mat)
+    dim = rank(stoich_mat)
     num_rows, num_cols = stoich_mat.shape
 
     # generate all subset combinations if there are more columns than dim

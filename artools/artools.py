@@ -17,75 +17,13 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.tri as mtri
 
 # ----------------------------------------------------------------------------
-# Utility functions
+# Visualisation
 # ----------------------------------------------------------------------------
-
-
-def uniqueRows(A, tol=1e-13):
-    '''
-    Find the unique rows of a matrix A given a tolerance
-
-    Parameters:
-        A       []
-
-    Returns:
-        tuple   []
-    '''
-
-    num_rows = A.shape[0]
-    duplicate_ks = []
-    for r1 in range(num_rows):
-        for r2 in range(r1 + 1, num_rows):
-            # check if row 1 is equal to row 2 to within tol
-            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
-                # only add if row 2 has not already been added from a previous
-                # pass
-                if r2 not in duplicate_ks:
-                    duplicate_ks.append(r2)
-
-    # generate a list of unique indices
-    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
-
-    # return matrix of unique rows and associated indices
-    return (A[unique_ks, :], unique_ks)
-
-
-def sameRows(A, B):
-    """
-    Check if A and B have the exact same rows.
-    """
-
-    # check if A and B are the same shape
-    if A.shape != B.shape:
-        return False
-    else:
-
-        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
-            return sp.allclose(A.flatten(), B.flatten())
-
-        # now loop through each row in A and check if the same row exists in B.
-        # If not, A and B are not equivalent according to their rows.
-        for row_A in A:
-            # does row_A exist in B?
-            if not any([sp.allclose(row_A, row_B) for row_B in B]):
-                return False
-
-        return True
-
-
-def sameCols(A, B):
-    """
-    Check if A and B have the exact same columns.
-    """
-
-    return sameRows(A.T, B.T)
-
-
 def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''
     Plot a filled 2D region, similar to MATLAB's fill() function.
 
-    Parameters:
+    Arguments:
         Vs      (L x d) A numpy array containing the region to be plotted.
 
         ax      Optional. A matplotlib axis object. In case an exisiting plot
@@ -130,7 +68,7 @@ def plotRegion3D(Vs,
     '''
     Plot a filled 3D region, similar to MATLAB's trisurf() function.
 
-    Parameters:
+    Arguments:
         Vs          (L x d) A numpy array containing the region to be plotted.
 
         ax          Optional. A matplotlib axis object. In case an exisiting
@@ -184,7 +122,7 @@ def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -227,13 +165,176 @@ def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     return ax.get_figure()
 
 
+# ----------------------------------------------------------------------------
+# Fundamental reactors
+# ----------------------------------------------------------------------------
+def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
+    '''
+    Convenience function that integrate the PFR trajecotry from the feed point
+    specified Cf, using scipy.integrate.odeint().
+    Time is based on a logscaling
+
+    Arguments:
+        Cf          (d x 1) numpy array. Feed concentration to the PFR.
+
+        rate_fn     Python function. Rate function in (C,t) format that returns
+                    an array equal to the length of Cf.
+
+        t_end       Float indicating the residence time of the PFR.
+
+        NUM_PTS     Optional. Number of PFR points.
+                    Default value is 250 points.
+
+    Returns:
+        pfr_cs      (NUM_PTS x d) numpy array representing the PFR trajectory
+                    points.
+
+        pfr_ts      (NUM_PTS x 1) numpy array of PFR residence times
+                    corresponding to pfr_cs.
+    '''
+
+    # TODO: optional accuracy for integration
+
+    # since logspace can't give log10(0), append 0.0 to the beginning of pfr_ts
+    # and decrese NUM_PTS by 1
+    if linspace_ts:
+        pfr_ts = sp.linspace(0, t_end, NUM_PTS)
+    else:
+        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
+
+    pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
+
+    return pfr_cs, pfr_ts
+
+
+def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
+    '''
+    Brute-force CSTR locus solver using geometric CSTR colinearity condition
+    between r(C) and (C - Cf).
+
+    Arguments:
+        Cf          []
+
+        rate_fn     []
+
+        NUM_PTS     []
+
+        axis_lims   []
+
+        tol         Optional.
+                    Default value is 1e-6.
+
+        N           Optional.
+                    Default value is 2e4.
+
+    Returns:
+        cstr_cs     A list of cstr effluent concentrations.
+
+        cstr_ts     CSTR residence times corresponding to cstr_cs.
+    '''
+
+    Cs = Cf
+    ts = [0.0]
+
+    N = int(N)  # block length
+
+    while Cs.shape[0] < NUM_PTS:
+
+        # update display
+        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
+                                      100.0)
+
+        # generate random points within the axis limits in blocks of N points
+        Xs = randPts(N, axis_lims)
+
+        # loop through each point and determine if it is a CSTR point
+        ks = []
+        for i, ci in enumerate(Xs):
+            # calculate rate vector ri and mixing vector vi
+            ri = rate_fn(ci, 1)
+            vi = ci - Cf
+
+            # normalise ri and vi
+            vn = vi / scipy.linalg.norm(vi)
+            rn = ri / scipy.linalg.norm(ri)
+
+            # calculate colinearity between rn and vn
+            if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
+                ks.append(i)
+
+                # calc corresponding cstr residence time (based on 1st element)
+                tau = vi[0] / ri[0]
+                ts.append(tau)
+
+        # append colinear points to current list of CSTR points
+        Cs = sp.vstack([Cs, Xs[ks, :]])
+
+    # chop to desired number of points
+    Cs = Cs[0:NUM_PTS, :]
+    ts = sp.array(ts[0:NUM_PTS])
+
+    return Cs, ts
+
+
+def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
+    '''
+    Quick (potentially inexact) CSTR solver using a standard non-linear solver
+    (Newton). The initial guess is based on the previous solution.
+    Note: this method will not find multiple solutions and may behave poorly
+    with systems with multiple solutions. Use only if you know that the system
+    is 'simple' (no multiple solutions) and you need a quick answer
+
+    Arguments:
+        Cf
+
+        rate_fn
+
+        t_end
+
+        num_pts
+
+    Returns:
+        cstr_cs
+
+        cstr_ts
+    '''
+
+    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
+    cstr_cs = []
+
+    # loop through each cstr residence time and solve for the corresponding
+    # cstr effluent concentration
+    C_guess = Cf
+    for ti in cstr_ts:
+
+        # define CSTR function
+        def cstr_fn(C):
+            return Cf + ti * rate_fn(C, 1) - C
+
+        # solve
+        ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
+
+        cstr_cs.append(ci)
+
+        # update guess
+        C_guess = ci
+
+    # convert to numpy array
+    cstr_cs = sp.array(cstr_cs)
+
+    return cstr_cs, cstr_ts
+
+
+# ----------------------------------------------------------------------------
+# Spatial and polytope routines
+# ----------------------------------------------------------------------------
 def con2vert(A, b):
     '''
     Compute the V-representation of a convex polytope from a set of hyperplane
     constraints. Solve the vertex enumeration problem given inequalities of the
     form A*x <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -318,7 +419,7 @@ def vert2con(Vs):
     '''
     Compute the H-representation of a set of points (facet enumeration).
 
-    Parameters:
+    Arguments:
         Vs
 
     Returns:
@@ -367,7 +468,7 @@ def inRegion(xi, A, b, tol=1e-12):
     Determine whether point xi lies within the region or on the region boundary
     defined by the system of inequalities A*xi <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -396,7 +497,7 @@ def outRegion(xi, A, b, tol=1e-12):
     Determine whether point xi lies strictly outside of the region (NOT on the
     region boundary) defined by the system of inequalities A*xi <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -425,7 +526,7 @@ def ptsInRegion(Xs, A, b, tol=1e-12):
     Similar to inregion(), but works on an array of points and returns the
     points and indices.
 
-    Parameters:
+    Arguments:
 
     Returns:
 
@@ -450,7 +551,7 @@ def ptsOutRegion(Xs, A, b, tol=1e-12):
     Similar to outregion(), but works on an array of points and returns the
     points and indices.
 
-    Parameters:
+    Arguments:
         Xs
 
         A
@@ -481,217 +582,13 @@ def ptsOutRegion(Xs, A, b, tol=1e-12):
     return Cs, ks
 
 
-def allcomb(*X):
-    '''
-    Cartesian product of a list of vectors.
-
-    Parameters:
-        *X      A variable argument list of vectors
-
-    Returns:
-        Xs      A numpy array containing the combinations of the Cartesian
-                product.
-    '''
-
-    combs = itertools.product(*X)
-    Xs = sp.array(list(combs))
-    return Xs
-
-
-def randPts(Npts, axis_lims):
-    '''
-    Generate a list of random points within a user-specified range.
-
-    Parameters:
-        Npts        Number of points to generate.
-
-        axis_lims   An array of axis min-max pairs.
-                    e.g. [xmin, xmax, ymin, ymax, zmin, zmax, etc.] where
-                    d = len(axis_lims)/2
-
-    Returns:
-        Ys          (Npts x d) numpy array of random points.
-    '''
-
-    dim = len(axis_lims) / 2
-
-    Xs = sp.rand(int(Npts), dim)
-    # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
-
-    # convert axis lims list into a Lx2 array that can be used with matrix
-    # multiplication to scale the random points
-    AX = sp.reshape(axis_lims, (-1, 2))
-    D = sp.diag(AX[:, 1] - AX[:, 0])
-
-    Ys = sp.dot(Xs, D) + AX[:, 0]
-
-    return Ys
-
-
-def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
-    '''
-    Convenience function that integrate the PFR trajecotry from the feed point
-    specified Cf, using scipy.integrate.odeint().
-    Time is based on a logscaling
-
-    Parameters:
-        Cf          (d x 1) numpy array. Feed concentration to the PFR.
-
-        rate_fn     Python function. Rate function in (C,t) format that returns
-                    an array equal to the length of Cf.
-
-        t_end       Float indicating the residence time of the PFR.
-
-        NUM_PTS     Optional. Number of PFR points.
-                    Default value is 250 points.
-
-    Returns:
-        pfr_cs      (NUM_PTS x d) numpy array representing the PFR trajectory
-                    points.
-
-        pfr_ts      (NUM_PTS x 1) numpy array of PFR residence times
-                    corresponding to pfr_cs.
-    '''
-
-    # TODO: optional accuracy for integration
-
-    # since logspace can't give log10(0), append 0.0 to the beginning of pfr_ts
-    # and decrese NUM_PTS by 1
-    if linspace_ts:
-        pfr_ts = sp.linspace(0, t_end, NUM_PTS)
-    else:
-        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
-
-    pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
-
-    return pfr_cs, pfr_ts
-
-
-def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
-    '''
-    Brute-force CSTR locus solver using geometric CSTR colinearity condition
-    between r(C) and (C - Cf).
-
-    Parameters:
-        Cf          []
-
-        rate_fn     []
-
-        NUM_PTS     []
-
-        axis_lims   []
-
-        tol         Optional.
-                    Default value is 1e-6.
-
-        N           Optional.
-                    Default value is 2e4.
-
-    Returns:
-        cstr_cs     A list of cstr effluent concentrations.
-
-        cstr_ts     CSTR residence times corresponding to cstr_cs.
-    '''
-
-    Cs = Cf
-    ts = [0.0]
-
-    N = int(N)  # block length
-
-    while Cs.shape[0] < NUM_PTS:
-
-        # update display
-        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
-                                      100.0)
-
-        # generate random points within the axis limits in blocks of N points
-        Xs = randPts(N, axis_lims)
-
-        # loop through each point and determine if it is a CSTR point
-        ks = []
-        for i, ci in enumerate(Xs):
-            # calculate rate vector ri and mixing vector vi
-            ri = rate_fn(ci, 1)
-            vi = ci - Cf
-
-            # normalise ri and vi
-            vn = vi / scipy.linalg.norm(vi)
-            rn = ri / scipy.linalg.norm(ri)
-
-            # calculate colinearity between rn and vn
-            if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
-                ks.append(i)
-
-                # calc corresponding cstr residence time (based on 1st element)
-                tau = vi[0] / ri[0]
-                ts.append(tau)
-
-        # append colinear points to current list of CSTR points
-        Cs = sp.vstack([Cs, Xs[ks, :]])
-
-    # chop to desired number of points
-    Cs = Cs[0:NUM_PTS, :]
-    ts = sp.array(ts[0:NUM_PTS])
-
-    return Cs, ts
-
-
-def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
-    '''
-    Quick (potentially inexact) CSTR solver using a standard non-linear solver
-    (Newton). The initial guess is based on the previous solution.
-    Note: this method will not find multiple solutions and may behave poorly
-    with systems with multiple solutions. Use only if you know that the system
-    is 'simple' (no multiple solutions) and you need a quick answer
-
-    Parameters:
-        Cf
-
-        rate_fn
-
-        t_end
-
-        num_pts
-
-    Returns:
-        cstr_cs
-
-        cstr_ts
-    '''
-
-    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
-    cstr_cs = []
-
-    # loop through each cstr residence time and solve for the corresponding
-    # cstr effluent concentration
-    C_guess = Cf
-    for ti in cstr_ts:
-
-        # define CSTR function
-        def cstr_fn(C):
-            return Cf + ti * rate_fn(C, 1) - C
-
-        # solve
-        ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
-
-        cstr_cs.append(ci)
-
-        # update guess
-        C_guess = ci
-
-    # convert to numpy array
-    cstr_cs = sp.array(cstr_cs)
-
-    return cstr_cs, cstr_ts
-
-
 def convhullPts(Xs):
     '''
     A wrapper for SciPy's ConvexHull() function that returns the convex hull
     points directly and neatens up the syntax slightly. Use when you just need
     the convex hull points and not the indices to the vertices or facets.
 
-    Parameters:
+    Arguments:
         Xs  (L x d) array where L is the number of point and d is the number of
             components (the dimension of the points). We compute conv(Xs).
 
@@ -705,6 +602,73 @@ def convhullPts(Xs):
     Vs = Xs[K, :]
 
     return Vs
+
+
+# ----------------------------------------------------------------------------
+# Linear algebra
+# ----------------------------------------------------------------------------
+def nullspace(A, tol=1e-15):
+    '''
+    Compute the nullspace of A using singular value decomposition (SVD). Factor
+    A into three matrices U,S,V such that A = U*S*(V.T), where V.T is the
+    transpose of V. If A has size (m x n), then U is (m x m), S is (m x n) and
+    V.T is (n x n).
+
+    If A is (m x n) and has rank = r, then the dimension of the nullspace
+    matrix is (n x (n-r))
+
+    Note:
+        Unlike MATLAB's svd() function, Scipy returns V.T automatically and not
+        V. Also, the S variable returned by scipy.linalg.svd() is an array and
+        not a (m x n) matrix as in MATLAB.
+
+    Arguments:
+        A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is
+                ambiguous -- is it a mx1 column vector or a 1xm row vector?
+
+        tol     Optional. Tolerance to determine singular values.
+                Default value is 1e-15.
+
+    Returns:
+        N   (n x n-r) matrix. Columns in N correspond to a basis of the
+            nullspace of A, null(A).
+    '''
+
+    U, s, V = scipy.linalg.svd(A)
+
+    # scipy's svd() function works different to MATLAB's. The s returned is an
+    # array and not a matrix.
+    # convert s to an array that has the same number of columns as V (if A is
+    # mxn, then V is nxn and len(S) = n)
+    S = sp.zeros(V.shape[1])
+
+    # fill S with values in s (the singular values that are meant to be on the
+    # diagoanl of the S matrix like in MATLAB)
+    for i, si in enumerate(s):
+        S[i] = si
+
+    # find smallest singualr values
+    ks = sp.nonzero(S <= tol)[0]
+
+    # extract columns in V. Note that V here is V.T by MATLAB's standards.
+    N = V[:, ks]
+
+    return N
+
+
+def rank(A):
+    '''
+    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
+    Useful for critical CSTR and DSR calculations.
+
+    Arguments:
+        A   (m x n) numpy array.
+
+    Returns:
+        r   The rank of matrix A.
+    '''
+
+    return numpy.linalg.matrix_rank(A)
 
 
 def isColVector(A):
@@ -733,6 +697,9 @@ def isRowVector(A):
     return False
 
 
+# ----------------------------------------------------------------------------
+# Stoichiometric subspace
+# ----------------------------------------------------------------------------
 def stoich_S_1D(Cf0, stoich_mat):
     """
     A helper function for stoichSubspace().
@@ -793,26 +760,12 @@ def stoich_S_nD(Cf0, stoich_mat):
     return (Cs, Es)
 
 
-def getExtrema(Xs, axis=0):
-    """
-    Collect the max and min values according to a user-specified axis direction
-    of Xs.
-    """
-
-    Xs = sp.vstack(Xs)
-    Xs_mins = sp.amin(Xs, axis)
-    Xs_maxs = sp.amax(Xs, axis)
-    Xs_bounds = sp.vstack([Xs_mins, Xs_maxs])
-
-    return Xs_bounds
-
-
 def stoichSubspace(Cf0s, stoich_mat):
     """
     Compute the extreme points of the stoichiometric subspace, S, from multiple
     feed points and a stoichoimetric coefficient matrix.
 
-    Parameters:
+    Arguments:
         stoich_mat      (n x d) array. Each row in stoich_mat corresponds to a
                         component and each column corresponds to a reaction.
 
@@ -899,68 +852,145 @@ def stoichSubspace(Cf0s, stoich_mat):
     return S
 
 
-def nullspace(A, tol=1e-15):
+# ----------------------------------------------------------------------------
+# General
+# ----------------------------------------------------------------------------
+def uniqueRows(A, tol=1e-13):
     '''
-    Compute the nullspace of A using singular value decomposition (SVD). Factor
-    A into three matrices U,S,V such that A = U*S*(V.T), where V.T is the
-    transpose of V. If A has size (m x n), then U is (m x m), S is (m x n) and
-    V.T is (n x n).
+    Find the unique rows of a matrix A given a tolerance
 
-    If A is (m x n) and has rank = r, then the dimension of the nullspace
-    matrix is (n x (n-r))
-
-    Note:
-        Unlike MATLAB's svd() function, Scipy returns V.T automatically and not
-        V. Also, the S variable returned by scipy.linalg.svd() is an array and
-        not a (m x n) matrix as in MATLAB.
-
-    Parameters:
-        A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is
-                ambiguous -- is it a mx1 column vector or a 1xm row vector?
-
-        tol     Optional. Tolerance to determine singular values.
-                Default value is 1e-15.
+    Arguments:
+        A       []
 
     Returns:
-        N   (n x n-r) matrix. Columns in N correspond to a basis of the
-            nullspace of A, null(A).
+        tuple   []
     '''
 
-    U, s, V = scipy.linalg.svd(A)
+    num_rows = A.shape[0]
+    duplicate_ks = []
+    for r1 in range(num_rows):
+        for r2 in range(r1 + 1, num_rows):
+            # check if row 1 is equal to row 2 to within tol
+            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
+                # only add if row 2 has not already been added from a previous
+                # pass
+                if r2 not in duplicate_ks:
+                    duplicate_ks.append(r2)
 
-    # scipy's svd() function works different to MATLAB's. The s returned is an
-    # array and not a matrix.
-    # convert s to an array that has the same number of columns as V (if A is
-    # mxn, then V is nxn and len(S) = n)
-    S = sp.zeros(V.shape[1])
+    # generate a list of unique indices
+    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
 
-    # fill S with values in s (the singular values that are meant to be on the
-    # diagoanl of the S matrix like in MATLAB)
-    for i, si in enumerate(s):
-        S[i] = si
-
-    # find smallest singualr values
-    ks = sp.nonzero(S <= tol)[0]
-
-    # extract columns in V. Note that V here is V.T by MATLAB's standards.
-    N = V[:, ks]
-
-    return N
+    # return matrix of unique rows and associated indices
+    return (A[unique_ks, :], unique_ks)
 
 
-def rank(A):
+def sameRows(A, B):
+    """
+    Check if A and B have the exact same rows.
+    """
+
+    # check if A and B are the same shape
+    if A.shape != B.shape:
+        return False
+    else:
+
+        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
+            return sp.allclose(A.flatten(), B.flatten())
+
+        # now loop through each row in A and check if the same row exists in B.
+        # If not, A and B are not equivalent according to their rows.
+        for row_A in A:
+            # does row_A exist in B?
+            if not any([sp.allclose(row_A, row_B) for row_B in B]):
+                return False
+
+        return True
+
+
+def sameCols(A, B):
+    """
+    Check if A and B have the exact same columns.
+    """
+
+    return sameRows(A.T, B.T)
+
+
+def allcomb(*X):
     '''
-    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
-    Useful for critical CSTR and DSR calculations.
+    Cartesian product of a list of vectors.
 
-    Parameters:
-        A   (m x n) numpy array.
+    Arguments:
+        *X      A variable argument list of vectors
 
     Returns:
-        r   The rank of matrix A.
+        Xs      A numpy array containing the combinations of the Cartesian
+                product.
     '''
 
-    return numpy.linalg.matrix_rank(A)
+    combs = itertools.product(*X)
+    Xs = sp.array(list(combs))
+    return Xs
+
+
+def randPts(Npts, axis_lims):
+    '''
+    Generate a list of random points within a user-specified range.
+
+    Arguments:
+        Npts        Number of points to generate.
+
+        axis_lims   An array of axis min-max pairs.
+                    e.g. [xmin, xmax, ymin, ymax, zmin, zmax, etc.] where
+                    d = len(axis_lims)/2
+
+    Returns:
+        Ys          (Npts x d) numpy array of random points.
+    '''
+
+    dim = len(axis_lims) / 2
+
+    Xs = sp.rand(int(Npts), dim)
+    # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
+
+    # convert axis lims list into a Lx2 array that can be used with matrix
+    # multiplication to scale the random points
+    AX = sp.reshape(axis_lims, (-1, 2))
+    D = sp.diag(AX[:, 1] - AX[:, 0])
+
+    Ys = sp.dot(Xs, D) + AX[:, 0]
+
+    return Ys
+
+
+def getExtrema(Xs, axis=0):
+    """
+    Collect the max and min values according to a user-specified axis direction
+    of Xs.
+
+    Example
+        In : X = numpy.array([[ 0.97336273,  0.96797706,  0.17441055],
+                              [ 0.03894325,  0.59271898,  0.59070622],
+                              [ 0.62042139,  0.91331658,  0.15974472]])
+
+        In : getExtrema(X)
+        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
+                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
+
+        In : getExtrema(X, axis=1)
+        Out: array([[ 0.19455935,  0.24275731,  0.02587713],
+                    [ 0.91954525,  0.62194451,  0.59483543]])
+
+        In : getExtrema(X, axis=0)
+        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
+                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
+    """
+
+    Xs = sp.vstack(Xs)
+    Xs_mins = sp.amin(Xs, axis)
+    Xs_maxs = sp.amax(Xs, axis)
+    Xs_bounds = sp.vstack([Xs_mins, Xs_maxs])
+
+    return Xs_bounds
 
 
 def cullPts(Xs, min_dist, axis_lims=None):
@@ -974,7 +1004,7 @@ def cullPts(Xs, min_dist, axis_lims=None):
     points are not evenly spaced, but the markers on a plot need to be evenly
     spaced for display purposes.
 
-    Parameters:
+    Arguments:
         Xs          A (N x d) numpy array of points that we wish to space out.
 
         min_dist    Positive float. Minimum distance. If points are less than
@@ -1162,13 +1192,14 @@ def validRxnStr(rxn_str):
 def genStoichMat(rxn_strings):
     """
     Generate a stoichiometric coefficient matrix given a list of reactions
-    written as Python strings in a specific format.
+    written as Python strings.
 
-    '+' indicates separate terms in the reaction string: 'A + B'
-    '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
-    '->' separates products from reactants: '1.5*A + B -> 0.1*C'
-    Organise each line in the reaction as a separate string in a list:
-        ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
+    Reactions should be written according to the following format:
+      '+' indicates separate terms in the reaction string: 'A + B
+      '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
+      '->' separates products from reactants: '1.5*A + B -> 0.1*C'
+      Organise each line in the reaction as a separate string in a list:
+          ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
 
     e.g
     ['A + 2*B -> 1.5*C',

@@ -1236,7 +1236,7 @@ def genStoichMat(rxn_strings):
             comp = ri[1]
             comp_idx = components_dict[comp]
 
-            stoich_mat[comp_idx, rnum] = coeff
+            stoich_mat[comp_idx, rnum] += coeff
 
         for pi in products:
             # reactants have positive stoichiometric coefficients
@@ -1244,7 +1244,7 @@ def genStoichMat(rxn_strings):
             comp = pi[1]
             comp_idx = components_dict[comp]
 
-            stoich_mat[comp_idx, rnum] = coeff
+            stoich_mat[comp_idx, rnum] += coeff
 
     return stoich_mat, components_dict
 

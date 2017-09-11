@@ -239,6 +239,52 @@ class TestWords:
         assert (sameRows(A, A_ref) and equivalentDictionaries(d, d_ref) is True)
 
 
+class TestAutocatalytic:
+    def test_1(self):
+        r = "A + B -> 2*B"
+        A, d = genStoichMat([r])
+
+        A_ref = sp.array([[-1.0, 1.0]]).T
+        d_ref = {'A': 0, 'B': 1}
+
+        assert (sameRows(A, A_ref) is True)
+        assert (equivalentDictionaries(d, d_ref) is True)
+
+
+    def test_2(self):
+        rxns = ["A + B -> 2*B",
+                "A + C -> D"]
+        A, d = genStoichMat(rxns)
+
+        A_ref = sp.array([[-1., -1.],
+                          [ 1.,  0.],
+                          [ 0., -1.],
+                          [ 0.,  1.]])
+        d_ref = {'A': 0,
+                 'B': 1,
+                 'C': 2,
+                 'D': 3}
+
+        assert (sameRows(A, A_ref) is True)
+        assert (equivalentDictionaries(d, d_ref) is True)
+
+
+    def test_3(self):
+        rxns = ["A + B -> 2*B",
+                "B + C -> 3*C"]
+        A, d = genStoichMat(rxns)
+
+        A_ref = sp.array([[-1.,  0.],
+                          [ 1., -1.],
+                          [ 0.,  2.]])
+        d_ref = {'A': 0,
+                 'B': 1,
+                 'C': 2}
+
+        assert (sameRows(A, A_ref) is True)
+        assert (equivalentDictionaries(d, d_ref) is True)
+
+
 class TestErorr:
 
     def test_double_arrow(self):

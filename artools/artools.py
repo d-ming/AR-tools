@@ -17,70 +17,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.tri as mtri
 
 # ----------------------------------------------------------------------------
-# Utility functions
+# Visualisation
 # ----------------------------------------------------------------------------
-
-
-def uniqueRows(A, tol=1e-13):
-    '''
-    Find the unique rows of a matrix A given a tolerance
-
-    Arguments:
-        A       []
-
-    Returns:
-        tuple   []
-    '''
-
-    num_rows = A.shape[0]
-    duplicate_ks = []
-    for r1 in range(num_rows):
-        for r2 in range(r1 + 1, num_rows):
-            # check if row 1 is equal to row 2 to within tol
-            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
-                # only add if row 2 has not already been added from a previous
-                # pass
-                if r2 not in duplicate_ks:
-                    duplicate_ks.append(r2)
-
-    # generate a list of unique indices
-    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
-
-    # return matrix of unique rows and associated indices
-    return (A[unique_ks, :], unique_ks)
-
-
-def sameRows(A, B):
-    """
-    Check if A and B have the exact same rows.
-    """
-
-    # check if A and B are the same shape
-    if A.shape != B.shape:
-        return False
-    else:
-
-        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
-            return sp.allclose(A.flatten(), B.flatten())
-
-        # now loop through each row in A and check if the same row exists in B.
-        # If not, A and B are not equivalent according to their rows.
-        for row_A in A:
-            # does row_A exist in B?
-            if not any([sp.allclose(row_A, row_B) for row_B in B]):
-                return False
-
-        return True
-
-
-def sameCols(A, B):
-    """
-    Check if A and B have the exact same columns.
-    """
-
-    return sameRows(A.T, B.T)
-
-
 def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''
     Plot a filled 2D region, similar to MATLAB's fill() function.
@@ -227,6 +165,169 @@ def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     return ax.get_figure()
 
 
+# ----------------------------------------------------------------------------
+# Fundamental reactors
+# ----------------------------------------------------------------------------
+def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
+    '''
+    Convenience function that integrate the PFR trajecotry from the feed point
+    specified Cf, using scipy.integrate.odeint().
+    Time is based on a logscaling
+
+    Arguments:
+        Cf          (d x 1) numpy array. Feed concentration to the PFR.
+
+        rate_fn     Python function. Rate function in (C,t) format that returns
+                    an array equal to the length of Cf.
+
+        t_end       Float indicating the residence time of the PFR.
+
+        NUM_PTS     Optional. Number of PFR points.
+                    Default value is 250 points.
+
+    Returns:
+        pfr_cs      (NUM_PTS x d) numpy array representing the PFR trajectory
+                    points.
+
+        pfr_ts      (NUM_PTS x 1) numpy array of PFR residence times
+                    corresponding to pfr_cs.
+    '''
+
+    # TODO: optional accuracy for integration
+
+    # since logspace can't give log10(0), append 0.0 to the beginning of pfr_ts
+    # and decrese NUM_PTS by 1
+    if linspace_ts:
+        pfr_ts = sp.linspace(0, t_end, NUM_PTS)
+    else:
+        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
+
+    pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
+
+    return pfr_cs, pfr_ts
+
+
+def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
+    '''
+    Brute-force CSTR locus solver using geometric CSTR colinearity condition
+    between r(C) and (C - Cf).
+
+    Arguments:
+        Cf          []
+
+        rate_fn     []
+
+        NUM_PTS     []
+
+        axis_lims   []
+
+        tol         Optional.
+                    Default value is 1e-6.
+
+        N           Optional.
+                    Default value is 2e4.
+
+    Returns:
+        cstr_cs     A list of cstr effluent concentrations.
+
+        cstr_ts     CSTR residence times corresponding to cstr_cs.
+    '''
+
+    Cs = Cf
+    ts = [0.0]
+
+    N = int(N)  # block length
+
+    while Cs.shape[0] < NUM_PTS:
+
+        # update display
+        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
+                                      100.0)
+
+        # generate random points within the axis limits in blocks of N points
+        Xs = randPts(N, axis_lims)
+
+        # loop through each point and determine if it is a CSTR point
+        ks = []
+        for i, ci in enumerate(Xs):
+            # calculate rate vector ri and mixing vector vi
+            ri = rate_fn(ci, 1)
+            vi = ci - Cf
+
+            # normalise ri and vi
+            vn = vi / scipy.linalg.norm(vi)
+            rn = ri / scipy.linalg.norm(ri)
+
+            # calculate colinearity between rn and vn
+            if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
+                ks.append(i)
+
+                # calc corresponding cstr residence time (based on 1st element)
+                tau = vi[0] / ri[0]
+                ts.append(tau)
+
+        # append colinear points to current list of CSTR points
+        Cs = sp.vstack([Cs, Xs[ks, :]])
+
+    # chop to desired number of points
+    Cs = Cs[0:NUM_PTS, :]
+    ts = sp.array(ts[0:NUM_PTS])
+
+    return Cs, ts
+
+
+def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
+    '''
+    Quick (potentially inexact) CSTR solver using a standard non-linear solver
+    (Newton). The initial guess is based on the previous solution.
+    Note: this method will not find multiple solutions and may behave poorly
+    with systems with multiple solutions. Use only if you know that the system
+    is 'simple' (no multiple solutions) and you need a quick answer
+
+    Arguments:
+        Cf
+
+        rate_fn
+
+        t_end
+
+        num_pts
+
+    Returns:
+        cstr_cs
+
+        cstr_ts
+    '''
+
+    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
+    cstr_cs = []
+
+    # loop through each cstr residence time and solve for the corresponding
+    # cstr effluent concentration
+    C_guess = Cf
+    for ti in cstr_ts:
+
+        # define CSTR function
+        def cstr_fn(C):
+            return Cf + ti * rate_fn(C, 1) - C
+
+        # solve
+        ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
+
+        cstr_cs.append(ci)
+
+        # update guess
+        C_guess = ci
+
+    # convert to numpy array
+    cstr_cs = sp.array(cstr_cs)
+
+    return cstr_cs, cstr_ts
+
+
+# ----------------------------------------------------------------------------
+# Spatial and polytope routines
+# ----------------------------------------------------------------------------
 def con2vert(A, b):
     '''
     Compute the V-representation of a convex polytope from a set of hyperplane
@@ -481,6 +582,96 @@ def ptsOutRegion(Xs, A, b, tol=1e-12):
     return Cs, ks
 
 
+def convhullPts(Xs):
+    '''
+    A wrapper for SciPy's ConvexHull() function that returns the convex hull
+    points directly and neatens up the syntax slightly. Use when you just need
+    the convex hull points and not the indices to the vertices or facets.
+
+    Arguments:
+        Xs  (L x d) array where L is the number of point and d is the number of
+            components (the dimension of the points). We compute conv(Xs).
+
+    Returns:
+        Vs  (k x d) array where k is the number of points belonging to the
+            convex hull of Xs, conv(Xs), and d is the number of components (the
+            dimension of the points).
+    '''
+
+    K = scipy.spatial.ConvexHull(Xs).vertices
+    Vs = Xs[K, :]
+
+    return Vs
+
+
+# ----------------------------------------------------------------------------
+# Sorting and filtering
+# ----------------------------------------------------------------------------
+
+
+def uniqueRows(A, tol=1e-13):
+    '''
+    Find the unique rows of a matrix A given a tolerance
+
+    Arguments:
+        A       []
+
+    Returns:
+        tuple   []
+    '''
+
+    num_rows = A.shape[0]
+    duplicate_ks = []
+    for r1 in range(num_rows):
+        for r2 in range(r1 + 1, num_rows):
+            # check if row 1 is equal to row 2 to within tol
+            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
+                # only add if row 2 has not already been added from a previous
+                # pass
+                if r2 not in duplicate_ks:
+                    duplicate_ks.append(r2)
+
+    # generate a list of unique indices
+    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
+
+    # return matrix of unique rows and associated indices
+    return (A[unique_ks, :], unique_ks)
+
+
+def sameRows(A, B):
+    """
+    Check if A and B have the exact same rows.
+    """
+
+    # check if A and B are the same shape
+    if A.shape != B.shape:
+        return False
+    else:
+
+        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
+            return sp.allclose(A.flatten(), B.flatten())
+
+        # now loop through each row in A and check if the same row exists in B.
+        # If not, A and B are not equivalent according to their rows.
+        for row_A in A:
+            # does row_A exist in B?
+            if not any([sp.allclose(row_A, row_B) for row_B in B]):
+                return False
+
+        return True
+
+
+def sameCols(A, B):
+    """
+    Check if A and B have the exact same columns.
+    """
+
+    return sameRows(A.T, B.T)
+
+
+# ----------------------------------------------------------------------------
+# Linear algebra
+# ----------------------------------------------------------------------------
 def allcomb(*X):
     '''
     Cartesian product of a list of vectors.
@@ -526,185 +717,6 @@ def randPts(Npts, axis_lims):
     Ys = sp.dot(Xs, D) + AX[:, 0]
 
     return Ys
-
-
-def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
-    '''
-    Convenience function that integrate the PFR trajecotry from the feed point
-    specified Cf, using scipy.integrate.odeint().
-    Time is based on a logscaling
-
-    Arguments:
-        Cf          (d x 1) numpy array. Feed concentration to the PFR.
-
-        rate_fn     Python function. Rate function in (C,t) format that returns
-                    an array equal to the length of Cf.
-
-        t_end       Float indicating the residence time of the PFR.
-
-        NUM_PTS     Optional. Number of PFR points.
-                    Default value is 250 points.
-
-    Returns:
-        pfr_cs      (NUM_PTS x d) numpy array representing the PFR trajectory
-                    points.
-
-        pfr_ts      (NUM_PTS x 1) numpy array of PFR residence times
-                    corresponding to pfr_cs.
-    '''
-
-    # TODO: optional accuracy for integration
-
-    # since logspace can't give log10(0), append 0.0 to the beginning of pfr_ts
-    # and decrese NUM_PTS by 1
-    if linspace_ts:
-        pfr_ts = sp.linspace(0, t_end, NUM_PTS)
-    else:
-        pfr_ts = sp.append(0.0, sp.logspace(-3, sp.log10(t_end), NUM_PTS - 1))
-
-    pfr_cs = scipy.integrate.odeint(rate_fn, Cf, pfr_ts)
-
-    return pfr_cs, pfr_ts
-
-
-def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
-    '''
-    Brute-force CSTR locus solver using geometric CSTR colinearity condition
-    between r(C) and (C - Cf).
-
-    Arguments:
-        Cf          []
-
-        rate_fn     []
-
-        NUM_PTS     []
-
-        axis_lims   []
-
-        tol         Optional.
-                    Default value is 1e-6.
-
-        N           Optional.
-                    Default value is 2e4.
-
-    Returns:
-        cstr_cs     A list of cstr effluent concentrations.
-
-        cstr_ts     CSTR residence times corresponding to cstr_cs.
-    '''
-
-    Cs = Cf
-    ts = [0.0]
-
-    N = int(N)  # block length
-
-    while Cs.shape[0] < NUM_PTS:
-
-        # update display
-        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
-                                      100.0)
-
-        # generate random points within the axis limits in blocks of N points
-        Xs = randPts(N, axis_lims)
-
-        # loop through each point and determine if it is a CSTR point
-        ks = []
-        for i, ci in enumerate(Xs):
-            # calculate rate vector ri and mixing vector vi
-            ri = rate_fn(ci, 1)
-            vi = ci - Cf
-
-            # normalise ri and vi
-            vn = vi / scipy.linalg.norm(vi)
-            rn = ri / scipy.linalg.norm(ri)
-
-            # calculate colinearity between rn and vn
-            if sp.fabs(sp.fabs(sp.dot(vn, rn) - 1.0)) <= tol:
-                ks.append(i)
-
-                # calc corresponding cstr residence time (based on 1st element)
-                tau = vi[0] / ri[0]
-                ts.append(tau)
-
-        # append colinear points to current list of CSTR points
-        Cs = sp.vstack([Cs, Xs[ks, :]])
-
-    # chop to desired number of points
-    Cs = Cs[0:NUM_PTS, :]
-    ts = sp.array(ts[0:NUM_PTS])
-
-    return Cs, ts
-
-
-def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
-    '''
-    Quick (potentially inexact) CSTR solver using a standard non-linear solver
-    (Newton). The initial guess is based on the previous solution.
-    Note: this method will not find multiple solutions and may behave poorly
-    with systems with multiple solutions. Use only if you know that the system
-    is 'simple' (no multiple solutions) and you need a quick answer
-
-    Arguments:
-        Cf
-
-        rate_fn
-
-        t_end
-
-        num_pts
-
-    Returns:
-        cstr_cs
-
-        cstr_ts
-    '''
-
-    cstr_ts = sp.hstack([0., sp.logspace(-3, sp.log10(t_end), num_pts - 1)])
-    cstr_cs = []
-
-    # loop through each cstr residence time and solve for the corresponding
-    # cstr effluent concentration
-    C_guess = Cf
-    for ti in cstr_ts:
-
-        # define CSTR function
-        def cstr_fn(C):
-            return Cf + ti * rate_fn(C, 1) - C
-
-        # solve
-        ci = scipy.optimize.newton_krylov(cstr_fn, C_guess)
-
-        cstr_cs.append(ci)
-
-        # update guess
-        C_guess = ci
-
-    # convert to numpy array
-    cstr_cs = sp.array(cstr_cs)
-
-    return cstr_cs, cstr_ts
-
-
-def convhullPts(Xs):
-    '''
-    A wrapper for SciPy's ConvexHull() function that returns the convex hull
-    points directly and neatens up the syntax slightly. Use when you just need
-    the convex hull points and not the indices to the vertices or facets.
-
-    Arguments:
-        Xs  (L x d) array where L is the number of point and d is the number of
-            components (the dimension of the points). We compute conv(Xs).
-
-    Returns:
-        Vs  (k x d) array where k is the number of points belonging to the
-            convex hull of Xs, conv(Xs), and d is the number of components (the
-            dimension of the points).
-    '''
-
-    K = scipy.spatial.ConvexHull(Xs).vertices
-    Vs = Xs[K, :]
-
-    return Vs
 
 
 def isColVector(A):
@@ -1041,6 +1053,9 @@ def cullPts(Xs, min_dist, axis_lims=None):
     return Vs
 
 
+# ----------------------------------------------------------------------------
+# Other
+# ----------------------------------------------------------------------------
 def ARDim(Xs):
     """
     Compute the dimension of a set of point Xs that the AR will reside in.

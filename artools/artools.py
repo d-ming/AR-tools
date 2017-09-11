@@ -25,7 +25,7 @@ def uniqueRows(A, tol=1e-13):
     '''
     Find the unique rows of a matrix A given a tolerance
 
-    Parameters:
+    Arguments:
         A       []
 
     Returns:
@@ -85,7 +85,7 @@ def plotRegion2D(Vs, ax=None, color="g", alpha=0.5, plot_verts=False):
     '''
     Plot a filled 2D region, similar to MATLAB's fill() function.
 
-    Parameters:
+    Arguments:
         Vs      (L x d) A numpy array containing the region to be plotted.
 
         ax      Optional. A matplotlib axis object. In case an exisiting plot
@@ -130,7 +130,7 @@ def plotRegion3D(Vs,
     '''
     Plot a filled 3D region, similar to MATLAB's trisurf() function.
 
-    Parameters:
+    Arguments:
         Vs          (L x d) A numpy array containing the region to be plotted.
 
         ax          Optional. A matplotlib axis object. In case an exisiting
@@ -184,7 +184,7 @@ def plotHplanes(A, b, lims=(0.0, 1.0), ax=None):
     Plot a set of hyperplane constraints given in A*x <= b format. Only for
     two-dimensional plots.
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -233,7 +233,7 @@ def con2vert(A, b):
     constraints. Solve the vertex enumeration problem given inequalities of the
     form A*x <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -318,7 +318,7 @@ def vert2con(Vs):
     '''
     Compute the H-representation of a set of points (facet enumeration).
 
-    Parameters:
+    Arguments:
         Vs
 
     Returns:
@@ -367,7 +367,7 @@ def inRegion(xi, A, b, tol=1e-12):
     Determine whether point xi lies within the region or on the region boundary
     defined by the system of inequalities A*xi <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -396,7 +396,7 @@ def outRegion(xi, A, b, tol=1e-12):
     Determine whether point xi lies strictly outside of the region (NOT on the
     region boundary) defined by the system of inequalities A*xi <= b
 
-    Parameters:
+    Arguments:
         A
 
         b
@@ -425,7 +425,7 @@ def ptsInRegion(Xs, A, b, tol=1e-12):
     Similar to inregion(), but works on an array of points and returns the
     points and indices.
 
-    Parameters:
+    Arguments:
 
     Returns:
 
@@ -450,7 +450,7 @@ def ptsOutRegion(Xs, A, b, tol=1e-12):
     Similar to outregion(), but works on an array of points and returns the
     points and indices.
 
-    Parameters:
+    Arguments:
         Xs
 
         A
@@ -485,7 +485,7 @@ def allcomb(*X):
     '''
     Cartesian product of a list of vectors.
 
-    Parameters:
+    Arguments:
         *X      A variable argument list of vectors
 
     Returns:
@@ -502,7 +502,7 @@ def randPts(Npts, axis_lims):
     '''
     Generate a list of random points within a user-specified range.
 
-    Parameters:
+    Arguments:
         Npts        Number of points to generate.
 
         axis_lims   An array of axis min-max pairs.
@@ -534,7 +534,7 @@ def pfrTrajectory(Cf, rate_fn, t_end, NUM_PTS=250, linspace_ts=False):
     specified Cf, using scipy.integrate.odeint().
     Time is based on a logscaling
 
-    Parameters:
+    Arguments:
         Cf          (d x 1) numpy array. Feed concentration to the PFR.
 
         rate_fn     Python function. Rate function in (C,t) format that returns
@@ -572,7 +572,7 @@ def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     Brute-force CSTR locus solver using geometric CSTR colinearity condition
     between r(C) and (C - Cf).
 
-    Parameters:
+    Arguments:
         Cf          []
 
         rate_fn     []
@@ -644,7 +644,7 @@ def cstrLocus_fast(Cf, rate_fn, t_end, num_pts):
     with systems with multiple solutions. Use only if you know that the system
     is 'simple' (no multiple solutions) and you need a quick answer
 
-    Parameters:
+    Arguments:
         Cf
 
         rate_fn
@@ -691,7 +691,7 @@ def convhullPts(Xs):
     points directly and neatens up the syntax slightly. Use when you just need
     the convex hull points and not the indices to the vertices or facets.
 
-    Parameters:
+    Arguments:
         Xs  (L x d) array where L is the number of point and d is the number of
             components (the dimension of the points). We compute conv(Xs).
 
@@ -812,7 +812,7 @@ def stoichSubspace(Cf0s, stoich_mat):
     Compute the extreme points of the stoichiometric subspace, S, from multiple
     feed points and a stoichoimetric coefficient matrix.
 
-    Parameters:
+    Arguments:
         stoich_mat      (n x d) array. Each row in stoich_mat corresponds to a
                         component and each column corresponds to a reaction.
 
@@ -914,7 +914,7 @@ def nullspace(A, tol=1e-15):
         V. Also, the S variable returned by scipy.linalg.svd() is an array and
         not a (m x n) matrix as in MATLAB.
 
-    Parameters:
+    Arguments:
         A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is
                 ambiguous -- is it a mx1 column vector or a 1xm row vector?
 
@@ -953,7 +953,7 @@ def rank(A):
     Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
     Useful for critical CSTR and DSR calculations.
 
-    Parameters:
+    Arguments:
         A   (m x n) numpy array.
 
     Returns:
@@ -974,7 +974,7 @@ def cullPts(Xs, min_dist, axis_lims=None):
     points are not evenly spaced, but the markers on a plot need to be evenly
     spaced for display purposes.
 
-    Parameters:
+    Arguments:
         Xs          A (N x d) numpy array of points that we wish to space out.
 
         min_dist    Positive float. Minimum distance. If points are less than
@@ -1162,13 +1162,14 @@ def validRxnStr(rxn_str):
 def genStoichMat(rxn_strings):
     """
     Generate a stoichiometric coefficient matrix given a list of reactions
-    written as Python strings in a specific format.
+    written as Python strings.
 
-    '+' indicates separate terms in the reaction string: 'A + B'
-    '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
-    '->' separates products from reactants: '1.5*A + B -> 0.1*C'
-    Organise each line in the reaction as a separate string in a list:
-        ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
+    Reactions should be written according to the following format:
+      '+' indicates separate terms in the reaction string: 'A + B
+      '*' specifies stoichiometric coefficients: '1.5*A + 3*B'
+      '->' separates products from reactants: '1.5*A + B -> 0.1*C'
+      Organise each line in the reaction as a separate string in a list:
+          ['N2 + 3*H2 -> 2*NH3', '2*H2 + O2 -> 2*H2O']
 
     e.g
     ['A + 2*B -> 1.5*C',

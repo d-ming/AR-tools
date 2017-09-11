@@ -605,118 +605,70 @@ def convhullPts(Xs):
 
 
 # ----------------------------------------------------------------------------
-# Sorting and filtering
-# ----------------------------------------------------------------------------
-
-
-def uniqueRows(A, tol=1e-13):
-    '''
-    Find the unique rows of a matrix A given a tolerance
-
-    Arguments:
-        A       []
-
-    Returns:
-        tuple   []
-    '''
-
-    num_rows = A.shape[0]
-    duplicate_ks = []
-    for r1 in range(num_rows):
-        for r2 in range(r1 + 1, num_rows):
-            # check if row 1 is equal to row 2 to within tol
-            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
-                # only add if row 2 has not already been added from a previous
-                # pass
-                if r2 not in duplicate_ks:
-                    duplicate_ks.append(r2)
-
-    # generate a list of unique indices
-    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
-
-    # return matrix of unique rows and associated indices
-    return (A[unique_ks, :], unique_ks)
-
-
-def sameRows(A, B):
-    """
-    Check if A and B have the exact same rows.
-    """
-
-    # check if A and B are the same shape
-    if A.shape != B.shape:
-        return False
-    else:
-
-        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
-            return sp.allclose(A.flatten(), B.flatten())
-
-        # now loop through each row in A and check if the same row exists in B.
-        # If not, A and B are not equivalent according to their rows.
-        for row_A in A:
-            # does row_A exist in B?
-            if not any([sp.allclose(row_A, row_B) for row_B in B]):
-                return False
-
-        return True
-
-
-def sameCols(A, B):
-    """
-    Check if A and B have the exact same columns.
-    """
-
-    return sameRows(A.T, B.T)
-
-
-# ----------------------------------------------------------------------------
 # Linear algebra
 # ----------------------------------------------------------------------------
-def allcomb(*X):
+def nullspace(A, tol=1e-15):
     '''
-    Cartesian product of a list of vectors.
+    Compute the nullspace of A using singular value decomposition (SVD). Factor
+    A into three matrices U,S,V such that A = U*S*(V.T), where V.T is the
+    transpose of V. If A has size (m x n), then U is (m x m), S is (m x n) and
+    V.T is (n x n).
+
+    If A is (m x n) and has rank = r, then the dimension of the nullspace
+    matrix is (n x (n-r))
+
+    Note:
+        Unlike MATLAB's svd() function, Scipy returns V.T automatically and not
+        V. Also, the S variable returned by scipy.linalg.svd() is an array and
+        not a (m x n) matrix as in MATLAB.
 
     Arguments:
-        *X      A variable argument list of vectors
+        A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is
+                ambiguous -- is it a mx1 column vector or a 1xm row vector?
+
+        tol     Optional. Tolerance to determine singular values.
+                Default value is 1e-15.
 
     Returns:
-        Xs      A numpy array containing the combinations of the Cartesian
-                product.
+        N   (n x n-r) matrix. Columns in N correspond to a basis of the
+            nullspace of A, null(A).
     '''
 
-    combs = itertools.product(*X)
-    Xs = sp.array(list(combs))
-    return Xs
+    U, s, V = scipy.linalg.svd(A)
+
+    # scipy's svd() function works different to MATLAB's. The s returned is an
+    # array and not a matrix.
+    # convert s to an array that has the same number of columns as V (if A is
+    # mxn, then V is nxn and len(S) = n)
+    S = sp.zeros(V.shape[1])
+
+    # fill S with values in s (the singular values that are meant to be on the
+    # diagoanl of the S matrix like in MATLAB)
+    for i, si in enumerate(s):
+        S[i] = si
+
+    # find smallest singualr values
+    ks = sp.nonzero(S <= tol)[0]
+
+    # extract columns in V. Note that V here is V.T by MATLAB's standards.
+    N = V[:, ks]
+
+    return N
 
 
-def randPts(Npts, axis_lims):
+def rank(A):
     '''
-    Generate a list of random points within a user-specified range.
+    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
+    Useful for critical CSTR and DSR calculations.
 
     Arguments:
-        Npts        Number of points to generate.
-
-        axis_lims   An array of axis min-max pairs.
-                    e.g. [xmin, xmax, ymin, ymax, zmin, zmax, etc.] where
-                    d = len(axis_lims)/2
+        A   (m x n) numpy array.
 
     Returns:
-        Ys          (Npts x d) numpy array of random points.
+        r   The rank of matrix A.
     '''
 
-    dim = len(axis_lims) / 2
-
-    Xs = sp.rand(int(Npts), dim)
-    # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
-
-    # convert axis lims list into a Lx2 array that can be used with matrix
-    # multiplication to scale the random points
-    AX = sp.reshape(axis_lims, (-1, 2))
-    D = sp.diag(AX[:, 1] - AX[:, 0])
-
-    Ys = sp.dot(Xs, D) + AX[:, 0]
-
-    return Ys
+    return numpy.linalg.matrix_rank(A)
 
 
 def isColVector(A):
@@ -745,6 +697,9 @@ def isRowVector(A):
     return False
 
 
+# ----------------------------------------------------------------------------
+# Stoichiometric subspace
+# ----------------------------------------------------------------------------
 def stoich_S_1D(Cf0, stoich_mat):
     """
     A helper function for stoichSubspace().
@@ -803,20 +758,6 @@ def stoich_S_nD(Cf0, stoich_mat):
     Cs = (Cf0[:, None] + sp.dot(stoich_mat, Es.T)).T
 
     return (Cs, Es)
-
-
-def getExtrema(Xs, axis=0):
-    """
-    Collect the max and min values according to a user-specified axis direction
-    of Xs.
-    """
-
-    Xs = sp.vstack(Xs)
-    Xs_mins = sp.amin(Xs, axis)
-    Xs_maxs = sp.amax(Xs, axis)
-    Xs_bounds = sp.vstack([Xs_mins, Xs_maxs])
-
-    return Xs_bounds
 
 
 def stoichSubspace(Cf0s, stoich_mat):
@@ -911,68 +852,145 @@ def stoichSubspace(Cf0s, stoich_mat):
     return S
 
 
-def nullspace(A, tol=1e-15):
+# ----------------------------------------------------------------------------
+# General
+# ----------------------------------------------------------------------------
+def uniqueRows(A, tol=1e-13):
     '''
-    Compute the nullspace of A using singular value decomposition (SVD). Factor
-    A into three matrices U,S,V such that A = U*S*(V.T), where V.T is the
-    transpose of V. If A has size (m x n), then U is (m x m), S is (m x n) and
-    V.T is (n x n).
-
-    If A is (m x n) and has rank = r, then the dimension of the nullspace
-    matrix is (n x (n-r))
-
-    Note:
-        Unlike MATLAB's svd() function, Scipy returns V.T automatically and not
-        V. Also, the S variable returned by scipy.linalg.svd() is an array and
-        not a (m x n) matrix as in MATLAB.
+    Find the unique rows of a matrix A given a tolerance
 
     Arguments:
-        A       (m x n) matrix. A MUST have ndim==2 since a 1d numpy array is
-                ambiguous -- is it a mx1 column vector or a 1xm row vector?
-
-        tol     Optional. Tolerance to determine singular values.
-                Default value is 1e-15.
+        A       []
 
     Returns:
-        N   (n x n-r) matrix. Columns in N correspond to a basis of the
-            nullspace of A, null(A).
+        tuple   []
     '''
 
-    U, s, V = scipy.linalg.svd(A)
+    num_rows = A.shape[0]
+    duplicate_ks = []
+    for r1 in range(num_rows):
+        for r2 in range(r1 + 1, num_rows):
+            # check if row 1 is equal to row 2 to within tol
+            if sp.all(sp.fabs(A[r1, :] - A[r2, :]) <= tol):
+                # only add if row 2 has not already been added from a previous
+                # pass
+                if r2 not in duplicate_ks:
+                    duplicate_ks.append(r2)
 
-    # scipy's svd() function works different to MATLAB's. The s returned is an
-    # array and not a matrix.
-    # convert s to an array that has the same number of columns as V (if A is
-    # mxn, then V is nxn and len(S) = n)
-    S = sp.zeros(V.shape[1])
+    # generate a list of unique indices
+    unique_ks = [idx for idx in range(num_rows) if idx not in duplicate_ks]
 
-    # fill S with values in s (the singular values that are meant to be on the
-    # diagoanl of the S matrix like in MATLAB)
-    for i, si in enumerate(s):
-        S[i] = si
-
-    # find smallest singualr values
-    ks = sp.nonzero(S <= tol)[0]
-
-    # extract columns in V. Note that V here is V.T by MATLAB's standards.
-    N = V[:, ks]
-
-    return N
+    # return matrix of unique rows and associated indices
+    return (A[unique_ks, :], unique_ks)
 
 
-def rank(A):
+def sameRows(A, B):
+    """
+    Check if A and B have the exact same rows.
+    """
+
+    # check if A and B are the same shape
+    if A.shape != B.shape:
+        return False
+    else:
+
+        if A.ndim == 2 and (A.shape[0] == 1 or A.shape[1] == 1):
+            return sp.allclose(A.flatten(), B.flatten())
+
+        # now loop through each row in A and check if the same row exists in B.
+        # If not, A and B are not equivalent according to their rows.
+        for row_A in A:
+            # does row_A exist in B?
+            if not any([sp.allclose(row_A, row_B) for row_B in B]):
+                return False
+
+        return True
+
+
+def sameCols(A, B):
+    """
+    Check if A and B have the exact same columns.
+    """
+
+    return sameRows(A.T, B.T)
+
+
+def allcomb(*X):
     '''
-    Wrapper to numpy.linalg.matrix_rank(). Calculates the rank of matrix A.
-    Useful for critical CSTR and DSR calculations.
+    Cartesian product of a list of vectors.
 
     Arguments:
-        A   (m x n) numpy array.
+        *X      A variable argument list of vectors
 
     Returns:
-        r   The rank of matrix A.
+        Xs      A numpy array containing the combinations of the Cartesian
+                product.
     '''
 
-    return numpy.linalg.matrix_rank(A)
+    combs = itertools.product(*X)
+    Xs = sp.array(list(combs))
+    return Xs
+
+
+def randPts(Npts, axis_lims):
+    '''
+    Generate a list of random points within a user-specified range.
+
+    Arguments:
+        Npts        Number of points to generate.
+
+        axis_lims   An array of axis min-max pairs.
+                    e.g. [xmin, xmax, ymin, ymax, zmin, zmax, etc.] where
+                    d = len(axis_lims)/2
+
+    Returns:
+        Ys          (Npts x d) numpy array of random points.
+    '''
+
+    dim = len(axis_lims) / 2
+
+    Xs = sp.rand(int(Npts), dim)
+    # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
+
+    # convert axis lims list into a Lx2 array that can be used with matrix
+    # multiplication to scale the random points
+    AX = sp.reshape(axis_lims, (-1, 2))
+    D = sp.diag(AX[:, 1] - AX[:, 0])
+
+    Ys = sp.dot(Xs, D) + AX[:, 0]
+
+    return Ys
+
+
+def getExtrema(Xs, axis=0):
+    """
+    Collect the max and min values according to a user-specified axis direction
+    of Xs.
+
+    Example
+        In : X = numpy.array([[ 0.97336273,  0.96797706,  0.17441055],
+                              [ 0.03894325,  0.59271898,  0.59070622],
+                              [ 0.62042139,  0.91331658,  0.15974472]])
+
+        In : getExtrema(X)
+        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
+                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
+
+        In : getExtrema(X, axis=1)
+        Out: array([[ 0.19455935,  0.24275731,  0.02587713],
+                    [ 0.91954525,  0.62194451,  0.59483543]])
+
+        In : getExtrema(X, axis=0)
+        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
+                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
+    """
+
+    Xs = sp.vstack(Xs)
+    Xs_mins = sp.amin(Xs, axis)
+    Xs_maxs = sp.amax(Xs, axis)
+    Xs_bounds = sp.vstack([Xs_mins, Xs_maxs])
+
+    return Xs_bounds
 
 
 def cullPts(Xs, min_dist, axis_lims=None):
@@ -1053,9 +1071,6 @@ def cullPts(Xs, min_dist, axis_lims=None):
     return Vs
 
 
-# ----------------------------------------------------------------------------
-# Other
-# ----------------------------------------------------------------------------
 def ARDim(Xs):
     """
     Compute the dimension of a set of point Xs that the AR will reside in.

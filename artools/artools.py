@@ -1021,7 +1021,7 @@ def cullPts(Xs, min_dist, axis_lims=None):
                     one.
 
     Returns:
-        Vs          Numpy array where are points are spaced at least min-dist
+        Vs          Numpy array where points are spaced at least min_dist
                     apart.
     '''
 
@@ -1079,14 +1079,6 @@ def ARDim(Xs):
     line in 3-D space. Thus the AR dimension is 1-D.
 
     Example
-        In : Xs = array([[ 1. ],
-                         [ 0. ],
-                         [ 0.5]])
-        In : ARDim(Xs)
-        Out: 0
-
-
-    Example
         In : Xs = array([[ 1.  ,  0.  ,  0.5 ],
                          [ 0.25, -0.25,  2.  ]])
         In : ARDim(Xs)
@@ -1100,6 +1092,14 @@ def ARDim(Xs):
                          [3.0, 2.0, 1.0]])
         In : ARDim(Xs)
         Out: 2
+
+
+    Example
+        In : Xs = array([[ 1. ],
+                         [ 0. ],
+                         [ 0.5]])
+        In : ARDim(Xs)
+        Out: 0
     """
 
     # check for a single row or column vector

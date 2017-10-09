@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import sys
 sys.path.append('../')
 from artools import genStoichMat, sameRows
@@ -14,18 +14,18 @@ def equivalentDictionaries(x, y):
     the same between x and y.
     """
 
-    for xi in x.values():
-        if xi not in y.values():
+    for xi in list(x.values()):
+        if xi not in list(y.values()):
             return False
-    for yi in y.values():
-        if yi not in x.values():
+    for yi in list(y.values()):
+        if yi not in list(x.values()):
             return False
 
-    for xi in x.keys():
-        if xi not in y.keys():
+    for xi in list(x.keys()):
+        if xi not in list(y.keys()):
             return False
-    for yi in y.keys():
-        if yi not in x.keys():
+    for yi in list(y.keys()):
+        if yi not in list(x.keys()):
             return False
 
     return True

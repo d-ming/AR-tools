@@ -241,8 +241,8 @@ def cstrLocus(Cf, rate_fn, NUM_PTS, axis_lims, tol=1e-6, N=2e4):
     while Cs.shape[0] < NUM_PTS:
 
         # update display
-        print "%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
-                                      100.0)
+        print("%.2f%% complete..." % (float(Cs.shape[0]) / float(NUM_PTS) *
+                                      100.0))
 
         # generate random points within the axis limits in blocks of N points
         Xs = randPts(N, axis_lims)
@@ -1155,7 +1155,7 @@ def collectComponents(rxn_strings):
         # exist.
         for term in terms:
             coeff, comp = splitCoeffFromStr(term)
-            if not all_components.has_key(comp):
+            if comp not in all_components:
                 all_components[comp] = comp_idx
                 comp_idx += 1
 
@@ -1183,7 +1183,7 @@ def validRxnStr(rxn_str):
 
     # conditions go here
     if len(rxn_str.split("->")) != 2:
-        print "\nReaction string must contain only one '->' per reaction\n"
+        print("\nReaction string must contain only one '->' per reaction\n")
         return False
 
     return True
@@ -1311,7 +1311,7 @@ def uniqueRxns(stoich_mat):
 
     # generate all subset combinations if there are more columns than dim
     if num_cols > dim:
-        combos = [combo for combo in itertools.combinations(range(num_cols), dim) if rank(stoich_mat[:, combo])==dim]
+        combos = [combo for combo in itertools.combinations(list(range(num_cols)), dim) if rank(stoich_mat[:, combo])==dim]
     else:
         # stoich mat has full dimension, generate only one combo containing all
         # column indices

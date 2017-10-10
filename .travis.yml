@@ -22,6 +22,5 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION scipy matplotlib
   - source activate test-environment
-  - python setup.py install
 sript:
   - pytest /artools/test

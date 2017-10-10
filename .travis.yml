@@ -1,6 +1,11 @@
 language: python
+
 python:
-  - "3.5"
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -21,6 +26,7 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION scipy matplotlib pytest
   - source activate test-environment
-  - cd ./artools/test
+
 script:
+  - cd ./artools/test
   - pytest

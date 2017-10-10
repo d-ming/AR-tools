@@ -36,7 +36,7 @@ Jupyter notebooks, which demonstrate common AR theory concepts, can be found [he
 
 ### 2.1 If you are using virtual environments
 Notebook widgets might not display if Jupyter is run in a virtual environment. If this is the case, issue the following console command:
-```python
+```
 jupyter nbextension enable --py widgetsnbextension
 ```
 

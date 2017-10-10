@@ -25,12 +25,18 @@ import artools
 ```
 
 ### 1.2 Dependencies
-Currently, `artools.py` is written in Python 2.7 and depends on [SciPy](https://www.scipy.org/) and [Matplotlib](https://matplotlib.org/). We recommend using [Anaconda](https://www.continuum.io/downloads) to manage the installation of these packages.
+Currently, `artools.py` is written in **Python 3** and depends on [SciPy](https://www.scipy.org/) and [Matplotlib](https://matplotlib.org/). We recommend using [Anaconda](https://www.continuum.io/downloads) to manage the installation of these packages.
+
+The code currently supports Python versions 3.4 - 3.6.
 
 ## 2. Jupyter notebooks
 <img src="./AR-book/notebook_demo.gif" width="480">
 
-Jupyter notebooks, which demonstrate a number of common AR theory concepts, can be found [here](./AR-book/AR-book-notebooks). These notebooks are written in conjunction with the [Attainable Region theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
+Jupyter notebooks, which demonstrate common AR theory concepts, can be found [here](./AR-book/AR-book-notebooks). These notebooks are written in conjunction with the [Attainable Region theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
 
 ## 3. AR website examples
 The source code for the examples described on attainableregions.com are stored [here](./AR-book/website-examples).
+
+## NOTES
+- As of 10 Oct 2017, Python 2 will no longer be supported. All code from now on will support Python 3.4 - 3.6 and may not work with any other versions of Python.
+- Please use [2to3.py](https://docs.python.org/3.0/library/2to3.html) to convert Python 2 `.py` files to Python 3, and [2to3_nb.py](https://github.com/pycam/python-intro/blob/master/install/2to3_nb.py) to convert Jupyter `.ipynb` notebooks.

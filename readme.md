@@ -34,6 +34,13 @@ The code currently supports Python versions 3.4 - 3.6.
 
 Jupyter notebooks, which demonstrate common AR theory concepts, can be found [here](./AR-book/AR-book-notebooks). These notebooks are written in conjunction with the [Attainable Region theory textbook](http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1119157889.html).
 
+### 2.1 If you are using virtual environments
+Notebook widgets might not display if you Jupyter is run in a virtual environment. If this is the case, issue the following console command:
+```python
+jupyter nbextension enable --py widgetsnbextension
+```
+See the [Stack Overflow issue](https://stackoverflow.com/questions/36351109/ipython-notebook-ipywidgets-does-not-show) and [ipywidgets Github installation instructions](https://github.com/jupyter-widgets/ipywidgets/blob/master/docs/source/user_install.md) for more details.
+
 ## 3. AR website examples
 The source code for the examples described on attainableregions.com are stored [here](./AR-book/website-examples).
 

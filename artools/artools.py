@@ -932,6 +932,28 @@ def allcomb(*X):
     return Xs
 
 
+def isEven(N):
+    """
+    Check if N is an even number
+    """
+
+    if N%2 == 0:
+        return True
+    else:
+        return False
+
+
+def isOdd(N):
+    """
+    Check if N is an odd number
+    """
+
+    if isEven(N):
+        return False
+    else:
+        return True
+
+
 def randPts(Npts, axis_lims):
     '''
     Generate a list of random points within a user-specified range.
@@ -947,10 +969,13 @@ def randPts(Npts, axis_lims):
         Ys          (Npts x d) numpy array of random points.
     '''
 
-    dim = len(axis_lims) / 2
+    num_elements = len(axis_lims)
+    if isOdd(num_elements):
+        raise ValueError("axis_lims must have an even number of elements")
 
-    Xs = sp.rand(int(Npts), dim)
-    # axis_lims = sp.array([-0.5, 1.25, 0, 1.5])
+    dim = int(num_elements/2)
+
+    Xs = sp.rand(Npts, dim)
 
     # convert axis lims list into a Lx2 array that can be used with matrix
     # multiplication to scale the random points

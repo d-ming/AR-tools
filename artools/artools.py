@@ -1007,6 +1007,9 @@ def randPts(Npts, axis_lims):
     if isOdd(num_elements):
         raise ValueError("axis_lims must have an even number of elements")
 
+    if type(Npts) != float:
+        raise TypeError("Npts must be an integer")
+    
     dim = int(num_elements/2)
 
     Xs = sp.rand(Npts, dim)

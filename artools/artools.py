@@ -1028,7 +1028,7 @@ def randPts(Npts, axis_lims):
 def getExtrema(Xs, axis=0):
     """
     Collect the max and min values according to a user-specified axis direction
-    of Xs.
+    of Xs. First row contains min values, second row contains max values.
 
     Example
         In : X = numpy.array([[ 0.97336273,  0.96797706,  0.17441055],
@@ -1036,16 +1036,16 @@ def getExtrema(Xs, axis=0):
                               [ 0.62042139,  0.91331658,  0.15974472]])
 
         In : getExtrema(X)
-        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
-                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
-
-        In : getExtrema(X, axis=1)
-        Out: array([[ 0.19455935,  0.24275731,  0.02587713],
-                    [ 0.91954525,  0.62194451,  0.59483543]])
+        Out: array([[ 0.03894325,  0.59271898,  0.15974472],
+                    [ 0.97336273,  0.96797706,  0.59070622]])
 
         In : getExtrema(X, axis=0)
-        Out: array([[ 0.02587713,  0.22760039,  0.24275731,  0.12356059],
-                    [ 0.91954525,  0.55360981,  0.71135263,  0.62194451]])
+        Out: array([[ 0.03894325,  0.59271898,  0.15974472],
+                    [ 0.97336273,  0.96797706,  0.59070622]])
+
+        In : getExtrema(X, axis=1)
+        Out: array([[ 0.17441055,  0.03894325,  0.15974472],
+                    [ 0.97336273,  0.59271898,  0.91331658]])
     """
 
     Xs = sp.vstack(Xs)

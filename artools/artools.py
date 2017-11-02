@@ -954,6 +954,40 @@ def isOdd(N):
         return True
 
 
+def gridPts(pts_per_axis, axis_lims):
+    '''
+    Generate a list of points spaced on a user-specified grid range.
+
+    Arguments
+        pts_per_axis: Number of points to generate.
+
+        axis_lims: An array of axis min-max pairs.
+                   e.g. [xmin, xmax, ymin, ymax, zmin, zmax, etc.] where
+                   d = len(axis_lims)/2
+
+    Returns
+        Ys: (pts_per_axis x d) numpy array of grid points.
+    '''
+
+    num_elements = len(axis_lims)
+    if isOdd(num_elements):
+        raise ValueError("axis_lims must have an even number of elements")
+
+    dim = int(num_elements/2)
+
+    AX = sp.reshape(axis_lims, (-1, 2))
+    D = sp.diag(AX[:, 1] - AX[:, 0])
+
+    # compute the Cartesian product for an n-D unit cube
+    spacing_list = [sp.linspace(0, 1, pts_per_axis) for i in range(AX.shape[0])]
+    Xs = sp.array(list(itertools.product(*spacing_list)))
+
+    # scale to axis limits
+    Ys = sp.dot(Xs, D) + AX[:, 0]
+
+    return Ys
+
+
 def randPts(Npts, axis_lims):
     '''
     Generate a list of random points within a user-specified range.
@@ -973,6 +1007,9 @@ def randPts(Npts, axis_lims):
     if isOdd(num_elements):
         raise ValueError("axis_lims must have an even number of elements")
 
+    if type(Npts) != int:
+        raise TypeError("Npts must be an integer")
+
     dim = int(num_elements/2)
 
     Xs = sp.rand(Npts, dim)
@@ -982,6 +1019,7 @@ def randPts(Npts, axis_lims):
     AX = sp.reshape(axis_lims, (-1, 2))
     D = sp.diag(AX[:, 1] - AX[:, 0])
 
+    # scale to axis limits
     Ys = sp.dot(Xs, D) + AX[:, 0]
 
     return Ys

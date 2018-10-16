@@ -46,5 +46,4 @@ See this [Stack Overflow post](https://stackoverflow.com/questions/36351109/ipyt
 The source code for the examples described on attainableregions.com are stored [here](./AR-book/website-examples).
 
 ## NOTES
-- As of 10 Oct 2017, Python 2 will no longer be supported. All code from now on will support Python 3.4 - 3.6 and may not work with any other versions of Python.
-- Please use [2to3.py](https://docs.python.org/3.0/library/2to3.html) to convert Python 2 `.py` files to Python 3, and [2to3_nb.py](https://github.com/pycam/python-intro/blob/master/install/2to3_nb.py) to convert Jupyter `.ipynb` notebooks.
+- As of 10 Oct 2017, Python 2.x is no longer supported. We will concentrate on supporting Python 3.4 - 3.6. Please use [2to3.py](https://docs.python.org/3.0/library/2to3.html) to convert Python 2 `.py` files to Python 3, and [2to3_nb.py](https://github.com/pycam/python-intro/blob/master/install/2to3_nb.py) to convert Jupyter `.ipynb` notebooks.
